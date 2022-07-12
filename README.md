@@ -17,7 +17,7 @@ Aleph-1 :
   Allégé
 
 Aleph-2:
-    Permet d'incule Aleph-0 et 1 a l'interieur en cascade
+    Permet d'inclure Aleph-0 et 1 a l'interieur en cascade
     struct spécif, objet
 
 Aleph-N:
