@@ -1,0 +1,4 @@
+%("Hello")
+%("Hello" + " world")
+%("Sub Total : "+ 3)
+%("Total : "+ (3*9))

@@ -3,18 +3,30 @@ open Format
 
 let print_token out = function
   | INT i ->
-    fprintf out "INTEGER %d" i
+    fprintf out "%d\n" i
+  | STRING s ->
+    fprintf out "%s\n" s
   | _ ->
-    fprintf out "EOF"
+    ()
 
 
 let lexbuf l =
-  let token = ref (Parser.main Lexer.token l) in
-    printf "%a\n" (print_token) !token;
-    while !token <> EOF do
-      token := Parser.main Lexer.token l;
-      printf "%a\n" (print_token) !token
-    done
+  try
+    let token = ref (Parser.main Lexer.token l) in
+      printf "%a" (print_token) !token;
+      while !token <> EOF do
+        token := Parser.main Lexer.token l;
+        printf "%a" (print_token) !token
+      done
+  with exn ->
+      begin
+        let curr = l.Lexing.lex_curr_p in
+        let line = curr.Lexing.pos_lnum in
+        let cnum = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
+        let tok = Lexing.lexeme l in
+        printf "Line : %d col : %d token : '%s'\n" line cnum tok;
+        raise exn
+      end
 
 let file f =
   let inchan = open_in (f) in
