@@ -2,3 +2,4 @@
 %("Hello" + " world")
 %("Sub Total : "+ 3)
 %("Total : "+ (3*9))
+%("Total = "+ (3*9 + 9 + 4))

@@ -7,12 +7,16 @@ let space = [' ' '\t' '\r']
 let digit = ['0'-'9']
 let lower = ['a'-'z']
 let upper = ['A'-'Z']
-let other = [':']
+let other = [':' '=']
 
 rule token = parse
     space          { token lexbuf }     (* skip blanks *)
   | ['\n']         { EOL }
   | digit+ as lxm  { INT(int_of_string lxm) }
+  | digit+ '.' digit* as lxm 
+    { FLOAT(float_of_string lxm) }
+  | digit* '.' digit+ as lxm  
+    { FLOAT(float_of_string lxm) }
   | '+'            { PLUS }
   | '-'            { MINUS }
   | '*'            { TIMES }

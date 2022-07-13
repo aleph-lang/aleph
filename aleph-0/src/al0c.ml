@@ -4,6 +4,10 @@ open Format
 let print_token out = function
   | INT i ->
     fprintf out "%d\n" i
+  | FLOAT f ->
+    fprintf out "%f\n" f
+  | CHAR c ->
+    fprintf out "%c\n" c
   | STRING s ->
     fprintf out "%s\n" s
   | _ ->
