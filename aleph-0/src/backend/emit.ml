@@ -77,7 +77,7 @@ and g' oc = function (* ��̿��Υ�����֥����� (caml2h
       if x <> y then Printf.fprintf oc "\tmovsd\t%s, %s\n" y x
   | NonTail(x), FNegD(y) ->
       if x <> y then Printf.fprintf oc "\tmovsd\t%s, %s\n" y x;
-      Printf.fprintf oc "\txorpd\tmin_caml_fnegd, %s\n" x
+      Printf.fprintf oc "\txorpd\tfnegd, %s\n" x
   | NonTail(x), FAddD(y, z) ->
       if x = z then
         Printf.fprintf oc "\taddsd\t%s, %s\n" y x
@@ -261,10 +261,10 @@ let f oc (Prog(data, fundefs, e)) =
     data;
   Printf.fprintf oc ".text\n";
   List.iter (fun fundef -> h oc fundef) fundefs;
-  Printf.fprintf oc ".globl\tmin_caml_start\n";
-  Printf.fprintf oc "min_caml_start:\n";
-  Printf.fprintf oc ".globl\t_min_caml_start\n";
-  Printf.fprintf oc "_min_caml_start: # for cygwin\n";
+  Printf.fprintf oc ".globl\tstart\n";
+  Printf.fprintf oc "start:\n";
+  Printf.fprintf oc ".globl\t_start\n";
+  Printf.fprintf oc "_start: # for cygwin\n";
   Printf.fprintf oc "\tpushl\t%%eax\n";
   Printf.fprintf oc "\tpushl\t%%ebx\n";
   Printf.fprintf oc "\tpushl\t%%ecx\n";

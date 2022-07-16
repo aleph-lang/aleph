@@ -98,7 +98,7 @@ let rec g env known = function (* �����������Ѵ��롼�
   | KNormal.Get(x, y) -> Get(x, y)
   | KNormal.Put(x, y, z) -> Put(x, y, z)
   | KNormal.ExtArray(x) -> ExtArray(Id.L(x))
-  | KNormal.ExtFunApp(x, ys) -> AppDir(Id.L("min_caml_" ^ x), ys)
+  | KNormal.ExtFunApp(x, ys) -> AppDir(Id.L(x), ys)
 
 let f e =
   toplevel := [];
