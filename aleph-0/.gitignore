@@ -5,3 +5,6 @@ out
 src/frontend/lexer.ml
 src/frontend/parser.ml
 src/frontend/parser.mli
+src/._bcdi
+src/._d
+
