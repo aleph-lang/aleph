@@ -1,6 +1,6 @@
 RESULT= al0c
 
-default: 
+default: mdir
 	make -C src
 	mv src/$(RESULT) $(RESULT)
 
@@ -8,4 +8,7 @@ clean:
 	make -C src clean
 
 cleanest: clean
-	rm -f $(RESULT)
+	rm -rf out $(RESULT)
+
+mdir:
+	mkdir -p out
