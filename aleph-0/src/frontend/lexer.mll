@@ -22,8 +22,12 @@ rule token = parse
     { BOOL(true) }
 | "false"
     { BOOL(false) }
-| "not"
+| '!'
     { NOT }
+| '&'
+    { AND }
+| '|'
+    { OR }
 | digit+
     { INT(int_of_string (Lexing.lexeme lexbuf)) }
 | digit+ ('.' digit*)? (['e' 'E'] ['+' '-']? digit+)?

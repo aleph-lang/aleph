@@ -10,14 +10,13 @@ let rec iter n e =
 let lexbuf outchan l =
   Id.counter := 0;
   Typing.extenv := M.empty;
-  Emit.f outchan
-    (Virtual.f
-      (Closure.f
-        (iter !limit
-          (Alpha.f
-            (KNormal.f
-              (Typing.f
-                  (Parser.exp Lexer.token l)))))))
+  let res = Emit.f
+      (iter !limit
+        (Alpha.f
+          (KNormal.f
+            (Typing.f
+              (Parser.exp Lexer.token l))))) in
+  Printf.fprintf outchan "%s\n" res
 
 let string s = lexbuf stdout (Lexing.from_string s)
 

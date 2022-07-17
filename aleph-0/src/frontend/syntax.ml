@@ -4,6 +4,8 @@ type t =
   | Int of int
   | Float of float
   | Not of t
+  | And of t * t
+  | Or of t * t
   | Neg of t
   | Add of t * t
   | Sub of t * t

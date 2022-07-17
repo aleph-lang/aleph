@@ -7,6 +7,8 @@ let addtyp x = (x, Type.gentyp ())
 %token <int> INT
 %token <float> FLOAT
 %token NOT
+%token AND
+%token OR
 %token MINUS
 %token PLUS
 %token AST
@@ -48,6 +50,7 @@ let addtyp x = (x, Type.gentyp ())
 %left EQUAL LESS_GREATER LESS GREATER LESS_EQUAL GREATER_EQUAL
 %left PLUS MINUS
 %left AST SLASH
+%left AND OR
 %right prec_unary_minus
 %left prec_app
 %left DOT
@@ -82,11 +85,16 @@ exp:
     { Not($2) }
 | MINUS exp
     %prec prec_unary_minus
-    { match $2 with
-    | Float(f) -> Float(-.f)
-    | e -> Neg(e) }
+    {   match $2 with
+        | Float(f) -> Float(-.f)
+        | e -> Neg(e) 
+    }
+| exp AND exp
+    { And($1,$3) }
+| exp OR exp
+    { Or($1,$3) }
 | exp PLUS exp
-     { match $1,$3 with
+    { match $1,$3 with
         | Int(_),Int(_) -> Add($1, $3)
         | Int(i), Float(_) -> FAdd(Float(float_of_int i), $3)
         | Float(_), Int(i) -> FAdd($1,Float(float_of_int i))
@@ -101,7 +109,7 @@ exp:
         | Float(_), Float(_) -> FSub($1, $3)
         | _,_ -> Unit
     }
-    | exp AST exp
+| exp AST exp
     { match $1,$3 with
         | Int(_),Int(_) -> Mul($1, $3)
         | Int(i), Float(_) -> FMul(Float(float_of_int i), $3)

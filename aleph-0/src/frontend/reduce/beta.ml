@@ -7,6 +7,8 @@ let rec g env = function
   | Int(i) -> Int(i)
   | Float(d) -> Float(d)
   | Neg(x) -> Neg(find x env)
+  | And(x, y) -> And(find x env, find y env)
+  | Or(x, y) -> Or(find x env, find y env)
   | Add(x, y) -> Add(find x env, find y env)
   | Sub(x, y) -> Sub(find x env, find y env)
   | Mul(x, y) -> Mul(find x env, find y env)
