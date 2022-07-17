@@ -1,10 +1,8 @@
-(* 2���ڥ��ɤǤϤʤ�3���ڥ��ɤ�x86������֥��ɤ� *)
-
 type id_or_imm = V of Id.t | C of int
-type t = (* ̿����� (caml2html: sparcasm_t) *)
+type t =
   | Ans of exp
   | Let of (Id.t * Type.t) * exp * t
-and exp = (* ��İ�Ĥ�̿����б����뼰 (caml2html: sparcasm_exp) *)
+and exp =
   | Nop
   | Set of int
   | SetL of Id.l
@@ -12,6 +10,8 @@ and exp = (* ��İ�Ĥ�̿����б����뼰 (caml2html: sparcas
   | Neg of Id.t
   | Add of Id.t * id_or_imm
   | Sub of Id.t * id_or_imm
+  | MulD of Id.t * id_or_imm
+  | DivD of Id.t * id_or_imm
   | Ld of Id.t * id_or_imm * int
   | St of Id.t * Id.t * id_or_imm * int
   | FMovD of Id.t
@@ -26,16 +26,15 @@ and exp = (* ��İ�Ĥ�̿����б����뼰 (caml2html: sparcas
   (* virtual instructions *)
   | IfEq of Id.t * id_or_imm * t * t
   | IfLE of Id.t * id_or_imm * t * t
-  | IfGE of Id.t * id_or_imm * t * t (* �����оΤǤϤʤ��Τ�ɬ�� *)
+  | IfGE of Id.t * id_or_imm * t * t
   | IfFEq of Id.t * Id.t * t * t
   | IfFLE of Id.t * Id.t * t * t
   (* closure address, integer arguments, and float arguments *)
   | CallCls of Id.t * Id.t list * Id.t list
   | CallDir of Id.l * Id.t list * Id.t list
-  | Save of Id.t * Id.t (* �쥸�����ѿ����ͤ򥹥��å��ѿ�����¸ (caml2html: sparcasm_save) *)
-  | Restore of Id.t (* �����å��ѿ������ͤ����� (caml2html: sparcasm_restore) *)
+  | Save of Id.t * Id.t
+  | Restore of Id.t
 type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Type.t }
-(* �ץ���������� = ��ư���������ơ��֥� + �ȥåץ�٥�ؿ� + �ᥤ��μ� (caml2html: sparcasm_prog) *)
 type prog = Prog of (Id.l * float) list * fundef list * t
 
 let fletd(x, e1, e2) = Let((x, Type.Float), e1, e2)
@@ -67,7 +66,7 @@ let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
   | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
   | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> [x]
-  | Add(x, y') | Sub(x, y') | Ld(x, y', _) | LdDF(x, y', _) -> x :: fv_id_or_imm y'
+  | Add(x, y') | Sub(x, y') | MulD(x, y') | DivD(x, y')  | Ld(x, y', _) | LdDF(x, y', _) -> x :: fv_id_or_imm y'
   | St(x, y, z', _) | StDF(x, y, z', _) -> x :: y :: fv_id_or_imm z'
   | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> [x; y]
   | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: fv_id_or_imm y' @ remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)

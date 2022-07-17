@@ -46,8 +46,8 @@ let addtyp x = (x, Type.gentyp ())
 %nonassoc prec_tuple
 %left COMMA
 %left EQUAL LESS_GREATER LESS GREATER LESS_EQUAL GREATER_EQUAL
-%left PLUS MINUS PLUS_DOT MINUS_DOT
-%left AST_DOT SLASH_DOT
+%left PLUS MINUS
+%left AST SLASH
 %right prec_unary_minus
 %left prec_app
 %left DOT
@@ -72,7 +72,9 @@ simple_exp:
 | simple_exp DOT LPAREN exp RPAREN
     { Get($1, $4) }
 
-exp: /* (* ���̤μ� (caml2html: parser_exp) *) */
+exp:
+| SEMICOLON
+    { Unit }
 | simple_exp
     { $1 }
 | NOT exp
@@ -81,16 +83,44 @@ exp: /* (* ���̤μ� (caml2html: parser_exp) *) */
 | MINUS exp
     %prec prec_unary_minus
     { match $2 with
-    | Float(f) -> Float(-.f) (* -1.23�ʤɤϷ����顼�ǤϤʤ��Τ��̰��� *)
+    | Float(f) -> Float(-.f)
     | e -> Neg(e) }
-| exp PLUS exp /* (* ­������ʸ���Ϥ���롼�� (caml2html: parser_add) *) */
-    { Add($1, $3) }
+| exp PLUS exp
+     { match $1,$3 with
+        | Int(_),Int(_) -> Add($1, $3)
+        | Int(i), Float(_) -> FAdd(Float(float_of_int i), $3)
+        | Float(_), Int(i) -> FAdd($1,Float(float_of_int i))
+        | Float(_), Float(_) -> FAdd($1, $3)
+        | _,_ -> Unit
+    }
 | exp MINUS exp
-    { Sub($1, $3) }
+    { match $1,$3 with
+        | Int(_),Int(_) -> Sub($1, $3)
+        | Int(i), Float(_) -> FSub(Float(float_of_int i), $3)
+        | Float(_), Int(i) -> FSub($1,Float(float_of_int i))
+        | Float(_), Float(_) -> FSub($1, $3)
+        | _,_ -> Unit
+    }
+    | exp AST exp
+    { match $1,$3 with
+        | Int(_),Int(_) -> Mul($1, $3)
+        | Int(i), Float(_) -> FMul(Float(float_of_int i), $3)
+        | Float(_), Int(i) -> FMul($1,Float(float_of_int i))
+        | Float(_), Float(_) -> FMul($1, $3)
+        | _,_ -> Unit
+    }
+| exp SLASH exp
+    { match $1,$3 with
+        | Int(_),Int(_) -> Div($1, $3)
+        | Int(i), Float(_) -> FDiv(Float(float_of_int i), $3)
+        | Float(_), Int(i) -> FDiv($1,Float(float_of_int i))
+        | Float(_), Float(_) -> FDiv($1, $3)
+        | _,_ -> Unit
+    }
 | exp EQUAL exp
     { Eq($1, $3) }
 | exp LESS_GREATER exp
-    { Not(Eq($1, $3)) (* some float comparisons differ from OCaml for NaN; see: https://github.com/esumii/min-caml/issues/13#issuecomment-1147032750 *) }
+    { Not(Eq($1, $3)) }
 | exp LESS exp
     { Not(LE($3, $1)) }
 | exp GREATER exp
@@ -102,20 +132,6 @@ exp: /* (* ���̤μ� (caml2html: parser_exp) *) */
 | IF exp THEN exp ELSE exp
     %prec prec_if
     { If($2, $4, $6) }
-| MINUS_DOT exp
-    %prec prec_unary_minus
-    { FNeg($2) }
-| exp PLUS_DOT exp
-    { FAdd($1, $3) }
-| exp MINUS_DOT exp
-    { FSub($1, $3) }
-| exp AST_DOT exp
-    { FMul($1, $3) }
-| exp SLASH_DOT exp
-    { FDiv($1, $3) }
-| LET IDENT EQUAL exp IN exp
-    %prec prec_let
-    { Let(addtyp $2, $4, $6) }
 | LET REC fundef IN exp
     %prec prec_let
     { LetRec($3, $5) }
@@ -129,11 +145,16 @@ exp: /* (* ���̤μ� (caml2html: parser_exp) *) */
     { LetTuple($3, $6, $8) }
 | simple_exp DOT LPAREN exp RPAREN LESS_MINUS exp
     { Put($1, $4, $7) }
+| IDENT EQUAL exp SEMICOLON exp
+    %prec prec_let
+    { Let(addtyp $1, $3, $5) }
 | exp SEMICOLON exp
     { Let((Id.gentmp Type.Unit, Type.Unit), $1, $3) }
 | ARRAY_CREATE simple_exp simple_exp
     %prec prec_app
     { Array($2, $3) }
+| EOF
+    { Unit }
 | error
     { failwith
         (Printf.sprintf "parse error near characters %d-%d"

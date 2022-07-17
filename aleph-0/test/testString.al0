@@ -1,5 +1,5 @@
-%("Hello")
-%("Hello" + " world")
-%("Sub Total : " + 3)
-%("Total : "+ (3*9))
-%("Total = "+ (3*9 + 9 + 4))
+print("Hello");
+print("Hello" + " world");
+print("Sub Total : " + 3);
+print("Total : "+ (3*9));
+print("Total = "+ (3*9 + 9 + 4));

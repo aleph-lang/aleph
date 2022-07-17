@@ -1,11 +1,13 @@
 type closure = { entry : Id.l; actual_fv : Id.t list }
-type t = (* �����������Ѵ���μ� (caml2html: closure_t) *)
+type t =
   | Unit
   | Int of int
   | Float of float
   | Neg of Id.t
   | Add of Id.t * Id.t
   | Sub of Id.t * Id.t
+  | Mul of Id.t * Id.t
+  | Div of Id.t * Id.t
   | FNeg of Id.t
   | FAdd of Id.t * Id.t
   | FSub of Id.t * Id.t
@@ -32,7 +34,7 @@ type prog = Prog of fundef list * t
 let rec fv = function
   | Unit | Int(_) | Float(_) | ExtArray(_) -> S.empty
   | Neg(x) | FNeg(x) -> S.singleton x
-  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Get(x, y) -> S.of_list [x; y]
+  | Add(x, y) | Sub(x, y) | Mul(x, y) | Div(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Get(x, y) -> S.of_list [x; y]
   | IfEq(x, y, e1, e2)| IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
@@ -44,13 +46,15 @@ let rec fv = function
 
 let toplevel : fundef list ref = ref []
 
-let rec g env known = function (* �����������Ѵ��롼�������� (caml2html: closure_g) *)
+let rec g env known = function
   | KNormal.Unit -> Unit
   | KNormal.Int(i) -> Int(i)
   | KNormal.Float(d) -> Float(d)
   | KNormal.Neg(x) -> Neg(x)
   | KNormal.Add(x, y) -> Add(x, y)
   | KNormal.Sub(x, y) -> Sub(x, y)
+  | KNormal.Mul(x, y) -> Mul(x, y)
+  | KNormal.Div(x, y) -> Div(x, y)
   | KNormal.FNeg(x) -> FNeg(x)
   | KNormal.FAdd(x, y) -> FAdd(x, y)
   | KNormal.FSub(x, y) -> FSub(x, y)
@@ -60,36 +64,29 @@ let rec g env known = function (* �����������Ѵ��롼�
   | KNormal.IfLE(x, y, e1, e2) -> IfLE(x, y, g env known e1, g env known e2)
   | KNormal.Let((x, t), e1, e2) -> Let((x, t), g env known e1, g (M.add x t env) known e2)
   | KNormal.Var(x) -> Var(x)
-  | KNormal.LetRec({ KNormal.name = (x, t); KNormal.args = yts; KNormal.body = e1 }, e2) -> (* �ؿ�����ξ�� (caml2html: closure_letrec) *)
-      (* �ؿ����let rec x y1 ... yn = e1 in e2�ξ��ϡ�
-         x�˼�ͳ�ѿ����ʤ�(closure��𤵤�direct�˸ƤӽФ���)
-         �Ȳ��ꤷ��known���ɲä���e1�򥯥��������Ѵ����Ƥߤ� *)
+  | KNormal.LetRec({ KNormal.name = (x, t); KNormal.args = yts; KNormal.body = e1 }, e2) ->
       let toplevel_backup = !toplevel in
       let env' = M.add x t env in
       let known' = S.add x known in
       let e1' = g (M.add_list yts env') known' e1 in
-      (* �����˼�ͳ�ѿ����ʤ��ä������Ѵ����e1'���ǧ���� *)
-      (* ����: e1'��x���Ȥ��ѿ��Ȥ��ƽи��������closure��ɬ��!
-         (thanks to nuevo-namasute and azounoman; test/cls-bug2.ml����) *)
       let zs = S.diff (fv e1') (S.of_list (List.map fst yts)) in
       let known', e1' =
         if S.is_empty zs then known', e1' else
-        (* ���ܤ��ä������(toplevel����)���ᤷ�ơ������������Ѵ�����ľ�� *)
         (Format.eprintf "free variable(s) %s found in function %s@." (Id.pp_list (S.elements zs)) x;
          Format.eprintf "function %s cannot be directly applied in fact@." x;
          toplevel := toplevel_backup;
          let e1' = g (M.add_list yts env') known e1 in
          known, e1') in
-      let zs = S.elements (S.diff (fv e1') (S.add x (S.of_list (List.map fst yts)))) in (* ��ͳ�ѿ��Υꥹ�� *)
-      let zts = List.map (fun z -> (z, M.find z env')) zs in (* �����Ǽ�ͳ�ѿ�z�η����������˰���env��ɬ�� *)
-      toplevel := { name = (Id.L(x), t); args = yts; formal_fv = zts; body = e1' } :: !toplevel; (* �ȥåץ�٥�ؿ����ɲ� *)
+      let zs = S.elements (S.diff (fv e1') (S.add x (S.of_list (List.map fst yts)))) in
+      let zts = List.map (fun z -> (z, M.find z env')) zs in
+      toplevel := { name = (Id.L(x), t); args = yts; formal_fv = zts; body = e1' } :: !toplevel;
       let e2' = g env' known' e2 in
-      if S.mem x (fv e2') then (* x���ѿ��Ȥ���e2'�˽и����뤫 *)
-        MakeCls((x, t), { entry = Id.L(x); actual_fv = zs }, e2') (* �и����Ƥ����������ʤ� *)
+      if S.mem x (fv e2') then
+        MakeCls((x, t), { entry = Id.L(x); actual_fv = zs }, e2')
       else
         (Format.eprintf "eliminating closure(s) %s@." x;
-         e2') (* �и����ʤ����MakeCls���� *)
-  | KNormal.App(x, ys) when S.mem x known -> (* �ؿ�Ŭ�Ѥξ�� (caml2html: closure_app) *)
+         e2')
+  | KNormal.App(x, ys) when S.mem x known ->
       Format.eprintf "directly applying %s@." x;
       AppDir(Id.L(x), ys)
   | KNormal.App(f, xs) -> AppCls(f, xs)

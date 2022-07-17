@@ -1,17 +1,17 @@
-%(true)
-%(false)
-%(true | false)
-%(false | false)
-%(true | true)
-%(false | true)
-%(true & false)
-%(false & false)
-%(true & true)
-%(false & true)
-%(true & false | false)
-%(true & false | true)
-%(true & (false | true))
-%(true & (false | false))
-%(!true)
-%(!false)
-%(true & (false | !false))
+print(true);
+print(false);
+print(true | false);
+print(false | false);
+print(true | true);
+print(false | true);
+print(true & false);
+print(false & false);
+print(true & true);
+print(false & true);
+print(true & false | false);
+print(true & false | true);
+print(true & (false | true));
+print(true & (false | false));
+print(!true);
+print(!false);
+print(true & (false | !false));

@@ -1,4 +1,4 @@
-type t = (* MinCamlの型を表現するデータ型 (caml2html: type_t) *)
+type t =
   | Unit
   | Bool
   | Int
@@ -8,4 +8,4 @@ type t = (* MinCamlの型を表現するデータ型 (caml2html: type_t) *)
   | Array of t
   | Var of t option ref
 
-let gentyp () = Var(ref None) (* 新しい型変数を作る *)
+let gentyp () = Var(ref None)

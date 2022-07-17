@@ -2,7 +2,7 @@
 
 open Asm
 
-let data = ref [] (* ��ư��������������ơ��֥� (caml2html: virtual_data) *)
+let data = ref []
 
 let classify xts ini addf addi =
   List.fold_left
@@ -31,13 +31,12 @@ let expand xts ini addf addi =
     (fun (offset, acc) x t ->
       (offset + 4, addi x t offset acc))
 
-let rec g env = function (* ���β��ۥޥ��󥳡������� (caml2html: virtual_g) *)
+let rec g env = function
   | Closure.Unit -> Ans(Nop)
   | Closure.Int(i) -> Ans(Set(i))
   | Closure.Float(d) ->
       let l =
         try
-          (* ���Ǥ�����ơ��֥�ˤ��ä�������� Cf. https://github.com/esumii/min-caml/issues/13 *)
           let (l, _) = List.find (fun (_, d') -> d = d') !data in
           l
         with Not_found ->
@@ -49,6 +48,8 @@ let rec g env = function (* ���β��ۥޥ��󥳡�������
   | Closure.Neg(x) -> Ans(Neg(x))
   | Closure.Add(x, y) -> Ans(Add(x, V(y)))
   | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
+  | Closure.Mul(x, y) -> Ans(MulD(x, V(y)))
+  | Closure.Div(x, y) -> Ans(DivD(x, V(y)))
   | Closure.FNeg(x) -> Ans(FNegD(x))
   | Closure.FAdd(x, y) -> Ans(FAddD(x, y))
   | Closure.FSub(x, y) -> Ans(FSubD(x, y))
@@ -73,8 +74,7 @@ let rec g env = function (* ���β��ۥޥ��󥳡�������
       | Type.Unit -> Ans(Nop)
       | Type.Float -> Ans(FMovD(x))
       | _ -> Ans(Mov(x)))
-  | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) -> (* ��������������� (caml2html: virtual_makecls) *)
-      (* Closure�Υ��ɥ쥹�򥻥åȤ��Ƥ��顢��ͳ�ѿ����ͤ򥹥ȥ� *)
+  | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) ->
       let e2' = g (M.add x t env) e2 in
       let offset, store_fv =
         expand
@@ -94,7 +94,7 @@ let rec g env = function (* ���β��ۥޥ��󥳡�������
   | Closure.AppDir(Id.L(x), ys) ->
       let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
       Ans(CallDir(Id.L(x), int, float))
-  | Closure.Tuple(xs) -> (* �Ȥ����� (caml2html: virtual_tuple) *)
+  | Closure.Tuple(xs) ->
       let y = Id.genid "t" in
       let (offset, store) =
         expand
@@ -118,7 +118,7 @@ let rec g env = function (* ���β��ۥޥ��󥳡�������
             if not (S.mem x s) then load else (* [XX] a little ad hoc optimization *)
             Let((x, t), Ld(y, C(offset), 1), load)) in
       load
-  | Closure.Get(x, y) -> (* ������ɤ߽Ф� (caml2html: virtual_get) *)
+  | Closure.Get(x, y) ->
       (match M.find x env with
       | Type.Array(Type.Unit) -> Ans(Nop)
       | Type.Array(Type.Float) -> Ans(LdDF(x, V(y), 8))
@@ -132,7 +132,6 @@ let rec g env = function (* ���β��ۥޥ��󥳡�������
       | _ -> assert false)
   | Closure.ExtArray(Id.L(x)) -> Ans(SetL(Id.L(x)))
 
-(* �ؿ��β��ۥޥ��󥳡������� (caml2html: virtual_h) *)
 let h { Closure.name = (Id.L(x), t); Closure.args = yts; Closure.formal_fv = zts; Closure.body = e } =
   let (int, float) = separate yts in
   let (offset, load) =
@@ -146,7 +145,6 @@ let h { Closure.name = (Id.L(x), t); Closure.args = yts; Closure.formal_fv = zts
       { name = Id.L(x); args = int; fargs = float; body = load; ret = t2 }
   | _ -> assert false
 
-(* �ץ���������Τβ��ۥޥ��󥳡������� (caml2html: virtual_f) *)
 let f (Closure.Prog(fundefs, e)) =
   data := [];
   let fundefs = List.map h fundefs in

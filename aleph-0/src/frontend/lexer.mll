@@ -1,10 +1,8 @@
 {
-(* lexer�����Ѥ����ѿ����ؿ������ʤɤ���� *)
 open Parser
 open Type
 }
 
-(* ����ɽ����ά�� *)
 let space = [' ' '\t' '\n' '\r']
 let digit = ['0'-'9']
 let lower = ['a'-'z']
@@ -14,7 +12,7 @@ rule token = parse
 | space+
     { token lexbuf }
 | "(*"
-    { comment lexbuf; (* �ͥ��Ȥ��������ȤΤ���Υȥ�å� *)
+    { comment lexbuf;
       token lexbuf }
 | '('
     { LPAREN }
@@ -26,13 +24,13 @@ rule token = parse
     { BOOL(false) }
 | "not"
     { NOT }
-| digit+ (* �����������Ϥ���롼�� (caml2html: lexer_int) *)
+| digit+
     { INT(int_of_string (Lexing.lexeme lexbuf)) }
 | digit+ ('.' digit*)? (['e' 'E'] ['+' '-']? digit+)?
     { FLOAT(float_of_string (Lexing.lexeme lexbuf)) }
-| '-' (* -.����󤷤ˤ��ʤ��Ƥ��ɤ�? ��Ĺ����? *)
+| '-'
     { MINUS }
-| '+' (* +.����󤷤ˤ��ʤ��Ƥ��ɤ�? ��Ĺ����? *)
+| '+'
     { PLUS }
 | '*'
     { AST }

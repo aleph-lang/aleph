@@ -10,7 +10,7 @@ frontend/typing.ml frontend/kNormal.mli frontend/kNormal.ml frontend/alpha.mli f
 frontend/reduce/beta.mli frontend/reduce/beta.ml frontend/reduce/assoc.mli frontend/reduce/assoc.ml \
 frontend/reduce/inline.mli frontend/reduce/inline.ml frontend/reduce/constFold.mli frontend/reduce/constFold.ml \
 frontend/reduce/elim.mli frontend/reduce/elim.ml frontend/closure.mli frontend/closure.ml \
-frontend/asm.mli frontend/asm.ml backend/virtual.mli backend/virtual.ml backend/emit.mli backend/emit.ml \
+backend/asm.mli backend/asm.ml backend/virtual.mli backend/virtual.ml backend/emit.mli backend/emit.ml \
 main.mli main.ml
 
 include OCamlMakefile

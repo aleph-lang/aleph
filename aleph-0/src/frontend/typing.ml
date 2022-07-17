@@ -93,7 +93,7 @@ let rec g env e =
     | Neg(e) ->
         unify Type.Int (g env e);
         Type.Int
-    | Add(e1, e2) | Sub(e1, e2) ->
+    | Add(e1, e2) | Sub(e1, e2) | Mul(e1, e2) | Div(e1, e2) ->
         unify Type.Int (g env e1);
         unify Type.Int (g env e2);
         Type.Int
@@ -113,21 +113,21 @@ let rec g env e =
         let t3 = g env e3 in
         unify t2 t3;
         t2
-    | Let((x, t), e1, e2) -> (* let�η����� (caml2html: typing_let) *)
+    | Let((x, t), e1, e2) ->
         unify t (g env e1);
         g (M.add x t env) e2
-    | Var(x) when M.mem x env -> M.find x env (* �ѿ��η����� (caml2html: typing_var) *)
+    | Var(x) when M.mem x env -> M.find x env
     | Var(x) when M.mem x !extenv -> M.find x !extenv
-    | Var(x) -> (* �����ѿ��η����� (caml2html: typing_extvar) *)
+    | Var(x) ->
         Format.eprintf "free variable %s assumed as external@." x;
         let t = Type.gentyp () in
         extenv := M.add x t !extenv;
         t
-    | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> (* let rec�η����� (caml2html: typing_letrec) *)
+    | LetRec({ name = (x, t); args = yts; body = e1 }, e2) ->
         let env = M.add x t env in
         unify t (Type.Fun(List.map snd yts, g (M.add_list yts env) e1));
         g env e2
-    | App(e, es) -> (* �ؿ�Ŭ�Ѥη����� (caml2html: typing_app) *)
+    | App(e, es) ->
         let t = Type.gentyp () in
         unify (g env e) (Type.Fun(List.map (g env) es, t));
         t
