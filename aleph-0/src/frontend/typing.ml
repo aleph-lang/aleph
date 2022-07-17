@@ -49,7 +49,7 @@ let rec deref_term = function
   | Put(e1, e2, e3) -> Put(deref_term e1, deref_term e2, deref_term e3)
   | e -> e
 
-let rec occur r1 = function (* occur check (caml2html: typing_occur) *)
+let rec occur r1 = function
   | Type.Fun(t2s, t2) -> List.exists (occur r1) t2s || occur r1 t2
   | Type.Tuple(t2s) -> List.exists (occur r1) t2s
   | Type.Array(t2) -> occur r1 t2

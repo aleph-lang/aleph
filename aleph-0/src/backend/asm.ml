@@ -45,7 +45,7 @@ let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
 let fregs = Array.init 8 (fun i -> Printf.sprintf "%%xmm%d" i)
 let allregs = Array.to_list regs
 let allfregs = Array.to_list fregs
-let reg_cl = regs.(Array.length regs - 1) (* closure address (caml2html: sparcasm_regcl) *)
+let reg_cl = regs.(Array.length regs - 1) (* closure address *)
 (*
 let reg_sw = regs.(Array.length regs - 1) (* temporary for swap *)
 let reg_fsw = fregs.(Array.length fregs - 1) (* temporary for swap *)
@@ -61,7 +61,7 @@ let rec remove_and_uniq xs = function
   | x :: ys when S.mem x xs -> remove_and_uniq xs ys
   | x :: ys -> x :: remove_and_uniq (S.add x xs) ys
 
-(* free variables in the order of use (for spilling) (caml2html: sparcasm_fv) *)
+(* free variables in the order of use (for spilling) *)
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
   | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
