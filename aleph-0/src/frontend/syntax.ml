@@ -1,5 +1,6 @@
 type t =
   | Unit
+  | Eol
   | Bool of bool
   | Int of int
   | Float of float

@@ -16,7 +16,7 @@ let lexbuf outchan l =
           (KNormal.f
             (Typing.f
               (Parser.exp Lexer.token l))))) in
-  Printf.fprintf outchan "%s\n" res
+  Printf.fprintf outchan "%s" res
 
 let string s = lexbuf stdout (Lexing.from_string s)
 

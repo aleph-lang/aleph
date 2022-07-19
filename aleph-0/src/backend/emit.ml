@@ -64,7 +64,7 @@ let rec g l env known = function
   | KNormal.FSub(x, y) -> (x ^ " -. " ^ y)::l
   | KNormal.FMul(x, y) -> (x ^ " *. " ^ y)::l
   | KNormal.FDiv(x, y) -> (x ^ " /. " ^ y)::l
-  | KNormal.Let((x, t), e1, e2) -> (g l env known e1) @ (g l (M.add x t env) known e2) @ l
+  | KNormal.Let((x, t), e1, e2) -> (g l env known e1) @ (g l (M.add x t env) known e2)  @ l
   | KNormal.IfEq(x, y, e1, e2) -> (g l env known e1) @ [" = "] @ (g l env known e2) @ l
   | KNormal.IfLE(x, y, e1, e2) ->  (g l env known e1) @ [" <= "] @ (g l env known e2) @ l
   | KNormal.Var(x) -> x::l
@@ -102,7 +102,7 @@ let rec g l env known = function
   | KNormal.Get(x, y) -> (x ^ " " ^ y)::l
   | KNormal.Put(x, y, z) ->  (x ^ " " ^ y)::l
   | KNormal.ExtArray(x) -> "Todo1"::l
-  | KNormal.ExtFunApp(x, ys) -> (";;\n" ^ x)::l
+  | KNormal.ExtFunApp(x, ys) -> (x ^ "\n")::l
 
 
 let f e =

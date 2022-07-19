@@ -95,7 +95,11 @@ let rec g env e =
     | Neg(e) ->
         unify Type.Int (g env e);
         Type.Int
-    | Add(e1, e2) | Sub(e1, e2) | Mul(e1, e2) | Div(e1, e2) | And(e1, e2) | Or(e1,e2) ->
+    | And(e1, e2) | Or(e1,e2) ->
+        unify Type.Bool (g env e1);
+        unify Type.Bool (g env e2);
+        Type.Bool
+    | Add(e1, e2) | Sub(e1, e2) | Mul(e1, e2) | Div(e1, e2) ->
         unify Type.Int (g env e1);
         unify Type.Int (g env e2);
         Type.Int
