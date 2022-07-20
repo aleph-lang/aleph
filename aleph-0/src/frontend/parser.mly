@@ -36,6 +36,8 @@ let addtyp x = (x, Type.gentyp ())
 %token SEMICOLON
 %token LPAREN
 %token RPAREN
+%token LBRACE
+%token RBRACE
 %token MODULO
 %token EOF
 
@@ -61,6 +63,8 @@ let addtyp x = (x, Type.gentyp ())
 
 simple_exp:
 | LPAREN exp RPAREN
+    { $2 }
+| LBRACE exp RBRACE
     { $2 }
 | LPAREN RPAREN
     { Unit }
@@ -137,9 +141,9 @@ exp:
     { LE($1, $3) }
 | exp GREATER_EQUAL exp
     { LE($3, $1) }
-| IF exp THEN exp ELSE exp
+| exp QUESTION exp COLON exp
     %prec prec_if
-    { If($2, $4, $6) }
+    { If($1, $3, $5) }
 | LET REC fundef IN exp
     %prec prec_let
     { LetRec($3, $5) }

@@ -76,6 +76,10 @@ rule token = parse
     { SEMICOLON }
 | '%'
     { MODULO }
+| '{'
+    { LBRACE }
+| '}'
+    { RBRACE }
 | eof
     { EOF }
 | lower (digit|lower|upper|'_')*
