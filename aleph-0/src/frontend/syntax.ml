@@ -19,6 +19,7 @@ type t =
   | Eq of t * t
   | LE of t * t
   | If of t * t * t
+  | While of t * t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
   | LetRec of fundef * t

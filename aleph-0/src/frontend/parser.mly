@@ -144,6 +144,12 @@ exp:
 | exp QUESTION exp COLON exp
     %prec prec_if
     { If($1, $3, $5) }
+| exp QUESTION AST exp
+    %prec prec_if
+    { While(Unit, $1, $4, Unit) }
+| LPAREN exp SEMICOLON exp SEMICOLON exp RPAREN QUESTION AST exp
+    %prec prec_if
+    { While($2, $4, $10, $6) }
 | LET REC fundef IN exp
     %prec prec_let
     { LetRec($3, $5) }
