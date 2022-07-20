@@ -3,4 +3,3 @@ aleph-0/src/lexer.ml
 aleph-0/src/parser.ml
 aleph-0/src/*.cmi
 aleph-0/src/*.cmo
-aleph-0/src/*.mli
