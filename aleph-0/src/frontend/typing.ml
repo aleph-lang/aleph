@@ -119,6 +119,14 @@ let rec g env e =
         let t3 = g env e3 in
         unify t2 t3;
         t2
+    | While(e1, e2, e3, e4) ->
+        unify (g env e2) Type.Bool;
+        let t1 = g env e1 in
+        let t3 = g env e3 in
+        let t4 = g env e4 in
+        unify t1 t3;
+        unify t3 t4;
+        t3
     | Let((x, t), e1, e2) ->
         unify t (g env e1);
         g (M.add x t env) e2

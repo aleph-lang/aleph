@@ -20,6 +20,7 @@ let rec g env = function
   | FDiv(x, y) -> FDiv(find x env, find y env)
   | IfEq(x, y, e1, e2) -> IfEq(find x env, find y env, g env e1, g env e2)
   | IfLE(x, y, e1, e2) -> IfLE(find x env, find y env, g env e1, g env e2)
+  | While(e1, e2, e3, e4) -> IfLE(find e2 env, find e2 env, g env e3, g env e4)
   | Let((x, t), e1, e2) ->
       (match g env e1 with
       | Var(y) ->

@@ -11,7 +11,10 @@ let upper = ['A'-'Z']
 rule token = parse
 | space+
     { token lexbuf }
-| "(*"
+| "//"
+    { commentLine lexbuf;
+      token lexbuf }
+| "/*"
     { comment lexbuf;
       token lexbuf }
 | '('
@@ -91,12 +94,20 @@ rule token = parse
            (Lexing.lexeme_start lexbuf)
            (Lexing.lexeme_end lexbuf)) }
 and comment = parse
-| "*)"
+| "*/"
     { () }
-| "(*"
+| "/*"
     { comment lexbuf;
       comment lexbuf }
 | eof
     { Format.eprintf "warning: unterminated comment@." }
 | _
     { comment lexbuf }
+and commentLine = parse
+| '\n'
+    { () }
+| "//"
+    { commentLine lexbuf;
+      commentLine lexbuf }
+| _
+    { commentLine lexbuf }

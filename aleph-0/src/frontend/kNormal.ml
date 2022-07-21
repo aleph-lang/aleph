@@ -18,6 +18,7 @@ type t =
   | FDiv of Id.t * Id.t
   | IfEq of Id.t * Id.t * t * t
   | IfLE of Id.t * Id.t * t * t
+  | While of t * Id.t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
   | LetRec of fundef * t
@@ -36,6 +37,7 @@ let rec fv = function
   | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | Mul(x, y) | Div(x, y) | FMul(x, y) | FDiv(x, y) | Get(x, y) | And(x, y) | Or(x, y) -> S.of_list [x; y]
   | IfEq(x, y, e1, e2) | IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
+  | While(e1, x, e2, e3) -> S.union (S.union (fv e1) (fv e2)) (fv e3)
   | Var(x) -> S.singleton x
   | LetRec({ name = (x, t); args = yts; body = e1 }, e2) ->
       let zs = S.diff (fv e1) (S.of_list (List.map fst yts)) in
@@ -123,6 +125,13 @@ let rec g env = function
               let e4', t4 = g env e4 in
               IfLE(x, y, e3', e4'), t3))
   | Syntax.If(e1, e2, e3) -> g env (Syntax.If(Syntax.Eq(e1, Syntax.Bool(false)), e3, e2))
+  | Syntax.While(e1, e2, e3, e4) ->
+      insert_let (g env e1)
+        (fun x -> insert_let (g env e2)
+            (fun y ->
+              let e3', t3 = g env e3 in
+              let e4', t4 = g env e4 in
+              IfEq(x, y, e3', e4'), t3))
   | Syntax.Let((x, t), e1, e2) ->
       let e1', t1 = g env e1 in
       let e2', t2 = g (M.add x t env) e2 in

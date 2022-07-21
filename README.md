@@ -62,7 +62,7 @@ c?{expr}:{expr} //if
 name (params) = expr | { }
 
 "bonjour"
-expr crlf expr ou expr : expr
+expr crlf expr ou expr ; expr
 
 
 import : en v2, struct
