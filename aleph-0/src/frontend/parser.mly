@@ -163,6 +163,9 @@ exp:
     { LetTuple($3, $6, $8) }
 | simple_exp DOT LPAREN exp RPAREN LESS_MINUS exp
     { Put($1, $4, $7) }
+| IDENT EQUAL exp
+    %prec prec_let
+    { Let(addtyp $1, $3, Unit) }
 | IDENT EQUAL exp SEMICOLON exp
     %prec prec_let
     { Let(addtyp $1, $3, $5) }

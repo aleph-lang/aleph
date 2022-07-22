@@ -17,6 +17,7 @@ type t =
   | FDiv of Id.t * Id.t
   | IfEq of Id.t * Id.t * t * t
   | IfLE of Id.t * Id.t * t * t
+  | While of t * Id.t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
   | MakeCls of (Id.t * Type.t) * emit * t
@@ -67,6 +68,7 @@ let rec g l env known = function
   | KNormal.Let((x, t), e1, e2) -> (g l env known e1) @ (g l (M.add x t env) known e2)  @ l
   | KNormal.IfEq(x, y, e1, e2) -> (g l env known e1) @ [" = "] @ (g l env known e2) @ l
   | KNormal.IfLE(x, y, e1, e2) ->  (g l env known e1) @ [" <= "] @ (g l env known e2) @ l
+  | KNormal.While(e1, e2, e3, e4) ->  (g l env known e1) @ [e2] @ (g l env known e3) @ (g l env known e4) @ l
   | KNormal.Var(x) -> x::l
   | KNormal.App(f, xs) -> f::l
   (*| KNormal.LetRec({ KNormal.name = (x, t); KNormal.args = yts; KNormal.body = e1 }, e2) ->

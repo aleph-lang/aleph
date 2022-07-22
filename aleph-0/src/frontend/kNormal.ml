@@ -126,12 +126,12 @@ let rec g env = function
               IfLE(x, y, e3', e4'), t3))
   | Syntax.If(e1, e2, e3) -> g env (Syntax.If(Syntax.Eq(e1, Syntax.Bool(false)), e3, e2))
   | Syntax.While(e1, e2, e3, e4) ->
-      insert_let (g env e1)
-        (fun x -> insert_let (g env e2)
-            (fun y ->
-              let e3', t3 = g env e3 in
-              let e4', t4 = g env e4 in
-              IfEq(x, y, e3', e4'), t3))
+    insert_let (g env e2) 
+        (fun x ->
+            let e1', t1 = g env e1 in
+            let e3', t3 = g env e3 in
+            let e4', t4 = g env e4 in
+            While(e1', x, e3', e4'), t3)
   | Syntax.Let((x, t), e1, e2) ->
       let e1', t1 = g env e1 in
       let e2', t2 = g (M.add x t env) e2 in

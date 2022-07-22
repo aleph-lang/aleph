@@ -36,6 +36,7 @@ let rec g env = function
   | IfLE(x, y, e1, e2) when memi x env && memi y env -> if findi x env <= findi y env then g env e1 else g env e2
   | IfLE(x, y, e1, e2) when memf x env && memf y env -> if findf x env <= findf y env then g env e1 else g env e2
   | IfLE(x, y, e1, e2) -> IfLE(x, y, g env e1, g env e2)
+  | While(e1, x, e3, e4) -> While(g env e1, x, g env e3, g env e4)
   | Let((x, t), e1, e2) ->
       let e1' = g env e1 in
       let e2' = g (M.add x e1' env) e2 in
