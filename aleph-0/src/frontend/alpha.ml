@@ -48,4 +48,39 @@ let rec g env = function
   | ExtArray(x) -> ExtArray(x)
   | ExtFunApp(x, ys) -> ExtFunApp(x, List.map (fun y -> find y env) ys)
 
-let f = g M.empty
+let rec printKnormal = function
+  | Unit -> Printf.printf "Unit"
+  | Int(i) -> Printf.printf "Int %d " i
+  | Float(f) -> Printf.printf "Float %f " f
+  | Neg(x) -> Printf.printf "- %s " x
+  | And(x, y) -> Printf.printf "And %s %s " x y
+  | Or(x, y) -> Printf.printf "Or %s %s " x y
+  | Add(x, y) -> Printf.printf "+ %s %s " x y
+  | Sub(x, y) -> Printf.printf "- %s %s " x y
+  | Mul(x, y) -> Printf.printf "* %s %s " x y
+  | Div(x, y) -> Printf.printf "/ %s %s " x y
+  | FNeg(x) -> Printf.printf "-. %s " x
+  | FAdd(x, y) -> Printf.printf "+. %s %s " x y
+  | FSub(x, y) -> Printf.printf "-. %s %s " x y
+  | FMul(x, y) -> Printf.printf "*. %s %s " x y
+  | FDiv(x, y) -> Printf.printf "/. %s %s " x y
+  | IfEq(x, y, e1, e2) -> Printf.printf "Neg %s" x
+  | IfLE(x, y, e1, e2) -> Printf.printf "Neg %s" x
+  | While(e1, e2, e3, e4) -> Printf.printf "While "; printKnormal e1; Printf.printf "%s" e2; printKnormal e3; printKnormal e4
+  | Let((x, t), e1, e2) ->
+      Printf.printf "PKno Let %s = " x; printKnormal e1; printKnormal e2
+  | Var(x) -> Printf.printf "Neg %s" x
+  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) ->
+      Printf.printf "Neg %s" x
+  | App(x, ys) -> Printf.printf "PKno App %s " x
+  | Tuple(xs) -> Printf.printf "Tuple"
+  | LetTuple(xts, y, e) ->
+      Printf.printf "LetTuple "
+  | Get(x, y) -> Printf.printf "Get %s " x
+  | Put(x, y, z) -> Printf.printf "Put %s " x
+  | ExtArray(x) -> Printf.printf "ExtArray %s " x
+  | ExtFunApp(x, ys) -> Printf.printf "ExtFunApp %s \n" x
+
+let f e = 
+  printKnormal e;
+  g M.empty e

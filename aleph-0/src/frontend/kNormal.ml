@@ -205,4 +205,68 @@ let rec g env = function
             (fun y -> insert_let (g env e3)
                 (fun z -> Put(x, y, z), Type.Unit)))
 
-let f e = fst (g M.empty e)
+let rec printSyntax = function
+  | Syntax.Unit -> Printf.printf "Unit\n"
+  | Syntax.Bool(b) -> Printf.printf "Bool %b" b
+  | Syntax.Int(i) -> Printf.printf "Int %d" i
+  | Syntax.Float(f) -> Printf.printf "Float %f" f
+  | Syntax.Not(e) -> Printf.printf "Not "; printSyntax e
+  | Syntax.And(e1, e2) ->
+      printSyntax e1; Printf.printf " And ";printSyntax e2
+  | Syntax.Or(e1, e2) ->
+      printSyntax e1; Printf.printf " Or ";printSyntax e2
+  | Syntax.Neg(e) ->
+      Printf.printf " - ";printSyntax e
+  | Syntax.Add(e1, e2) ->
+     printSyntax e1; Printf.printf " + ";printSyntax e2
+  | Syntax.Sub(e1, e2) ->
+      printSyntax e1; Printf.printf " - ";printSyntax e2
+  | Syntax.Mul(e1, e2) ->
+      printSyntax e1; Printf.printf " * ";printSyntax e2
+  | Syntax.Div(e1, e2) ->
+      printSyntax e1; Printf.printf " / ";printSyntax e2
+  | Syntax.FNeg(e) ->
+      Printf.printf " -. ";printSyntax e
+  | Syntax.FAdd(e1, e2) ->
+      printSyntax e1; Printf.printf " +. ";printSyntax e2
+  | Syntax.FSub(e1, e2) ->
+      printSyntax e1; Printf.printf " -. ";printSyntax e2
+  | Syntax.FMul(e1, e2) ->
+      printSyntax e1; Printf.printf " *. ";printSyntax e2
+  | Syntax.FDiv(e1, e2) ->
+      printSyntax e1; Printf.printf " /. ";printSyntax e2
+  | Syntax.Eq _ | Syntax.LE _ as cmp ->
+      Printf.printf "PSyn EQ/LE "; printSyntax cmp
+  | Syntax.If(Syntax.Not(e1), e2, e3) -> printSyntax (Syntax.If(e1, e3, e2))
+  | Syntax.If(Syntax.Eq(e1, e2), e3, e4) ->
+      Printf.printf "PSyn If "; printSyntax e1;Printf.printf " = "; printSyntax e2; Printf.printf " then "; printSyntax e3; Printf.printf " else "; printSyntax e4
+  | Syntax.If(Syntax.LE(e1, e2), e3, e4) ->
+       Printf.printf "PSyn If "; printSyntax e1;Printf.printf " <= "; printSyntax e2; Printf.printf " then "; printSyntax e3; Printf.printf " else "; printSyntax e4
+ | Syntax.If(e1, e2, e3) -> Printf.printf "PSyn If "; printSyntax e1; Printf.printf " then "; printSyntax e2; Printf.printf " else "; printSyntax e3
+  | Syntax.While(e1, e2, e3, e4) ->
+    Printf.printf "PSyn While "
+  | Syntax.Let((x, t), e1, e2) ->
+       Printf.printf "PSyn Let %s = " x; printSyntax e1; printSyntax e2
+  | Syntax.Var(x) ->
+       Printf.printf "Var %s" x
+  | Syntax.LetRec({ Syntax.name = (x, t); Syntax.args = yts; Syntax.body = e1 }, e2) ->
+       Printf.printf "PSyn LetRec "
+  | Syntax.App(e1, e2s) ->
+       Printf.printf "App "; printSyntax e1;
+       Printf.printf "("; 
+       List.map printSyntax e2s;
+       Printf.printf ")\n"
+  | Syntax.Tuple(es) ->
+      Printf.printf "PSyn Tuple "
+  | Syntax.LetTuple(xts, e1, e2) ->
+      Printf.printf "PSyn LetTuple "
+  | Syntax.Array(e1, e2) ->
+      Printf.printf "PSyn Array "
+  | Syntax.Get(e1, e2) ->
+      Printf.printf "PSyn Get "
+  | Syntax.Put(e1, e2, e3) ->
+      Printf.printf "PSyn Put "
+
+let f e = 
+  printSyntax e;
+  fst (g M.empty e)
