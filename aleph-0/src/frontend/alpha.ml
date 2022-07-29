@@ -68,7 +68,7 @@ let rec printKnormal = function
   | IfLE(x, y, e1, e2) -> Printf.printf "Neg %s" x
   | While(e1, e2, e3, e4) -> Printf.printf "While "; printKnormal e1; Printf.printf "%s" e2; printKnormal e3; printKnormal e4
   | Let((x, t), e1, e2) ->
-      Printf.printf "PKno Let %s = " x; printKnormal e1; printKnormal e2
+      Printf.printf "PKno Let %s = " x; printKnormal e1; printKnormal e2; Printf.printf "\n"
   | Var(x) -> Printf.printf "Neg %s" x
   | LetRec({ name = (x, t); args = yts; body = e1 }, e2) ->
       Printf.printf "Neg %s" x
