@@ -68,3 +68,12 @@ expr crlf expr ou expr ; expr
 import : en v2, struct
 ```
 
+Discution du 31/07/2022 a faire apres.
+
+Ajout de filtres Backend :
+    filtres par defaut genere du ocaml light dans le backend
+    un filtre prend un syntax et renvoi un syntax ou unit (Parce print du language dest)
+
+Ajout de filtre Frontend :
+    Prend un syntax et renvoi un syntax ou prend la source et rend un source ou syntax.
+
