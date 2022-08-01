@@ -1,34 +1,36 @@
-type emit = { entry : Id.l; actual_fv : Id.t list }
+open Syntax
 
 let rec g env = function
-  | KNormal.Unit -> ""
-  | KNormal.Int(i) -> " Int " ^string_of_int(i)
-  | KNormal.Float(d) -> string_of_float(d)
-  | KNormal.And(x, y) ->(x ^ " && " ^ y)
-  | KNormal.Or(x, y) -> (x ^ " || " ^ y)
-  | KNormal.Neg(x) -> ("-" ^ x)
-  | KNormal.Add(x, y) -> (x ^ " + " ^ y)
-  | KNormal.Sub(x, y) -> (x ^ " - " ^ y)
-  | KNormal.Mul(x, y) -> (x ^ " * " ^ y)
-  | KNormal.Div(x, y) -> (x ^ " / " ^ y)
-  | KNormal.FNeg(x) ->  ("-." ^ x)
-  | KNormal.FAdd(x, y) -> (x ^ " +. " ^ y)
-  | KNormal.FSub(x, y) -> (x ^ " -. " ^ y)
-  | KNormal.FMul(x, y) -> (x ^ " *. " ^ y)
-  | KNormal.FDiv(x, y) -> (x ^ " /. " ^ y)
-  | KNormal.Let((x, t), e1, e2) -> (g env e1) ^ (g (M.add x t env) e2)
-  | KNormal.IfEq(x, y, e1, e2) -> (g env e1) ^ " = " ^ (g env e2)
-  | KNormal.IfLE(x, y, e1, e2) ->  (g env e1) ^ " <= " ^ (g env e2)
-  | KNormal.While(e1, e2, e3, e4) ->  (g env e1) ^ e2 ^ (g env e3) ^ (g env e4)
-  | KNormal.Var(x) -> x
-  | KNormal.LetRec({ KNormal.name = (x, t); KNormal.args = yts; KNormal.body = e1 }, e2) -> x
-  | KNormal.App(x, xs) -> x
-  | KNormal.Tuple(xs) -> "Todo"
-  | KNormal.LetTuple(xts, y, e) -> y ^ (g (M.add_list xts env) e)
-  | KNormal.Get(x, y) -> (x ^ " " ^ y)
-  | KNormal.Put(x, y, z) ->  (x ^ " " ^ y)
-  | KNormal.ExtArray(x) -> "Todo1"
-  | KNormal.ExtFunApp(x, ys) -> ("EXTFUNAPP " ^ x ^ "\n")
+  | Unit -> ""
+  | Bool(b) -> " Bool " ^string_of_bool(b)
+  | Int(i) -> " Int " ^string_of_int(i)
+  | Float(d) -> string_of_float(d)
+  | Not(x) -> "not " ^ (g env x)
+  | And(x, y) ->(g env x) ^ " && " ^ (g env y)
+  | Or(x, y) -> (g env x) ^ " || " ^ (g env y)
+  | Eq(x, y) -> (g env x) ^ " = " ^ (g env y)
+  | LE(x, y) -> (g env x) ^ " <= " ^ (g env y)
+  | Neg(x) -> "-" ^ (g env x)
+  | Add(x, y) -> (g env x) ^ " + " ^ (g env y)
+  | Sub(x, y) -> (g env x) ^ " - " ^ (g env y)
+  | Mul(x, y) -> (g env x) ^ " * " ^ (g env y)
+  | Div(x, y) -> (g env x) ^ " / " ^ (g env y)
+  | FNeg(x) ->  "-." ^ (g env x)
+  | FAdd(x, y) -> (g env x) ^ " +. " ^ (g env y)
+  | FSub(x, y) -> (g env x) ^ " -. " ^ (g env y)
+  | FMul(x, y) -> (g env x) ^ " *. " ^ (g env y)
+  | FDiv(x, y) -> (g env x) ^ " /. " ^ (g env y)
+  | Let((x, t), e1, e2) -> (g env e1) ^ (g (M.add x t env) e2)
+  | If(e1, e2, e3) -> (g env e1) ^ " then " ^ (g env e2) ^ " else " ^ (g env e3)
+  | While(e1, e2, e3, e4) ->  (g env e1) ^ (g env e2) ^ (g env e3) ^ (g env e4)
+  | Var(x) -> x
+  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> x
+  | App(x, xs) -> (g env x) ^ "(" ^ (String.concat " " (List.map (g env) xs)) ^ ")\n"
+  | Tuple(xs) -> "Todo"
+  | LetTuple(xts, y, e) -> (g env y) ^ (g (M.add_list xts env) e)
+  | Get(x, y) -> (g env x) ^ " " ^ (g env y)
+  | Put(x, y, z) ->  (g env x) ^ " " ^ (g env y)
+  | Array(x, y) -> (g env x) ^ " " ^ (g env y)
 
 
 let f e = g M.empty e
