@@ -4,8 +4,8 @@ OCAMLLDFLAGS=-warn-error -31
 default: $(RESULT)
 $(RESULT): debug-code
 
-SOURCES = frontend/type.ml frontend/id.ml frontend/m.ml \
-frontend/syntax.ml frontend/parser.mly frontend/lexer.mll \
-backend/emit.ml main.ml
+SOURCES = frontend/type.ml frontend/id.ml frontend/m.ml frontend/syntax.ml \
+backend/emit.ml frontend/parser.mly frontend/lexer.mll \
+main.ml
 
 include OCamlMakefile
