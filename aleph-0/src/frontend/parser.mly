@@ -103,6 +103,10 @@ exp:
         | Int(i), Float(_) -> FAdd(Float(float_of_int i), $3)
         | Float(_), Int(i) -> FAdd($1,Float(float_of_int i))
         | Float(_), Float(_) -> FAdd($1, $3)
+        | _,Int(_) -> Add($1, $3)
+        | _,Float(_) -> FAdd($1, $3)
+        | Int(_),_ -> Add($1, $3)
+        | Float(_),_ -> FAdd($1, $3)
         | _,_ -> Unit
     }
 | exp MINUS exp
@@ -111,6 +115,10 @@ exp:
         | Int(i), Float(_) -> FSub(Float(float_of_int i), $3)
         | Float(_), Int(i) -> FSub($1,Float(float_of_int i))
         | Float(_), Float(_) -> FSub($1, $3)
+        | _,Int(_) -> Sub($1, $3)
+        | _,Float(_) -> FSub($1, $3)
+        | Int(_),_ -> Sub($1, $3)
+        | Float(_),_ -> FSub($1, $3)
         | _,_ -> Unit
     }
 | exp AST exp
@@ -119,6 +127,10 @@ exp:
         | Int(i), Float(_) -> FMul(Float(float_of_int i), $3)
         | Float(_), Int(i) -> FMul($1,Float(float_of_int i))
         | Float(_), Float(_) -> FMul($1, $3)
+        | _,Int(_) -> Mul($1, $3)
+        | _,Float(_) -> FMul($1, $3)
+        | Int(_),_ -> Mul($1, $3)
+        | Float(_),_ -> FMul($1, $3)
         | _,_ -> Unit
     }
 | exp SLASH exp
@@ -127,6 +139,10 @@ exp:
         | Int(i), Float(_) -> FDiv(Float(float_of_int i), $3)
         | Float(_), Int(i) -> FDiv($1,Float(float_of_int i))
         | Float(_), Float(_) -> FDiv($1, $3)
+        | _,Int(_) -> Div($1, $3)
+        | _,Float(_) -> FDiv($1, $3)
+        | Int(_),_ -> Div($1, $3)
+        | Float(_),_ -> FDiv($1, $3)
         | _,_ -> Unit
     }
 | exp EQUAL exp

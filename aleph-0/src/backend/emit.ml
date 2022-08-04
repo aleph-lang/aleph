@@ -20,7 +20,7 @@ let rec g env = function
   | FSub(x, y) -> (g env x) ^ " -. " ^ (g env y)
   | FMul(x, y) -> (g env x) ^ " *. " ^ (g env y)
   | FDiv(x, y) -> (g env x) ^ " /. " ^ (g env y)
-  | Let((x, t), e1, e2) -> (g env e1) ^ (g (M.add x t env) e2)
+  | Let((x, t), e1, e2) -> " let " ^ x ^ " = " ^ (g env e1) ^" in "^ (g (M.add x t env) e2)
   | If(e1, e2, e3) -> (g env e1) ^ " then " ^ (g env e2) ^ " else " ^ (g env e3)
   | While(e1, e2, e3, e4) ->  (g env e1) ^ (g env e2) ^ (g env e3) ^ (g env e4)
   | Var(x) -> x
