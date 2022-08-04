@@ -1,7 +1,7 @@
 open Syntax
 
 let rec g env = function
-  | Unit -> ""
+  | Unit -> "()"
   | Bool(b) -> " Bool " ^string_of_bool(b)
   | Int(i) -> " Int " ^string_of_int(i)
   | Float(d) -> string_of_float(d)
