@@ -24,9 +24,10 @@ let rec g env = function
   | If(e1, e2, e3) -> (g env e1) ^ " then " ^ (g env e2) ^ " else " ^ (g env e3)
   | While(e1, e2, e3, e4) ->  (g env e1) ^ (g env e2) ^ (g env e3) ^ (g env e4)
   | Var(x) -> x
-  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> x
+  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> x ^ (g env e1) ^ (g env e2)
   | App(x, xs) -> (g env x) ^ "(" ^ (String.concat " " (List.map (g env) xs)) ^ ")\n"
-  | Tuple(xs) -> "Todo"
+  | Return(e) -> "return " ^ (g env e)
+  | Tuple(xs) -> (String.concat " " (List.map (g env) xs))
   | LetTuple(xts, y, e) -> (g env y) ^ (g (M.add_list xts env) e)
   | Get(x, y) -> (g env x) ^ " " ^ (g env y)
   | Put(x, y, z) ->  (g env x) ^ " " ^ (g env y)

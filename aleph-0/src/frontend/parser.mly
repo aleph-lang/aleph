@@ -166,9 +166,9 @@ exp:
 | LPAREN exp SEMICOLON exp SEMICOLON exp RPAREN QUESTION AST exp
     %prec prec_if
     { While($2, $4, $10, $6) }
-| LET REC fundef IN exp
+| fundef IN exp
     %prec prec_let
-    { LetRec($3, $5) }
+    { LetRec($1, $3) }
 | simple_exp actual_args
     %prec prec_app
     { App($1, $2) }
@@ -190,6 +190,8 @@ exp:
 | ARRAY_CREATE simple_exp simple_exp
     %prec prec_app
     { Array($2, $3) }
+| MINUS GREATER exp
+    { Return($3) }
 | EOF
     { Unit }
 | error
