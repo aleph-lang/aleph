@@ -26,9 +26,6 @@ let addtyp x = (x, Type.gentyp ())
 %token THEN
 %token ELSE
 %token <Id.t> IDENT
-%token LET
-%token IN
-%token REC
 %token COMMA
 %token ARRAY_CREATE
 %token DOT
@@ -42,7 +39,6 @@ let addtyp x = (x, Type.gentyp ())
 %token EOF
 
 /* associativity */
-%nonassoc IN
 %right prec_let
 %right SEMICOLON
 %right prec_if
@@ -76,8 +72,6 @@ simple_exp:
     { Float($1) }
 | IDENT
     { Var($1) }
-| simple_exp DOT LPAREN exp RPAREN
-    { Get($1, $4) }
 
 exp:
 | SEMICOLON
@@ -166,7 +160,7 @@ exp:
 | LPAREN exp SEMICOLON exp SEMICOLON exp RPAREN QUESTION AST exp
     %prec prec_if
     { While($2, $4, $10, $6) }
-| fundef IN exp
+| fundef EQUAL exp
     %prec prec_let
     { LetRec($1, $3) }
 | simple_exp actual_args
@@ -175,10 +169,8 @@ exp:
 | elems
     %prec prec_tuple
     { Tuple($1) }
-| LET LPAREN pat RPAREN EQUAL exp IN exp
-    { LetTuple($3, $6, $8) }
-| simple_exp DOT LPAREN exp RPAREN LESS_MINUS exp
-    { Put($1, $4, $7) }
+| LPAREN pat RPAREN EQUAL exp SEMICOLON exp
+    { LetTuple($2, $5, $7) }
 | IDENT EQUAL exp
     %prec prec_let
     { Let(addtyp $1, $3, Unit) }
@@ -187,9 +179,6 @@ exp:
     { Let(addtyp $1, $3, $5) }
 | exp SEMICOLON exp
     { Let((Id.gentmp Type.Unit, Type.Unit), $1, $3) }
-| ARRAY_CREATE simple_exp simple_exp
-    %prec prec_app
-    { Array($2, $3) }
 | MINUS GREATER exp
     { Return($3) }
 | EOF

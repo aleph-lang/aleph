@@ -59,12 +59,6 @@ rule token = parse
     { GREATER }
 | ':'
     { COLON }
-| "let"
-    { LET }
-| "in"
-    { IN }
-| "rec"
-    { REC }
 | ','
     { COMMA }
 | '_'

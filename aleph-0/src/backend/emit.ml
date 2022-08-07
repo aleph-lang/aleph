@@ -29,9 +29,6 @@ let rec g env = function
   | Return(e) -> "return " ^ (g env e)
   | Tuple(xs) -> (String.concat " " (List.map (g env) xs))
   | LetTuple(xts, y, e) -> (g env y) ^ (g (M.add_list xts env) e)
-  | Get(x, y) -> (g env x) ^ " " ^ (g env y)
-  | Put(x, y, z) ->  (g env x) ^ " " ^ (g env y)
-  | Array(x, y) -> (g env x) ^ " " ^ (g env y)
 
 
 let f e = g M.empty e
