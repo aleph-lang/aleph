@@ -5,6 +5,7 @@ let rec g env = function
   | Bool(b) -> " Bool " ^string_of_bool(b)
   | Int(i) -> " Int " ^string_of_int(i)
   | Float(d) -> string_of_float(d)
+  | String(s) -> s
   | Not(x) -> "not " ^ (g env x)
   | And(x, y) ->(g env x) ^ " && " ^ (g env y)
   | Or(x, y) -> (g env x) ^ " || " ^ (g env y)

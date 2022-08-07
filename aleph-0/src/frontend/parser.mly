@@ -36,6 +36,8 @@ let addtyp x = (x, Type.gentyp ())
 %token LBRACE
 %token RBRACE
 %token MODULO
+%token DOUBLEQUOTE
+%token <string> STRING
 %token EOF
 
 /* associativity */
@@ -44,6 +46,7 @@ let addtyp x = (x, Type.gentyp ())
 %right prec_if
 %right LESS_MINUS
 %nonassoc prec_tuple
+%nonassoc STRING
 %left COMMA
 %left EQUAL LESS_GREATER LESS GREATER LESS_EQUAL GREATER_EQUAL
 %left PLUS MINUS
@@ -72,6 +75,8 @@ simple_exp:
     { Float($1) }
 | IDENT
     { Var($1) }
+| DOUBLEQUOTE STRING DOUBLEQUOTE
+    { String($2) }
 
 exp:
 | SEMICOLON
@@ -101,6 +106,7 @@ exp:
         | _,Float(_) -> FAdd($1, $3)
         | Int(_),_ -> Add($1, $3)
         | Float(_),_ -> FAdd($1, $3)
+        | String(s1),String(s2) -> String(s1 ^ s2)
         | _,_ -> Unit
     }
 | exp MINUS exp

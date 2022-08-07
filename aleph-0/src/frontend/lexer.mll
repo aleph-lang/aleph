@@ -73,6 +73,8 @@ rule token = parse
     { SEMICOLON }
 | '%'
     { MODULO }
+| '"'
+    { DOUBLEQUOTE }
 | '{'
     { LBRACE }
 | '}'
@@ -81,6 +83,8 @@ rule token = parse
     { EOF }
 | lower (digit|lower|upper|'_')*
     { IDENT(Lexing.lexeme lexbuf) }
+| (digit|lower|upper|'_'|' ')*
+    { STRING(Lexing.lexeme lexbuf) }
 | _
     { failwith
         (Printf.sprintf "unknown token %s near characters %d-%d"

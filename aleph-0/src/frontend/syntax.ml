@@ -3,6 +3,7 @@ type t =
   | Bool of bool
   | Int of int
   | Float of float
+  | String of string
   | Not of t
   | And of t * t
   | Or of t * t
