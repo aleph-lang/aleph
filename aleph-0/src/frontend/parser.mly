@@ -75,8 +75,8 @@ simple_exp:
     { Float($1) }
 | IDENT
     { Var($1) }
-| DOUBLEQUOTE STRING DOUBLEQUOTE
-    { String($2) }
+| STRING
+    { String($1) }
 
 exp:
 | SEMICOLON
@@ -97,54 +97,13 @@ exp:
 | exp OR exp
     { Or($1,$3) }
 | exp PLUS exp
-    { match $1,$3 with
-        | Int(_),Int(_) -> Add($1, $3)
-        | Int(i), Float(_) -> FAdd(Float(float_of_int i), $3)
-        | Float(_), Int(i) -> FAdd($1,Float(float_of_int i))
-        | Float(_), Float(_) -> FAdd($1, $3)
-        | _,Int(_) -> Add($1, $3)
-        | _,Float(_) -> FAdd($1, $3)
-        | Int(_),_ -> Add($1, $3)
-        | Float(_),_ -> FAdd($1, $3)
-        | String(s1),String(s2) -> String(s1 ^ s2)
-        | _,_ -> Unit
-    }
+    { Add($1,$3) }
 | exp MINUS exp
-    { match $1,$3 with
-        | Int(_),Int(_) -> Sub($1, $3)
-        | Int(i), Float(_) -> FSub(Float(float_of_int i), $3)
-        | Float(_), Int(i) -> FSub($1,Float(float_of_int i))
-        | Float(_), Float(_) -> FSub($1, $3)
-        | _,Int(_) -> Sub($1, $3)
-        | _,Float(_) -> FSub($1, $3)
-        | Int(_),_ -> Sub($1, $3)
-        | Float(_),_ -> FSub($1, $3)
-        | _,_ -> Unit
-    }
+    { Sub($1,$3) }
 | exp AST exp
-    { match $1,$3 with
-        | Int(_),Int(_) -> Mul($1, $3)
-        | Int(i), Float(_) -> FMul(Float(float_of_int i), $3)
-        | Float(_), Int(i) -> FMul($1,Float(float_of_int i))
-        | Float(_), Float(_) -> FMul($1, $3)
-        | _,Int(_) -> Mul($1, $3)
-        | _,Float(_) -> FMul($1, $3)
-        | Int(_),_ -> Mul($1, $3)
-        | Float(_),_ -> FMul($1, $3)
-        | _,_ -> Unit
-    }
+    { Mul($1,$3) }
 | exp SLASH exp
-    { match $1,$3 with
-        | Int(_),Int(_) -> Div($1, $3)
-        | Int(i), Float(_) -> FDiv(Float(float_of_int i), $3)
-        | Float(_), Int(i) -> FDiv($1,Float(float_of_int i))
-        | Float(_), Float(_) -> FDiv($1, $3)
-        | _,Int(_) -> Div($1, $3)
-        | _,Float(_) -> FDiv($1, $3)
-        | Int(_),_ -> Div($1, $3)
-        | Float(_),_ -> FDiv($1, $3)
-        | _,_ -> Unit
-    }
+    { Div($1, $3) }
 | exp EQUAL exp
     { Eq($1, $3) }
 | exp LESS_GREATER exp

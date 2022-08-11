@@ -12,11 +12,6 @@ type t =
   | Sub of t * t
   | Mul of t * t
   | Div of t * t
-  | FNeg of t
-  | FAdd of t * t
-  | FSub of t * t
-  | FMul of t * t
-  | FDiv of t * t
   | Eq of t * t
   | LE of t * t
   | If of t * t * t

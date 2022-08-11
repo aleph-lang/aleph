@@ -83,7 +83,7 @@ rule token = parse
     { EOF }
 | lower (digit|lower|upper|'_')*
     { IDENT(Lexing.lexeme lexbuf) }
-| (digit|lower|upper|'_')*
+| "\"" [^'"']* "\""
     { STRING(Lexing.lexeme lexbuf) }
 | _
     { failwith
