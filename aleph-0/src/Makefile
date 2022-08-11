@@ -5,7 +5,7 @@ default: $(RESULT)
 $(RESULT): debug-code
 
 SOURCES = frontend/type.ml frontend/id.ml frontend/m.ml frontend/syntax.ml \
-backend/emit.ml frontend/parser.mly frontend/lexer.mll \
+backend/filter/emit/ocaml.ml frontend/parser.mly frontend/lexer.mll \
 main.ml
 
 include OCamlMakefile

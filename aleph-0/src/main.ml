@@ -1,6 +1,6 @@
 let lexbuf outchan l =
   Id.counter := 0;
-  let res = Emit.f (Parser.exp Lexer.token l) in
+  let res = Ocaml.f (Parser.exp Lexer.token l) in
   Printf.fprintf outchan "%s\n" res
 
 let file f =
