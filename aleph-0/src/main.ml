@@ -18,7 +18,7 @@ let () =
     []
     (fun s -> files := !files @ [s])
     ("Aleph-0 compiler\n" ^
-     Printf.sprintf "usage: %s [-inline m] [-iter n] ...filenames without \".ml\"..." Sys.argv.(0));
+     Printf.sprintf "usage: %s filenames" Sys.argv.(0));
   List.iter
     (fun f -> ignore (file f))
     !files
