@@ -79,6 +79,8 @@ rule token = parse
     { LBRACE }
 | '}'
     { RBRACE }
+| "fun"
+    { FUN }
 | eof
     { EOF }
 | lower (digit|lower|upper|'_')*

@@ -18,9 +18,7 @@ type t =
   | While of t * t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
-  | LetRec of fundef * t
-  | Return of t
+  | LetRec of Id.t * t list * t
   | App of t * t list
   | Tuple of t list
   | LetTuple of (Id.t * Type.t) list * t * t
-and fundef = { name : Id.t * Type.t; args : (Id.t * Type.t) list; body : t }
