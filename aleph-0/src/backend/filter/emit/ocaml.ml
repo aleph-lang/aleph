@@ -19,6 +19,7 @@ let rec g env = function
   | Let((x, t), e1, Unit) -> " let " ^ x ^ " = " ^ (g env e1)
   | Let((x, t), e1, e2) -> " let " ^ x ^ " = " ^ (g env e1) ^" in "^ (g (M.add x t env) e2)
   | If(e1, e2, e3) -> "if " ^ (g env e1) ^ " then " ^ (g env e2) ^ " else " ^ (g env e3)
+  | While(Unit, e2, e3, Unit) ->    "while "^ (g env e2) ^ " do  " ^ (g env e3) ^ ";" ^ " done"
   | While(e1, e2, e3, e4) ->   (g env e1) ^ "while "^ (g env e2) ^ " do  " ^ (g env e3) ^ ";" ^ (g env e4) ^ " done"
   | Var(x) -> x
   | LetRec(name, args, e) -> "let rec " ^ name ^ " " ^ (String.concat " " (List.map (g env) args)) ^ " = " ^ (g env e)
