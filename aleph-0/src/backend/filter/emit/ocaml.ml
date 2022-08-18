@@ -23,6 +23,7 @@ let rec g env = function
   | While(e1, e2, e3, e4) ->   (g env e1) ^ "while "^ (g env e2) ^ " do  " ^ (g env e3) ^ ";" ^ (g env e4) ^ " done"
   | Var(x) -> x
   | LetRec(name, args, e) -> "let rec " ^ name ^ " " ^ (String.concat " " (List.map (g env) args)) ^ " = " ^ (g env e)
+  | App(Var("print"), xs) -> "Printf.printf(" ^ (String.concat " " (List.map (g env) xs)) ^ ")"
   | App(x, xs) -> (g env x) ^ "(" ^ (String.concat " " (List.map (g env) xs)) ^ ")\n"
   | Tuple(xs) -> (String.concat " " (List.map (g env) xs))
   | LetTuple(xts, y, e) -> (g env y) ^ (g (M.add_list xts env) e)
