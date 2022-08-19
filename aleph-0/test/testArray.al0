@@ -13,3 +13,7 @@ t[3+] = 6;
 print(t[3]);
 print(t[4]);
 print(t[5]);
+
+t2 = [6,7];
+t3 = t + t2;
+print(t3);
