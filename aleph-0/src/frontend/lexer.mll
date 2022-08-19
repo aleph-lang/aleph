@@ -21,6 +21,10 @@ rule token = parse
     { LPAREN }
 | ')'
     { RPAREN }
+| '['
+    { LSQUAREBRACKET }
+| ']'
+    { RSQUAREBRACKET }
 | "true"
     { BOOL(true) }
 | "false"
@@ -30,7 +34,7 @@ rule token = parse
 | '&'
     { AND }
 | '|'
-    { OR }
+    { PIPE }
 | digit+
     { INT(int_of_string (Lexing.lexeme lexbuf)) }
 | digit+ ('.' digit*)? (['e' 'E'] ['+' '-']? digit+)?
@@ -63,8 +67,6 @@ rule token = parse
     { COMMA }
 | '_'
     { IDENT(Id.gentmp Type.Unit) }
-| "Array.create" | "Array.make" (* [XX] ad hoc *)
-    { ARRAY_CREATE }
 | '.'
     { DOT }
 | "<-"

@@ -22,3 +22,7 @@ type t =
   | App of t * t list
   | Tuple of t list
   | LetTuple of (Id.t * Type.t) list * t * t
+  | Array of t list
+  | Get of Id.t * t
+  | Put of Id.t * t * t * bool
+  | Length of Id.t

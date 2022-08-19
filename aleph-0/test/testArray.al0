@@ -1,0 +1,15 @@
+t = [1,2,3,4,5];
+print(t);
+print(t[3]);
+
+length = |t|;
+print(length);
+
+t[3] = 5;
+print(t[3]);
+print(t[4]);
+
+t[3+] = 6;
+print(t[3]);
+print(t[4]);
+print(t[5]);

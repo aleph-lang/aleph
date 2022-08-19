@@ -8,7 +8,7 @@ let addtyp x = (x, Type.gentyp ())
 %token <float> FLOAT
 %token NOT
 %token AND
-%token OR
+%token PIPE
 %token MINUS
 %token PLUS
 %token AST
@@ -28,7 +28,6 @@ let addtyp x = (x, Type.gentyp ())
 %token FUN
 %token <Id.t> IDENT
 %token COMMA
-%token ARRAY_CREATE
 %token DOT
 %token LESS_MINUS
 %token SEMICOLON
@@ -36,6 +35,9 @@ let addtyp x = (x, Type.gentyp ())
 %token RPAREN
 %token LBRACE
 %token RBRACE
+%token LSQUAREBRACKET
+%token RSQUAREBRACKET
+%token GET
 %token MODULO
 %token DOUBLEQUOTE
 %token <string> STRING
@@ -95,7 +97,7 @@ exp:
     }
 | exp AND exp
     { And($1,$3) }
-| exp OR exp
+| exp PIPE exp
     { Or($1,$3) }
 | exp PLUS exp
     { Add($1,$3) }
@@ -145,6 +147,17 @@ exp:
     {  Let(addtyp $1, $3, $5) }
 | exp SEMICOLON exp
     { Let((Id.gentmp Type.Unit, Type.Unit), $1, $3) }
+| LSQUAREBRACKET elems RSQUAREBRACKET
+    %prec prec_tuple
+    { Array($2) }
+| IDENT LSQUAREBRACKET exp RSQUAREBRACKET EQUAL exp
+    { Put($1,$3,$6,false) }
+| IDENT LSQUAREBRACKET exp PLUS RSQUAREBRACKET EQUAL exp
+    { Put($1,$3,$7,true) }
+| IDENT LSQUAREBRACKET exp RSQUAREBRACKET
+    { Get($1,$3) }
+| PIPE IDENT PIPE
+    { Length($2) }
 | EOF
     { Unit }
 | error
