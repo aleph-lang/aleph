@@ -1,11 +1,17 @@
 RESULT = al0c
 OCAMLLDFLAGS=-warn-error -31
 
-default: $(RESULT)
+default: $(RESULT) filterAl0
 $(RESULT): debug-code
+	ocamlc -o $(RESULT) -I utils -I filter/parser/al0 dynlink.cma \
+	 	filter.cmo id.cmo lexer.cmo m.cmo type.cmo syntax.cmo parser.cmo main.ml
 
-SOURCES = frontend/type.ml frontend/id.ml frontend/m.ml frontend/syntax.ml \
-backend/filter/emit/ocaml.ml frontend/parser.mly frontend/lexer.mll \
-main.ml
+SOURCES = utils/type.ml utils/id.ml utils/m.ml utils/syntax.ml \
+filter/parser/al0/parser.mly filter/parser/al0/lexer.mll utils/filter.ml filter/gen/ocaml/ocaml.ml
+
+TRASH = main.cmo main.cmi filter/*.cmi filter/*.cmo filter/*/*.cmi filter/*/*.cmo  filter/*/*/*.cmi filter/*/*/*.cmo
 
 include OCamlMakefile
+
+filterAl0:
+	ocamlc -I utils -c filter/gen/al0/al0.ml

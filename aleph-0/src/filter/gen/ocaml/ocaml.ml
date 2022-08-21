@@ -33,4 +33,8 @@ let rec g env = function
   | Length(x) -> x ^ ".length()"
 
 
-let f e = g M.empty e
+let gen e = g M.empty e
+
+(* Call from dynlink *)
+let () =
+  Filter.gen := (fun e outchan -> Printf.fprintf outchan "%s\n" (gen e))
