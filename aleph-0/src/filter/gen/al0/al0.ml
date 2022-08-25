@@ -1,29 +1,29 @@
 open Syntax
 
 let rec g env = function
-  | Unit -> "Al0" ^ "()"
-  | Bool(b) -> "Al0" ^" Bool " ^string_of_bool(b)
-  | Int(i) -> "Al0" ^" Int " ^string_of_int(i)
-  | Float(d) -> "Al0" ^string_of_float(d)
-  | String(s) -> "Al0" ^s
-  | Not(x) -> "Al0" ^"not (" ^ (g env x) ^ ")"
-  | And(x, y) ->"Al0" ^(g env x) ^ " && " ^ (g env y)
-  | Or(x, y) ->"Al0" ^ (g env x) ^ " || " ^ (g env y)
-  | Eq(x, y) -> "Al0" ^(g env x) ^ " = " ^ (g env y)
-  | LE(x, y) ->"Al0" ^ (g env x) ^ " <= " ^ (g env y)
-  | Neg(x) -> "Al0" ^"-" ^ (g env x)
-  | Add(x, y) -> "Al0" ^(g env x) ^ " + " ^ (g env y)
-  | Sub(x, y) -> "Al0" ^(g env x) ^ " - " ^ (g env y)
-  | Mul(x, y) -> "Al0" ^(g env x) ^ " * " ^ (g env y)
-  | Div(x, y) -> "Al0" ^(g env x) ^ " / " ^ (g env y)
-  | Let((x, t), e1, Unit) -> "Al0" ^" let " ^ x ^ " = " ^ (g env e1)
-  | Let((x, t), e1, e2) -> "Al0" ^" let " ^ x ^ " = " ^ (g env e1) ^" in \n"^ (g (M.add x t env) e2)
+  | Unit -> ""
+  | Bool(b) -> string_of_bool(b)
+  | Int(i) -> string_of_int(i)
+  | Float(d) -> string_of_float(d)
+  | String(s) -> s
+  | Not(x) -> "!(" ^ (g env x) ^ ")"
+  | And(x, y) -> (g env x) ^ " & " ^ (g env y)
+  | Or(x, y) -> (g env x) ^ " | " ^ (g env y)
+  | Eq(x, y) -> (g env x) ^ " = " ^ (g env y)
+  | LE(x, y) ->(g env x) ^ " <= " ^ (g env y)
+  | Neg(x) -> "-" ^ (g env x)
+  | Add(x, y) -> (g env x) ^ " + " ^ (g env y)
+  | Sub(x, y) -> (g env x) ^ " - " ^ (g env y)
+  | Mul(x, y) -> (g env x) ^ " * " ^ (g env y)
+  | Div(x, y) -> (g env x) ^ " / " ^ (g env y)
+  | Let((x, t), e1, Unit) -> x ^ " = " ^ (g env e1)
+  | Let((x, t), e1, e2) -> x ^ " = " ^ (g env e1) ^";\n"^ (g (M.add x t env) e2)
   | If(e1, e2, e3) -> "Al0" ^"if " ^ (g env e1) ^ " then " ^ (g env e2) ^ " else " ^ (g env e3)
   | While(Unit, e2, e3, Unit) ->   "Al0" ^ "while "^ (g env e2) ^ " do  " ^ (g env e3) ^ ";" ^ " done"
   | While(e1, e2, e3, e4) ->  "Al0" ^ (g env e1) ^ "while "^ (g env e2) ^ " do  " ^ (g env e3) ^ ";" ^ (g env e4) ^ " done"
-  | Var(x) -> "Al0" ^x
+  | Var(x) -> x
   | LetRec(name, args, e) -> "Al0" ^"let rec " ^ name ^ " " ^ (String.concat " " (List.map (g env) args)) ^ " = " ^ (g env e)
-  | App(Var("print"), xs) -> "Al0" ^"Printf.printf(" ^ (String.concat " " (List.map (g env) xs)) ^ ")"
+  | App(Var("print"), xs) -> "print(" ^ (String.concat " " (List.map (g env) xs)) ^ ")"
   | App(x, xs) -> "Al0" ^(g env x) ^ "(" ^ (String.concat " " (List.map (g env) xs)) ^ ")\n"
   | Tuple(xs) -> "Al0" ^(String.concat " " (List.map (g env) xs))
   | LetTuple(xts, y, e) -> "Al0" ^(g env y) ^ (g (M.add_list xts env) e)

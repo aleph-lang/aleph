@@ -13,21 +13,25 @@ let read_file filename =
 
 let lexbuf outchan l =
   Id.counter := 0;
-  let process = 
   (if !confFile = ""
   then begin
     Printf.printf "Configuration file : Default (Al0 -> Ocaml)\n";
+    Dynlink.loadfile "src/filter/transform/ident.cmo";
     Dynlink.loadfile "src/filter/gen/ocaml/ocaml.cmo";
-    !Filter.gen
+    !Filter.gen (!Filter.transform (Parser.exp Lexer.token l)) outchan
   end else begin
     Printf.printf "Configuration file : %s\n" !confFile;
     let lines = read_file !confFile in
     let p = String.concat " " lines in
     Printf.printf "Using %s\n" (p);
+    let ast = (Parser.exp Lexer.token l) in
     Dynlink.loadfile p;
-    !Filter.gen
-  end) in
-  process (Parser.exp Lexer.token l) outchan
+    Dynlink.loadfile "src/filter/transform/ident.cmo";
+    let t1 = !Filter.transform ast in
+    Dynlink.loadfile "src/filter/transform/ident2.cmo";
+    let t2 = !Filter.transform t1 in
+    !Filter.gen t2 outchan
+  end)
 
 let file f =
   let inchan = open_in (f) in
