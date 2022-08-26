@@ -28,10 +28,10 @@ let rec g env = function
   | App(x, xs) -> (g env x) ^ "(" ^ (String.concat " " (List.map (g env) xs)) ^ ")\n"
   | Tuple(xs) -> (String.concat " " (List.map (g env) xs))
   | LetTuple(xts, y, e) -> (g env y) ^ (g (M.add_list xts env) e)
-  | Array(xs) -> "ARRAY : " ^ (String.concat " " (List.map (g env) xs))
-  | Get(x, y) -> "Get : " ^ x ^ "[" ^ (g env y) ^ "]"
+  | Array(xs) -> "[| " ^ (String.concat " ; " (List.map (g env) xs)) ^ " |]"
+  | Get(x, y) -> x ^ ".(" ^ (g env y) ^ ")"
   | Put(x, y, z, b) -> "Put : insert ? "^ string_of_bool(b) ^ ", "^ x ^ "[" ^ (g env y) ^ "] = " ^ (g env z)
-  | Length(x) -> x ^ ".length()"
+  | Length(x) -> "Array.length " ^ x
 
 
 let gen e = g M.empty e
