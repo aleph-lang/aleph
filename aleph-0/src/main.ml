@@ -11,26 +11,31 @@ let read_file filename =
     close_in chan;
     List.rev !lines
 
+let rec compute list lexbuf ast outchan = match list with
+  | [] -> ast
+  | h::b -> begin let l = Str.split (Str.regexp " ") h in
+      Dynlink.loadfile (List.nth l 0);
+      let t = match (List.nth l 1) with
+        | "parse" -> !Filter.parse lexbuf
+        | "transform" -> !Filter.transform ast
+        | "gen" -> !Filter.gen ast outchan; ast
+        | _ -> ast
+      in compute b lexbuf t outchan
+    end
+
 let lexbuf outchan l =
   Id.counter := 0;
   (if !confFile = ""
   then begin
     Printf.printf "Configuration file : Default (Al0 -> Ocaml)\n";
-    Dynlink.loadfile "src/filter/transform/ident.cmo";
+    Dynlink.loadfile "src/filter/parser/al0/al0.cmo";
+    let ast = !Filter.parse l in
     Dynlink.loadfile "src/filter/gen/ocaml/ocaml.cmo";
-    !Filter.gen (!Filter.transform (Parser.exp Lexer.token l)) outchan
+    !Filter.gen ast outchan
   end else begin
     Printf.printf "Configuration file : %s\n" !confFile;
     let lines = read_file !confFile in
-    let p = String.concat " " lines in
-    Printf.printf "Using %s\n" (p);
-    let ast = (Parser.exp Lexer.token l) in
-    Dynlink.loadfile p;
-    Dynlink.loadfile "src/filter/transform/ident.cmo";
-    let t1 = !Filter.transform ast in
-    Dynlink.loadfile "src/filter/transform/ident2.cmo";
-    let t2 = !Filter.transform t1 in
-    !Filter.gen t2 outchan
+    let _ = compute lines l Unit outchan in ();
   end)
 
 let file f =
