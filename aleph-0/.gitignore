@@ -2,9 +2,9 @@
 out
 **cmo
 **cmi
-src/frontend/lexer.ml
-src/frontend/parser.ml
-src/frontend/parser.mli
+src/*/*/*/lexer.ml
+src/*/*/*/parser.ml
+src/*/*/*/parser.mli
 src/._bcdi
 src/._d
 
