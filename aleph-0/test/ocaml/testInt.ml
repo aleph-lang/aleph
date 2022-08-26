@@ -1,7 +1,7 @@
-Printf.printf "%d\n" 9;
-Printf.printf "%d\n" (3 + 4);
-Printf.printf "%d\n" (2 * 5);
-Printf.printf "%d\n" (6 / 8);
-Printf.printf "%d\n" (9 - 5);
-Printf.printf "%d\n" (3 - 8);
-Printf.printf "%d\n" (-6);;
+print_newline (print_int 9);
+print_newline (print_int (3 + 4));
+print_newline (print_int (2 * 5));
+print_newline (print_int (6 / 8));
+print_newline (print_int (9 - 5));
+print_newline (print_int (3 - 8));
+print_newline (print_int (-6));;
