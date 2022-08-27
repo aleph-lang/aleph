@@ -24,10 +24,9 @@ let rec compute list lexbuf ast outchan = match list with
     end
 
 let lexbuf outchan l =
-  Id.counter := 0;
   if !confFile = ""
   then begin
-    Printf.printf "Configuration file : Default (Al0 -> Ocaml)\n";
+    Printf.printf "Configuration file : Default - conf/al02ocaml.conf (Al0 -> Ocaml)\n";
     confFile := "conf/al02ocaml.conf"
   end else begin
     Printf.printf "Configuration file : %s\n" !confFile;

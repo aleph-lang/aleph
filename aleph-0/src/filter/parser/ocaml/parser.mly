@@ -1,6 +1,5 @@
 %{
 open Syntax
-let addtyp x = (x, Type.gentyp ())
 %}
 
 %token <bool> BOOL
@@ -26,7 +25,7 @@ let addtyp x = (x, Type.gentyp ())
 %token THEN
 %token ELSE
 %token FUN
-%token <Id.t> IDENT
+%token <string> IDENT
 %token COMMA
 %token DOT
 %token LESS_MINUS
@@ -137,16 +136,14 @@ exp:
 | elems
     %prec prec_tuple
     { Tuple($1) }
-| LPAREN pat RPAREN EQUAL exp SEMICOLON exp
-    { LetTuple($2, $5, $7) }
 | IDENT EQUAL exp
     %prec prec_let
-    {  Let(addtyp $1, $3, Unit) }
+    {  Let($1, $3, Unit) }
 | IDENT EQUAL exp SEMICOLON exp
     %prec prec_let
-    {  Let(addtyp $1, $3, $5) }
+    {  Let($1, $3, $5) }
 | exp SEMICOLON exp
-    { Let((Id.gentmp Type.Unit, Type.Unit), $1, $3) }
+    { Let(Syntax.gentmp Unit, $1, $3) }
 | LSQUAREBRACKET elems RSQUAREBRACKET
     %prec prec_tuple
     { Array($2) }
@@ -179,9 +176,3 @@ elems:
     { $1 @ [$3] }
 | exp COMMA exp
     { [$1; $3] }
-
-pat:
-| pat COMMA IDENT
-    { $1 @ [addtyp $3] }
-| IDENT COMMA IDENT
-    { [addtyp $1; addtyp $3] }

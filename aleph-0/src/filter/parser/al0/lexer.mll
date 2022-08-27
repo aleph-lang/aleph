@@ -1,6 +1,6 @@
 {
 open Parser
-open Type
+open Syntax
 }
 
 let space = [' ' '\t' '\n' '\r']
@@ -66,7 +66,7 @@ rule token = parse
 | ','
     { COMMA }
 | '_'
-    { IDENT(Id.gentmp Type.Unit) }
+    { IDENT(Syntax.gentmp Syntax.Unit) }
 | '.'
     { DOT }
 | "<-"
