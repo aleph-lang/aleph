@@ -25,18 +25,15 @@ let rec compute list lexbuf ast outchan = match list with
 
 let lexbuf outchan l =
   Id.counter := 0;
-  (if !confFile = ""
+  if !confFile = ""
   then begin
     Printf.printf "Configuration file : Default (Al0 -> Ocaml)\n";
-    Dynlink.loadfile "src/filter/parser/al0/al0.cmo";
-    let ast = !Filter.parse l in
-    Dynlink.loadfile "src/filter/gen/ocaml/ocaml.cmo";
-    !Filter.gen ast outchan
+    confFile := "conf/al02ocaml.conf"
   end else begin
     Printf.printf "Configuration file : %s\n" !confFile;
-    let lines = read_file !confFile in
-    let _ = compute lines l Unit outchan in ();
-  end)
+  end;
+  let lines = read_file !confFile in
+  let _ = compute lines l Unit outchan in ()
 
 let file f =
   let inchan = open_in (f) in
