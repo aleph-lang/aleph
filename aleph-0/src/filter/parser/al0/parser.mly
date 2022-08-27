@@ -138,12 +138,12 @@ exp:
     { Tuple($1) }
 | IDENT EQUAL exp
     %prec prec_let
-    {  Let($1, $3, Unit) }
+    { Let($1, $3, Unit) }
 | IDENT EQUAL exp SEMICOLON exp
     %prec prec_let
-    {  Let($1, $3, $5) }
+    { Let($1, $3, $5) }
 | exp SEMICOLON exp
-    { Let(Syntax.gentmp Unit, $1, $3) }
+    { Stmts($1, $3) }
 | LSQUAREBRACKET elems RSQUAREBRACKET
     %prec prec_tuple
     { Array($2) }

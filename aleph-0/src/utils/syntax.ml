@@ -27,6 +27,7 @@ type t =
   | Get of string * t
   | Put of string * t * t * bool
   | Length of string
+  | Stmts of t * t
 
 let rec id_of_typ = function
   | Unit -> "u"

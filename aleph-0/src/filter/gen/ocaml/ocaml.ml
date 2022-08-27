@@ -24,13 +24,14 @@ let rec gen = function
   | While(e1, e2, e3, e4) ->   (gen e1) ^ "while "^ (gen e2) ^ " do  " ^ (gen e3) ^ ";" ^ (gen e4) ^ " done"
   | Var(x) -> x
   | LetRec(name, args, e) -> "let rec " ^ name ^ " " ^ (String.concat " " (List.map (gen) args)) ^ " = " ^ (gen e)
-  | App(Var("print"), xs) -> "Printf.printf(" ^ (String.concat " " (List.map gen xs)) ^ ")"
+  | App(Var("print"), xs) -> "Printf.printf (" ^ (String.concat " " (List.map gen xs)) ^ ")"
   | App(x, xs) -> (gen x) ^ "(" ^ (String.concat " " (List.map (gen) xs)) ^ ")\n"
   | Tuple(xs) -> (String.concat " " (List.map (gen) xs))
   | Array(xs) -> "[| " ^ (String.concat " ; " (List.map gen xs)) ^ " |]"
   | Get(x, y) -> x ^ ".(" ^ (gen y) ^ ")"
   | Put(x, y, z, b) -> "Put : insert ? "^ string_of_bool(b) ^ ", "^ x ^ "[" ^ (gen y) ^ "] = " ^ (gen z)
   | Length(x) -> "Array.length " ^ x
+  | Stmts(e1,e2) -> (gen e1) ^ ";\n" ^ (gen e2)
 
 (* Call from dynlink *)
 let () =

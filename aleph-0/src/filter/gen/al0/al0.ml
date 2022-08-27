@@ -24,12 +24,13 @@ let rec gen = function
   | Var(x) -> x
   | LetRec(name, args, e) -> "Al0" ^"let rec " ^ name ^ " " ^ (String.concat " " (List.map gen args)) ^ " = " ^ (gen e)
   | App(Var("print"), xs) -> "print(" ^ (String.concat " " (List.map (gen) xs)) ^ ")"
-  | App(x, xs) -> "Al0" ^(gen x) ^ "(" ^ (String.concat " " (List.map (gen) xs)) ^ ")\n"
-  | Tuple(xs) -> "Al0" ^(String.concat " " (List.map (gen) xs))
-  | Array(xs) -> "Al0" ^"ARRAY : " ^ (String.concat " " (List.map gen xs))
-  | Get(x, y) -> "Al0" ^"Get : " ^ x ^ "[" ^ (gen y) ^ "]"
-  | Put(x, y, z, b) -> "Al0" ^"Put : insert ? "^ string_of_bool(b) ^ ", "^ x ^ "[" ^ (gen y) ^ "] = " ^ (gen z)
-  | Length(x) -> "Al0" ^x ^ ".length()"
+  | App(x, xs) -> "Al0 " ^(gen x) ^ "(" ^ (String.concat " " (List.map (gen) xs)) ^ ")\n"
+  | Tuple(xs) -> "Al0 " ^(String.concat " " (List.map (gen) xs))
+  | Array(xs) -> "Al0 " ^"ARRAY : " ^ (String.concat " " (List.map gen xs))
+  | Get(x, y) -> "Al0 " ^"Get : " ^ x ^ "[" ^ (gen y) ^ "]"
+  | Put(x, y, z, b) -> "Al0 " ^"Put : insert ? "^ string_of_bool(b) ^ ", "^ x ^ "[" ^ (gen y) ^ "] = " ^ (gen z)
+  | Length(x) -> "Al0 " ^x ^ ".length()"
+  | Stmts(e1,e2) -> "Al0 " ^(gen e1) ^ ";\n" ^ (gen e2)
 
 (* Call from dynlink *)
 let () =
