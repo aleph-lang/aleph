@@ -1,13 +1,10 @@
 RESULT = al0c
-OCAMLLDFLAGS=-warn-error -31
 
-default: $(RESULT)
-
-$(RESULT): debug-code
+default:
 	ocamlc -o $(RESULT) -I utils dynlink.cma str.cma syntax.cmo filter.cmo main.ml
 
-SOURCES = utils/syntax.ml utils/filter.ml
+utils:
+	if [ -s utils/filter.cmo ]; then echo "utils already make"; else make -C utils; fi
 
-TRASH = main.cmo main.cmi filter/*.cmi filter/*.cmo filter/*/*.cmi filter/*/*.cmo  filter/*/*/*.cmi filter/*/*/*.cmo
-
-include OCamlMakefile
+clean:
+	rm -f *.cmo *.cmi

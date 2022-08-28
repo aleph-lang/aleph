@@ -1,5 +1,5 @@
 RESULT= al0c
-FILTER= $(dir $(wildcard src/filter/*/*/.))
+FILTER= src/utils $(dir $(wildcard src/filter/*/*/.))
 
 default: mdir filters
 	make -C src
