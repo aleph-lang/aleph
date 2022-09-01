@@ -24,7 +24,23 @@ let rec gen = function
   | While(e1, e2, e3, e4) ->   (gen e1) ^ "while "^ (gen e2) ^ " do  " ^ (gen e3) ^ ";" ^ (gen e4) ^ " done"
   | Var(x) -> x
   | LetRec(name, args, e) -> "let rec " ^ name ^ " " ^ (String.concat " " (List.map (gen) args)) ^ " = " ^ (gen e)
-  | App(Var("print"), xs) -> "Printf.printf (" ^ (String.concat " " (List.map gen xs)) ^ ")"
+  | App(Var("print"), xs) -> 
+    let rec typeList l = match l with
+      [] -> [],[]
+      | e::r -> begin let lp, lv = typeList r in
+          let t = getType e in
+          (match (primType t) with
+            | "unit" -> ""
+            | "bool" -> "%b"
+            | "int" -> "%d"
+            | "float" -> "%f"
+            | "string" -> "%s"
+            | _ -> "")::lp, e::lv
+      end in
+      let lp, lv = typeList xs in
+      let s = (String.concat " " (List.map gen lv)) in
+      let s1 = (String.concat " " lp) in
+    "Printf.printf \"" ^ s1 ^ "\\n\" (" ^ s ^ ");"
   | App(x, xs) -> (gen x) ^ "(" ^ (String.concat " " (List.map (gen) xs)) ^ ")\n"
   | Tuple(xs) -> (String.concat " " (List.map (gen) xs))
   | Array(xs) -> "[| " ^ (String.concat " ; " (List.map gen xs)) ^ " |]"
