@@ -28,6 +28,7 @@ type t =
   | Put of string * t * t * bool
   | Length of string
   | Stmts of t * t
+  | Import of string
 
 let rec getType = function
   | Unit -> Unit
@@ -80,8 +81,8 @@ let rec getType = function
     let t1 = getType e in
     t1
   | App(x, xs) -> Unit
-  | Tuple(xs) -> Unit
-  | Array(xs) -> Unit
+  | Tuple(xs) -> Tuple(xs)
+  | Array(xs) -> Array(xs)
   | Get(x, y) -> Unit
   | Put(x, y, z, b) -> Unit
   | Length(x) -> Int(0)
@@ -89,6 +90,7 @@ let rec getType = function
     let t1 = getType e1 in
     let t2 = getType e2 in  
     t1 (* should be unify with t2 *)
+  | Import(_) -> Unit
 
 let primType = function
   | Unit -> "unit"

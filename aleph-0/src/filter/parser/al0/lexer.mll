@@ -83,6 +83,8 @@ rule token = parse
     { RBRACE }
 | "fun"
     { FUN }
+| "import"
+    { IMPORT }
 | eof
     { EOF }
 | lower (digit|lower|upper|'_')*

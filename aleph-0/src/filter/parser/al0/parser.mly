@@ -25,6 +25,7 @@ open Syntax
 %token THEN
 %token ELSE
 %token FUN
+%token IMPORT
 %token <string> IDENT
 %token COMMA
 %token DOT
@@ -127,6 +128,8 @@ exp:
 | LPAREN exp SEMICOLON exp SEMICOLON exp RPAREN QUESTION AST exp
     %prec prec_if
     { While($2, $4, $10, $6) }
+| IMPORT STRING
+    { Import($2) }
 | FUN IDENT actual_args EQUAL exp
     %prec prec_let
     { LetRec($2, $3, $5) }

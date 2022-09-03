@@ -48,6 +48,7 @@ let rec gen = function
   | Put(x, y, z, b) -> "Put : insert ? "^ string_of_bool(b) ^ ", "^ x ^ "[" ^ (gen y) ^ "] = " ^ (gen z)
   | Length(x) -> "Array.length " ^ x
   | Stmts(e1,e2) -> (gen e1) ^ ";\n" ^ (gen e2)
+  | Import(s) -> "#use " ^ s ^ ";"
 
 (* Call from dynlink *)
 let () =
