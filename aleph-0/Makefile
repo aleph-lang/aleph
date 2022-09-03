@@ -14,6 +14,9 @@ cleanest: clean
 
 mdir:
 	mkdir -p out
+	mkdir -p out/test
+	mkdir -p out/test/al0
+	mkdir -p out/test/ocaml
 
 cleanFilters:
 	$(foreach c,$(FILTER),make -C $(c) clean && ) true
