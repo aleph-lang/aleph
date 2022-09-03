@@ -1,12 +1,11 @@
 RESULT= al0c
-FILTER= src/utils $(dir $(wildcard src/filter/*/*/.))
+CONTRIB= ../../aleph-contrib/src
 
-default: mdir filters
+default: mdir contrib
 	make -C src
 	mv src/$(RESULT) $(RESULT)
-	rm -rf src/filter/utils
 
-clean: cleanFilters
+clean: cleanContrib
 	make -C src clean
 
 cleanest: clean
@@ -18,8 +17,8 @@ mdir:
 	mkdir -p out/test/al0
 	mkdir -p out/test/ocaml
 
-cleanFilters:
-	$(foreach c,$(FILTER),make -C $(c) clean && ) true
+cleanContrib:
+	$(foreach c,$(CONTRIB),make -C $(c) clean && ) true
 
-filters:
-	$(foreach c,$(FILTER),make -C $(c) && ) true
+contrib:
+	$(foreach c,$(CONTRIB),make -C $(c) && ) true
