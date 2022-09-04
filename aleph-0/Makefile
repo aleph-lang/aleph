@@ -13,9 +13,6 @@ cleanest: clean
 
 mdir:
 	mkdir -p out
-	mkdir -p out/test
-	mkdir -p out/test/al0
-	mkdir -p out/test/ocaml
 
 cleanContrib:
 	$(foreach c,$(CONTRIB),make -C $(c) clean && ) true
