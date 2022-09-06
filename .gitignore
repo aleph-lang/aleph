@@ -1,5 +1,12 @@
-aleph-0/al0c
-aleph-0/src/lexer.ml
-aleph-0/src/parser.ml
-aleph-0/src/*.cmi
-aleph-0/src/*.cmo
+alephc
+out
+**cmo
+**cmi
+src/*/*/*/lexer.ml
+src/*/*/*/parser.ml
+src/*/*/*/parser.mli
+src/._bcdi
+src/._d
+src/filter/*/*/._d
+src/filter/*/*/._bcdi
+

@@ -1,5 +1,5 @@
-RESULT = al0c
-CONTRIB= ../../../aleph-contrib/src
+RESULT = alephc
+CONTRIB= ../../aleph-contrib/src
 
 default:
 	ocamlc -o $(RESULT) -I $(CONTRIB)/utils dynlink.cma str.cma syntax.cmo filter.cmo main.ml

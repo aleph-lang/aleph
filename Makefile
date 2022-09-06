@@ -1,5 +1,5 @@
-RESULT= al0c
-CONTRIB= ../../aleph-contrib/src
+RESULT= alephc
+CONTRIB= ../aleph-contrib/src
 
 default: mdir contrib
 	make -C src
