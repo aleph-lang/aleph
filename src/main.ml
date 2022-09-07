@@ -28,8 +28,8 @@ let rec compute list lexbuf ast outchan = match list with
 let lexbuf outchan l =
   if !confFile = ""
   then begin
-    Printf.printf "Configuration file : Default - conf/al02ocaml.conf (Al0 -> Ocaml)\n";
-    confFile := "conf/al02ocaml.conf"
+    Printf.printf "Configuration file : Default - conf/ale2ocaml.conf (Ale -> Ocaml)\n";
+    confFile := "conf/ale2ocaml.conf"
   end else begin
     Printf.printf "Configuration file : %s\n" !confFile;
   end;
@@ -53,7 +53,7 @@ let () =
      ("-oExt", Arg.String(fun s -> outputExt := s), "output extension")
     ]
     (fun s -> files := !files @ [s])
-    ("Aleph-0 compiler\n" ^
+    ("Aleph compiler\n" ^
      Printf.sprintf "usage: %s filenames" Sys.argv.(0));
   List.iter
     (fun f -> ignore (file f))

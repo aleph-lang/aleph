@@ -5,7 +5,7 @@ default:
 	ocamlc -o $(RESULT) -I $(CONTRIB)/utils dynlink.cma str.cma syntax.cmo filter.cmo main.ml
 
 utils:
-	if [ -s utils/filter.cmo ]; then echo "utils already make"; else make -C utils; fi
+	if [ -s $(CONTRIB)/utils/filter.cmo ]; then echo "utils already make"; else make -C $(CONTRIB)/utils; fi
 
 clean:
 	rm -f *.cmo *.cmi
