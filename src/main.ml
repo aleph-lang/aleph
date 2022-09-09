@@ -1,6 +1,6 @@
 let confFile = ref ""
 let outputDir = ref "out"
-let outputExt = ref ".out"
+let outputFile = ref "output.out"
 
 let read_file filename = 
   let lines = ref [] in
@@ -38,7 +38,8 @@ let lexbuf outchan l =
 
 let file f =
   let inchan = open_in (f) in
-  let outchan = open_out(!outputDir ^ "/"^ (Filename.basename (Filename.remove_extension f)) ^ !outputExt) in
+  let path = !outputDir ^ "/"^ !outputFile in
+  let outchan = open_out(path) in
   try
     lexbuf outchan (Lexing.from_channel inchan);
     close_in inchan;
@@ -49,8 +50,8 @@ let () =
   let files = ref [] in
   Arg.parse
     [("-conf", Arg.String(fun s -> confFile := s), "Compiler configuration file");
-     ("-o", Arg.String(fun s -> outputDir := s), "output directory");
-     ("-oExt", Arg.String(fun s -> outputExt := s), "output extension")
+     ("-oDir", Arg.String(fun s -> outputDir := s), "output directory");
+     ("-o", Arg.String(fun s -> outputFile := s), "output file")
     ]
     (fun s -> files := !files @ [s])
     ("Aleph compiler\n" ^
