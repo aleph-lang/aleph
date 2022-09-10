@@ -1,5 +1,5 @@
 RESULT= alephc
-CONTRIB= ../aleph-contrib/src
+CONTRIB= ../aleph-contrib
 
 default: mdir contrib
 	make -C src
