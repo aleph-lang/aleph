@@ -20,8 +20,7 @@ let rec compute list lexbuf ast outchan = match list with
       let t = match (List.nth l 1) with
         | "parse" -> !Filter.parse lexbuf
         | "transform" -> !Filter.transform ast
-        | "gen" -> !Filter.gen ast outchan; ast
-        | "genHumanReadable" -> !Filter.genHumanReadable ast outchan ((List.length l)> 2 && bool_of_string(List.nth l 2)); ast
+        | "gen" -> !Filter.gen ast outchan ((List.length l)> 2 && bool_of_string(List.nth l 2)); ast
         | _ -> ast
       in compute b lexbuf t outchan
     end
