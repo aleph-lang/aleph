@@ -39,7 +39,7 @@ let lexbuf outchan l =
 
 let file f =
   let inchan = open_in (f) in
-  let outchan = (if !useStdout == "false" then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
+  let outchan = (if (not(bool_of_string(!useStdout))) then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
   try
     lexbuf outchan (Lexing.from_channel inchan);
     close_in inchan;
@@ -48,7 +48,7 @@ let file f =
 
 let computeLines l =
   let inchan = String.concat "\n" l in
-  let outchan = (if !useStdout == "false" then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
+  let outchan = (if (not(bool_of_string(!useStdout))) then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
   try
     lexbuf outchan (Lexing.from_string inchan);
     close_out outchan;
