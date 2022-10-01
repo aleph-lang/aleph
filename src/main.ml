@@ -1,6 +1,7 @@
 let confFile = ref ""
 let outputDir = ref "out"
 let outputFile = ref "output.out"
+let useStdout = ref "false"
 
 let read_file filename = 
   let lines = ref [] in
@@ -28,34 +29,52 @@ let rec compute list lexbuf ast outchan = match list with
 let lexbuf outchan l =
   if !confFile = ""
   then begin
-    Printf.printf "Configuration file : Default - conf/ale2ocaml.conf (Ale -> Ocaml)\n";
+    if (!useStdout == "false") then Printf.printf "Configuration file : Default - conf/ale2ocaml.conf (Ale -> Ocaml)\n" else ();
     confFile := "conf/ale2ocaml.conf"
   end else begin
-    Printf.printf "Configuration file : %s\n" !confFile;
+    if (!useStdout == "false") then Printf.printf "Configuration file : %s\n" !confFile else ();
   end;
   let lines = read_file !confFile in
   let _ = compute lines l Unit outchan in ()
 
 let file f =
   let inchan = open_in (f) in
-  let path = !outputDir ^ "/"^ !outputFile in
-  let outchan = open_out(path) in
+  let outchan = (if !useStdout == "false" then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
   try
     lexbuf outchan (Lexing.from_channel inchan);
     close_in inchan;
     close_out outchan;
   with e -> (close_in inchan; close_out outchan; raise e)
 
+let computeLines l =
+  let inchan = String.concat "\n" l in
+  let outchan = (if !useStdout == "false" then (open_out(!outputDir ^ "/"^ !outputFile)) else (stdout)) in
+  try
+    lexbuf outchan (Lexing.from_string inchan);
+    close_out outchan;
+  with e -> (close_out outchan; raise e)
+
 let () =
   let files = ref [] in
   Arg.parse
     [("-conf", Arg.String(fun s -> confFile := s), "Compiler configuration file");
      ("-oDir", Arg.String(fun s -> outputDir := s), "output directory");
-     ("-o", Arg.String(fun s -> outputFile := s), "output file")
+     ("-o", Arg.String(fun s -> outputFile := s), "output file");
+     ("-stdout", Arg.String(fun s -> useStdout := s), "use stdout");
     ]
     (fun s -> files := !files @ [s])
     ("Aleph compiler\n" ^
      Printf.sprintf "usage: %s filenames" Sys.argv.(0));
-  List.iter
+  if (!files = []) then (
+    (* STDIN *)
+    let lines = ref [] in
+    try
+        while true do
+            lines := !lines @ [read_line ()];
+        done
+    with
+        End_of_file -> ignore (computeLines !lines)
+  ) else (List.iter
     (fun f -> ignore (file f))
     !files
+  )
