@@ -16,7 +16,7 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     
     // run json2ale
     let child = Command::new("./alephc")
-                         .current_dir("../..")
+                         .current_dir("../aleph-contrib")
                          .arg("-conf")
                          .arg("conf/json2ale.conf")
                          .arg("-stdout").arg("true")

@@ -9,7 +9,7 @@ src/._bcdi
 src/._d
 src/filter/*/*/._d
 src/filter/*/*/._bcdi
-src/ws/Cargo.lock
-src/ws/**/*.rs.bk
-src/ws/debug/
-src/ws/target/
+Cargo.lock
+**/*.rs.bk
+debug/
+target/
