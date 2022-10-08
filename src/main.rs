@@ -1,5 +1,6 @@
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -31,7 +32,9 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     //println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
     let out = String::from_utf8_lossy(&output.stdout);
-    let res = format!("{{\"response\" : \"{}\"}}", out);
+    let result = out.replace("\n", "\\n");
+    //let res = format!('{{"response\" : \"{}\"}}", result);
+    let res = json!({"response" : result});
 
     HttpResponse::Ok().json(res) // <- send response
 }

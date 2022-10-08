@@ -19,8 +19,7 @@ async def req():
     print("res : " + res)
     jsonRes = json.loads(res)
     assert 200 == resp.status
-    print("json : "+jsonRes)
-    print(jsonRes['response'])
+    print(jsonRes["response"])
 
 
 asyncio.get_event_loop().run_until_complete(req())
