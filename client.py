@@ -6,15 +6,21 @@
 import json
 import asyncio
 import aiohttp
+import sys
 
 async def req():
+    data = sys.stdin.readlines()
+    data = ''.join(data)
     resp = await aiohttp.ClientSession().request(
         "post", 'http://localhost:8080/',
-        data=json.dumps({"content_type": "JSON", "content": "{\"type\" : \"And\", \"boolExpr1\" : { \"type\" : \"Bool\",\"value\" : \"true\"},\"boolExpr2\" : {\"type\" : \"Bool\",\"value\" : \"false\"}}"}),
+        data=json.dumps({"content_type": "JSON", "content": data}),
         headers={"content-type": "application/json"})
-    print(str(resp))
-    print(await resp.text())
+    res = await resp.text()
+    print("res : " + res)
+    jsonRes = json.loads(res)
     assert 200 == resp.status
+    print("json : "+jsonRes)
+    print(jsonRes['response'])
 
 
 asyncio.get_event_loop().run_until_complete(req())
