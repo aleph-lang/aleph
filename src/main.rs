@@ -31,10 +31,7 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     //println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
     //println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
-    let out = String::from_utf8_lossy(&output.stdout);
-    let result = out.replace("\n", "\\n");
-    //let res = format!('{{"response\" : \"{}\"}}", result);
-    let res = json!({"response" : result});
+    let res = json!({"response" : String::from_utf8_lossy(&output.stdout)});
 
     HttpResponse::Ok().json(res) // <- send response
 }
