@@ -8,6 +8,7 @@ use std::process::{Command, Stdio};
 struct AlephEntry {
     content_type: String,
     content: String,
+    return_type: String
 }
 
 /// This handler uses json extractor
@@ -26,10 +27,6 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
                          .spawn().unwrap();
     child.stdin.as_ref().unwrap().write(content.as_bytes()).unwrap();
     let output = child.wait_with_output().unwrap();
-    
-    //println!("status: {}", output.status);
-    //println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-    //println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
     let res = json!({"response" : String::from_utf8_lossy(&output.stdout)});
 
