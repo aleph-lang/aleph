@@ -130,8 +130,8 @@ pub enum AlephTree {
     },
     App{
         #[serde(alias="objectName")]
-        object_name: Option<String>,
-        fun: Option<Box<AlephTree>>,
+        object_name: String,
+        fun: Box<AlephTree>,
         #[serde(alias="paramList")]
         param_list: Vec<Box<AlephTree>>
     },
