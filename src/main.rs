@@ -4,6 +4,8 @@ use serde_json::json;
 use std::io::Write;
 use std::process::{Command, Stdio};
 
+pub mod syntax;
+
 #[derive(Debug, Serialize, Deserialize)]
 struct AlephEntry {
     content_type: String,
@@ -11,10 +13,17 @@ struct AlephEntry {
     return_type: String
 }
 
+
 /// This handler uses json extractor
 async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     println!("model: {:?}", &item);
-    let content = item.0.content;
+    let content = item.0.content.clone();
+
+
+    //example for parsing json using syntax enum
+    let parsed_content: syntax::AlephTree = serde_json::from_str(&item.0.content).unwrap();
+    println!("parsed_content: {:?}", &parsed_content);
+
     
     // run json2ale
     let child = Command::new("./alephc")
