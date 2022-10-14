@@ -16,7 +16,8 @@ async def req(args):
     if args.out_type == None:
         args.out_type = "ale"
 
-    resp = await aiohttp.ClientSession().request(
+    session = aiohttp.ClientSession()
+    resp = await session.request(
         "post", 'http://localhost:8080/',
         data=json.dumps({"content_type": "JSON", "content": data, "return_type": args.out_type}),
         headers={"content-type": "application/json"})
@@ -24,6 +25,7 @@ async def req(args):
     jsonRes = json.loads(res)
     assert 200 == resp.status
     print(jsonRes["response"])
+    await session.close()
 
 
 parser = argparse.ArgumentParser(description ='Compile given file')
