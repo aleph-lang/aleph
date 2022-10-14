@@ -15,5 +15,7 @@ pkgs.mkShell {
         cargo
         rustc
         python-with-packages
+        pkg-config
+        openssl
     ];
 }
