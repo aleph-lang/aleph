@@ -2,10 +2,12 @@ use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 use serde_json::json;
 use serde::{Deserialize, Serialize};
 
-pub mod syntax;
+mod filter;
+mod syntax;
 
-#[path = "filter/gen/ale/ale.rs"]
-mod ale;
+use crate::filter::gen::Gen;
+use crate::filter::gen::ale::AleGen as ale_gen;
+
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AlephEntry {
@@ -21,7 +23,7 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     let parsed_content: syntax::AlephTree = serde_json::from_str(&item.0.content).unwrap();
     
     // run json2ale
-    let output = ale::generate(parsed_content);
+    let output = ale_gen::generate(parsed_content);
 
     let res = json!({"response" : output});
 
