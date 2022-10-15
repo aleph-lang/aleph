@@ -71,11 +71,13 @@ pub enum AlephTree {
         els: Box<AlephTree>
     },
     While{
-        condition: Box<AlephTree>,
         #[serde(alias="initExpr")]
         init_expr: Box<AlephTree>,
+        condition: Box<AlephTree>,
         #[serde(alias="loopExpr")]
-        loop_expr: Box<AlephTree>
+        loop_expr: Box<AlephTree>,
+		#[serde(alias="postExpr")]
+        post_expr: Box<AlephTree>,
     },
     Let{
         var: String,
