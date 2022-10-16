@@ -6,6 +6,8 @@ mod filter;
 mod syntax;
 
 use crate::filter::gen::Gen;
+
+#[cfg(feature="ale_gen")]
 use crate::filter::gen::ale::AleGen as ale_gen;
 
 
@@ -23,6 +25,7 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     let parsed_content: syntax::AlephTree = serde_json::from_str(&item.0.content).unwrap();
     
     // run json2ale
+    // TODO; add pattern handling somewhere esle for feature configuration
     let output = ale_gen::generate(parsed_content);
 
     let res = json!({"response" : output});

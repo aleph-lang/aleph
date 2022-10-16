@@ -1,6 +1,7 @@
 use crate::syntax;
 use syntax::AlephTree as at;
 
+#[cfg(feature="ale_gen")]
 pub mod ale;
 
 /**
