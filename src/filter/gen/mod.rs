@@ -8,5 +8,5 @@ pub mod ale;
 * this trait should be implemented by all generators
 */
 pub trait Gen {
-    fn generate(ast: at) -> String;
+    fn generate(&self, ast: at) -> String ;
 }

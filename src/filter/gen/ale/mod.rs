@@ -46,7 +46,7 @@ fn gen( ast: at) -> String {
 }
 
 impl Gen for AleGen {
-    fn generate(ast: at) -> String {
+    fn generate(&self, ast: at) -> String {
         println!("AST {:?}", &ast);
         gen(ast)
     }
