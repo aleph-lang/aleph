@@ -1,8 +1,8 @@
 use crate::syntax::AlephTree as at;
 use crate::filter::gen::Gen;
 
-//TODO: move in GenEnum or GenTypes
-pub struct AleGen {}
+#[derive(Default)]
+pub struct AleGen;
 
 fn gen_list_expr(ast_list: Vec<Box<at>>) -> String {
     format!("{}", ast_list.into_iter().map(|e| gen(*e)).collect::<Vec<String>>().join(", "))
