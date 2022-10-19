@@ -5,10 +5,10 @@ use syntax::AlephTree as at;
 mod ale;
 
 
-fn to_gen(s:String) -> Option<impl Gen> {
+fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
         #[cfg(feature="ale_gen")]
-        "ale" => Some(ale::AleGen{}),
+        "ale" => Some(Box::new(ale::AleGen{})),
 
         _ => None
     }
