@@ -2,7 +2,7 @@ use crate::syntax;
 use syntax::AlephTree as at;
 
 #[cfg(feature="ale_gen")]
-pub mod ale;
+mod ale;
 
 
 fn to_gen(s:String) -> Option<impl Gen> {
@@ -25,6 +25,6 @@ pub fn generate(to: String, ast: at) -> String {
 /**
 * this trait should be implemented by all generators
 */
-pub trait Gen {
+trait Gen {
     fn generate(&self, ast: at) -> String ;
 }
