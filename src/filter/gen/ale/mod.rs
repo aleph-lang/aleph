@@ -43,7 +43,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::LE{expr1, expr2} => format!("{}{} <= {}", comp_indent(indent), gen(*expr1, 0), gen(*expr2, 0)),
         at::If{condition, then, els} => format!("{}({})?{{{}}}:{{{}}}", comp_indent(indent), gen(*condition, indent), gen(*then, indent), gen(*els, indent)),
         at::While{init_expr, condition, loop_expr, post_expr} => format!("{}{}\n{}({})?*{{{}\n{}}}", comp_indent(indent), gen(*init_expr, indent), comp_indent(indent), gen(*condition, indent), gen(*loop_expr, indent), gen(*post_expr, indent)),
-        at::Let{var, is_pointer, value, expr} => format!("{}{}{} = {}; {}", comp_indent(indent), var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
+        at::Let{var, is_pointer, value, expr} => format!("{}{}{} = {};\n{}", comp_indent(indent), var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
         at::LetRec{name, args, body} => format!("{}fun {}({}) = {{\n{}\n{}}}", comp_indent(indent), name, gen_list_expr(args), gen(*body, indent+1), comp_indent(indent)),
         at::Get{array_name, elem} => format!("{}{}[{}]", comp_indent(indent), array_name, gen(*elem, indent)),
         at::Put{array_name, elem, value, insert} => format!("{}{}[{}{}] = {}", comp_indent(indent), array_name, (if insert=="true" {"+"} else {""}), gen(*elem, indent), gen(*value, indent)),
