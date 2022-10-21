@@ -6,18 +6,11 @@ pub struct AleParser;
 
 #[rust_sitter::grammar("ale")]
 pub mod grammar {
+
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum Expression {
-        Bool(#[rust_sitter::leaf(pattern = "true|false", transform = |v| v.parse().unwrap())] bool),
-        Number(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i32),
-        Float(#[rust_sitter::leaf(pattern = r"\d*\.\d*",transform = |v| v.parse().unwrap())] f32),
-        #[rust_sitter::prec_left(1)]
-        LPexpRP(
-            #[rust_sitter::leaf(text = "(")] (),
-            Box<Expression>,
-            #[rust_sitter::leaf(text = ")")] (),
-        ),
+        SE(Box<SimplExpr>),
         #[rust_sitter::prec_left(10)]
         Not(
             #[rust_sitter::leaf(text = "!")] (),
@@ -78,6 +71,31 @@ pub mod grammar {
         ),
     }
 
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum SimplExpr {
+        Bool(#[rust_sitter::leaf(pattern = "true|false", transform = |v| v.parse().unwrap())] bool),
+        Number(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i32),
+        Float(#[rust_sitter::leaf(pattern = r"\d*\.\d*",transform = |v| v.parse().unwrap())] f32),
+        String(#[rust_sitter::leaf(pattern = r#"".*""#, transform = |v| v.parse().unwrap())] String),
+        Ident(#[rust_sitter::leaf(pattern = r"\[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
+        #[rust_sitter::prec_left(1)]
+        LPRP(
+            #[rust_sitter::leaf(text = "(")] (),
+            #[rust_sitter::leaf(text = ")")] (),
+        ),
+        LPexpRP(
+            #[rust_sitter::leaf(text = "(")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = ")")] (),
+        ),
+        LBexpRB(
+            #[rust_sitter::leaf(text = "{")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "}")] (),
+        ),
+    }
+
     #[rust_sitter::extra]
     struct Whitespace {
         #[rust_sitter::leaf(pattern = r"\s")]
@@ -85,12 +103,22 @@ pub mod grammar {
     }
 }
 
+fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
+     match tree {
+         grammar::SimplExpr::Bool(b) => at::Bool{value: b.to_string()},
+         grammar::SimplExpr::LPexpRP(_,e,_) => translate(*e),
+         grammar::SimplExpr::LBexpRB(_,e,_) => translate(*e),
+         grammar::SimplExpr::LPRP(_,_) => at::Unit{},
+         grammar::SimplExpr::Number(i) => at::Int{value: i.to_string()},
+         grammar::SimplExpr::Float(f) => at::Float{value: f.to_string()},
+         grammar::SimplExpr::String(s) => at::String{value: s},
+         grammar::SimplExpr::Ident(s) => at::Var{var: s, is_pointer: "false".to_string()},
+     }
+}
+
 fn translate(tree : grammar::Expression) -> at {
      match tree {
-         grammar::Expression::LPexpRP(_,e,_) => translate(*e),
-         grammar::Expression::Bool(b) => at::Bool{value: b.to_string()},
-         grammar::Expression::Number(i) => at::Int{value: i.to_string()},
-         grammar::Expression::Float(f) => at::Float{value: f.to_string()},
+         grammar::Expression::SE(se) => translate_simple_expr(*se),
          grammar::Expression::Not(_, e) => at::Not{bool_expr: Box::new(translate(*e))},
          grammar::Expression::Neg(_, e) => at::Neg{expr: Box::new(translate(*e))},
          grammar::Expression::And(e1,_, e2) => at::And{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
@@ -106,6 +134,7 @@ fn translate(tree : grammar::Expression) -> at {
 
 impl Parser for AleParser {
     fn parse(&self, source: String) -> at {
-       translate(grammar::parse(&source).unwrap())
+        println!("{}", &source);   
+        translate(grammar::parse(&source).unwrap())
     }
 }
