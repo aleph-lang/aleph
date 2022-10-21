@@ -7,20 +7,27 @@ mod syntax;
 
 use crate::filter::parser::parse;
 use crate::filter::gen::generate;
+use crate::filter::transform_dispatcher;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AlephEntry {
     content_type: String,
     content: String,
-    return_type: String
+    return_type: String,
+    transformer_list: Option<Vec<String>>
 }
 
 
 /// This handler uses json extractor
 async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
     let parsed_content: syntax::AlephTree = parse(item.0.content_type, item.0.content);
+
+    let transformed_content: syntax::AlephTree = match item.0.transformer_list {
+        Some(list)=> transform_dispatcher(list, parsed_content),
+        None => parsed_content
+    };
     
-    let output = generate(item.0.return_type, parsed_content);
+    let output = generate(item.0.return_type, transformed_content);
 
     let res = json!({"response" : output});
 

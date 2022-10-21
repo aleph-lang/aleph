@@ -19,10 +19,17 @@ async def req(args):
     if args.out_type == None:
         args.out_type = "ale"
 
+    if args.transformer_list == None:
+        args.transformer_list = []
+    else:
+        args.transformer_list = args.transformer_list.split(",")
+
+
     session = aiohttp.ClientSession()
     resp = await session.request(
         "post", 'http://localhost:8080/',
-        data=json.dumps({"content_type": args.in_type, "content": data, "return_type": args.out_type}),
+        data=json.dumps({"content_type": args.in_type, "content": data,
+                            "return_type": args.out_type, "transformer_list":args.transformer_list}),
         headers={"content-type": "application/json"})
     res = await resp.text()
     jsonRes = json.loads(res)
@@ -34,6 +41,7 @@ async def req(args):
 parser = argparse.ArgumentParser(description ='Compile given file')
 parser.add_argument('-i', dest ='in_type', action ='store', help ='input type')
 parser.add_argument('-o', dest ='out_type',action ='store', help ='output type')
+parser.add_argument('-t', dest ='transformer_list',action ='store', help ='list of transforms functions to be used (separed by a comma)')
 
 args = parser.parse_args()
 
