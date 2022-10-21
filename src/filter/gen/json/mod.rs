@@ -6,6 +6,6 @@ pub struct JsonGen;
 
 impl Gen for JsonGen {
     fn generate(&self, ast: at) -> String {
-        serde_json::to_string(&ast).unwrap()
+        serde_json::to_string_pretty(&ast).unwrap()
     }
 }
