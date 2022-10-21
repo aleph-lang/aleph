@@ -5,9 +5,8 @@ use serde::{Deserialize, Serialize};
 mod filter;
 mod syntax;
 
+use crate::filter::parser::parse;
 use crate::filter::gen::generate;
-
-
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AlephEntry {
@@ -19,11 +18,8 @@ struct AlephEntry {
 
 /// This handler uses json extractor
 async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
-    //example for parsing json using syntax enum
-    let parsed_content: syntax::AlephTree = serde_json::from_str(&item.0.content).unwrap();
+    let parsed_content: syntax::AlephTree = parse(item.0.content_type, item.0.content);
     
-    // run json2ale
-    // TODO; add pattern handling somewhere else for feature configuration
     let output = generate(item.0.return_type, parsed_content);
 
     let res = json!({"response" : output});

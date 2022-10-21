@@ -1,15 +1,14 @@
 use crate::syntax;
 use syntax::AlephTree as at;
 
-#[cfg(feature="ale_gen")]
 mod ale;
+mod json;
 
 
 fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
-        #[cfg(feature="ale_gen")]
         "ale" => Some(Box::new(ale::AleGen{})),
-
+        "json" => Some(Box::new(json::JsonGen{})),
         _ => None
     }
 }
@@ -18,7 +17,7 @@ fn to_gen(s:String) -> Option<Box<dyn Gen>> {
 pub fn generate(to: String, ast: at) -> String {
     match to_gen(to) {
         Some(g) => g.generate(ast),
-        None => "Not Implemented: Use external binary as generator".to_string()
+        None => "Generator Not Implemented: Use external binary as generator".to_string()
     }
 }
 

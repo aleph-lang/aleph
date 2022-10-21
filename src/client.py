@@ -14,7 +14,7 @@ async def req(args):
     data = ''.join(data)
 
     if args.in_type == None:
-        args.in_type = "JSON"
+        args.in_type = "json"
 
     if args.out_type == None:
         args.out_type = "ale"
