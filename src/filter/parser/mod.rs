@@ -1,10 +1,12 @@
 use crate::syntax;
 use syntax::AlephTree as at;
 
+mod ale;
 mod json;
 
 fn do_parse(s:String) -> Option<Box<dyn Parser>> {
     match s.as_str() {
+        "ale" => Some(Box::new(ale::AleParser{})),
         "json" => Some(Box::new(json::JsonParser{})),
         _ => None
     }
