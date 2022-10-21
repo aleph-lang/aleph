@@ -1,25 +1,12 @@
 use crate::syntax::AlephTree as at;
 use crate::filter::gen::Gen;
+use crate::filter::gen::comp_indent;
 
 #[derive(Default)]
 pub struct AleGen;
 
 fn gen_list_expr(ast_list: Vec<Box<at>>) -> String {
     format!("{}", ast_list.into_iter().map(|e| gen(*e, 0)).collect::<Vec<String>>().join(", "))
-}
-
-// move to String_utils
-// change to loop for reduce stack
-fn comp_indent_sep(indent: i64, sep: String) -> String {
-    let mut res = "".to_string();
-    for _ in 0..indent {
-        res.push_str(&sep);
-    } 
-    res 
-}
-
-fn comp_indent(indent: i64) -> String {
-   comp_indent_sep(indent, String::from("\t"))
 }
 
 fn gen(ast: at, indent: i64) -> String {
@@ -42,7 +29,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Eq{expr1, expr2} => format!("{}{} = {}", comp_indent(indent), gen(*expr1, 0), gen(*expr2, 0)),
         at::LE{expr1, expr2} => format!("{}{} <= {}", comp_indent(indent), gen(*expr1, 0), gen(*expr2, 0)),
         at::If{condition, then, els} => format!("{}({})?{{{}}}:{{{}}}", comp_indent(indent), gen(*condition, indent), gen(*then, indent), gen(*els, indent)),
-        at::While{init_expr, condition, loop_expr, post_expr} => format!("{}{}\n{}({})?*{{{}\n{}}}", comp_indent(indent), gen(*init_expr, indent), comp_indent(indent), gen(*condition, indent), gen(*loop_expr, indent), gen(*post_expr, indent)),
+        at::While{init_expr, condition, loop_expr, post_expr} => format!("{}{}\n{}({})?*{{\n{};\n{}}}", comp_indent(indent), gen(*init_expr, indent), comp_indent(indent), gen(*condition, 0), gen(*loop_expr, indent+1), gen(*post_expr, indent+1)),
         at::Let{var, is_pointer, value, expr} => format!("{}{}{} = {};\n{}", comp_indent(indent), var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
         at::LetRec{name, args, body} => format!("{}fun {}({}) = {{\n{}\n{}}}", comp_indent(indent), name, gen_list_expr(args), gen(*body, indent+1), comp_indent(indent)),
         at::Get{array_name, elem} => format!("{}{}[{}]", comp_indent(indent), array_name, gen(*elem, indent)),

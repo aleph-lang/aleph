@@ -22,6 +22,20 @@ pub fn generate(to: String, ast: at) -> String {
     }
 }
 
+// indentation for generators
+fn comp_indent_sep(indent: i64, sep: String) -> String {
+    let mut res = "".to_string();
+    for _ in 0..indent {
+        res.push_str(&sep);
+    }
+    res
+}
+
+// use comp_indent_sep with tab
+fn comp_indent(indent: i64) -> String {
+   comp_indent_sep(indent, String::from("\t"))
+}
+
 /**
 * this trait should be implemented by all generators
 */
