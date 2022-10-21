@@ -1,13 +1,18 @@
 use crate::syntax;
 use syntax::AlephTree as at;
 
+#[cfg(feature="ale_gen")]
 mod ale;
+#[cfg(feature="json_gen")]
 mod json;
 
 
 fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
+        #[cfg(feature="ale_gen")]
         "ale" => Some(Box::new(ale::AleGen{})),
+
+        #[cfg(feature="json_gen")]
         "json" => Some(Box::new(json::JsonGen{})),
         _ => None
     }

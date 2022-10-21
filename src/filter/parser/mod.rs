@@ -1,12 +1,16 @@
 use crate::syntax;
 use syntax::AlephTree as at;
 
+#[cfg(feature="ale_gen")]
 mod ale;
+#[cfg(feature="json_gen")]
 mod json;
 
 fn do_parse(s:String) -> Option<Box<dyn Parser>> {
     match s.as_str() {
+        #[cfg(feature="ale_gen")]
         "ale" => Some(Box::new(ale::AleParser{})),
+        #[cfg(feature="json_gen")]
         "json" => Some(Box::new(json::JsonParser{})),
         _ => None
     }
