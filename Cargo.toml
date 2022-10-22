@@ -24,8 +24,13 @@ rust-sitter = "0.1.2"
 rust-sitter-tool = "0.1.2"
 
 [features]
-"ale_gen" = []
-"json_gen" = []
 "ale_parse" = []
 "json_parse" = []
+"ale_gen" = []
+"bash_gen" = []
+"java_gen" = []
+"json_gen" = []
+"ocaml_gen" = []
+"python_gen" = []
+"rust_gen" = []
 "default" = ["ale_gen","json_gen" ,"ale_parse","json_parse" ]
