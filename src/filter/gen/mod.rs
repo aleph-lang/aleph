@@ -30,9 +30,9 @@ fn to_gen(s:String) -> Option<Box<dyn Gen>> {
         #[cfg(feature="ocaml_gen")]
         "ocaml" => Some(Box::new(ocaml::OcamlGen{})),
         #[cfg(feature="python_gen")]
-        "python" => Some(Box::new(python::PythonGen{})),
+        "python" | "py" => Some(Box::new(python::PythonGen{})),
         #[cfg(feature="rust_gen")]
-        "rust" => Some(Box::new(rust::RustGen{})),
+        "rust" | "rs" => Some(Box::new(rust::RustGen{})),
         _ => None
     }
 }
