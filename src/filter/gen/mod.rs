@@ -45,8 +45,8 @@ pub fn generate(to: String, ast: at) -> String {
     }
 }
 
-fn gen_list_expr(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String) -> String {
-    format!("{}", ast_list.into_iter().map(|e| f(*e, 0)).collect::<Vec<String>>().join(" "))
+fn gen_list_expr(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String, sep:Option<&str>) -> String {
+    format!("{}", ast_list.into_iter().map(|e| f(*e, 0)).collect::<Vec<String>>().join(sep.unwrap_or(" ")))
 }
 
 // indentation for generators
