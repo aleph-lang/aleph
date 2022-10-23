@@ -45,6 +45,10 @@ pub fn generate(to: String, ast: at) -> String {
     }
 }
 
+fn gen_list_expr(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String) -> String {
+    format!("{}", ast_list.into_iter().map(|e| f(*e, 0)).collect::<Vec<String>>().join(" "))
+}
+
 // indentation for generators
 fn comp_indent_sep(indent: i64, sep: String) -> String {
     let mut res = "".to_string();
