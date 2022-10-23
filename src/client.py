@@ -45,4 +45,4 @@ parser.add_argument('-t', dest ='transformer_list',action ='store', help ='list 
 
 args = parser.parse_args()
 
-asyncio.get_event_loop().run_until_complete(req(args))
+asyncio.run(req(args))

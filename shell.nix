@@ -1,7 +1,7 @@
 let pkgs = import <nixpkgs> {};
 # choose the ocaml version you want to use
 ocamlPackages = pkgs.ocaml-ng.ocamlPackages_4_11;
-my-python = pkgs.python39;
+my-python = pkgs.python310;
 python-with-packages = my-python.withPackages ( p: with p; [
     aiohttp
 ]);
