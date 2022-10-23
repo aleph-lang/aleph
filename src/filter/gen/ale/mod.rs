@@ -27,8 +27,8 @@ fn gen(ast: at, indent: i64) -> String {
         at::Eq{expr1, expr2} => format!("{}{} = {}", c_indent, gen(*expr1, 0), gen(*expr2, 0)),
         at::LE{expr1, expr2} => format!("{}{} <= {}", c_indent, gen(*expr1, 0), gen(*expr2, 0)),
         at::If{condition, then,els} => match *els {
-             at::Unit => format!("{}({})?{{\n{}\n{}}}", c_indent, gen(*condition, 0), gen(*then, indent+1), c_indent),
-             _ => format!("{}({})?{{\n{}\n{}}}:{{\n{}\n{}}}", c_indent, gen(*condition, 0), gen(*then, indent+1), c_indent, gen(*els, indent+1), c_indent),
+             at::Unit => format!("{c_indent}({cond})?{{\n{then}\n{c_indent}}}", c_indent=c_indent, cond=gen(*condition, 0), then=gen(*then, indent+1)),
+             _ => format!("{c_indent}({cond})?{{\n{then}\n{c_indent}}}:{{\n{els}\n{c_indent}}}", c_indent=c_indent, cond=gen(*condition, 0), then=gen(*then, indent+1), els=gen(*els, indent+1)),
         },
         at::While{init_expr, condition, loop_expr, post_expr} => {
             format!("{}\n{}({})?*{{\n{}\n{}\n{}}}", gen(*init_expr, indent), c_indent, gen(*condition, 0), gen(*loop_expr, indent+1), gen(*post_expr, indent+1), c_indent)
