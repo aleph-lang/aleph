@@ -53,7 +53,6 @@ fn gen_list_expr(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String) -> String {
     gen_list_expr_sep(ast_list, f, " ")
 }
 
-
 // indentation for generators
 fn comp_indent_sep(indent: i64, sep: String) -> String {
     let mut res = "".to_string();
