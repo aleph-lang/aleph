@@ -100,28 +100,28 @@ pub mod grammar {
             #[rust_sitter::leaf(text = ":=")] (),
             Box<Expression>,
         ),
-		#[rust_sitter::prec_left(1)]
+                #[rust_sitter::prec_left(1)]
         AppEmpty(
             Box<SimplExpr>,
-			#[rust_sitter::leaf(text = "(")] (),
+                        #[rust_sitter::leaf(text = "(")] (),
             #[rust_sitter::leaf(text = ")")] (),
         ),
-		#[rust_sitter::prec_left(1)]
+                #[rust_sitter::prec_left(1)]
         App(
             Box<Ident>,
-			#[rust_sitter::leaf(text = "(")] (),
+                        #[rust_sitter::leaf(text = "(")] (),
             Box<SimplExpr>,
-			#[rust_sitter::leaf(text = ")")] (),
+                        #[rust_sitter::leaf(text = ")")] (),
         ),
-		#[rust_sitter::prec_left(1)]
+                #[rust_sitter::prec_left(1)]
         Tuple(
             Box<ExprList>,
         ),
-		#[rust_sitter::prec_left(1)]
+                #[rust_sitter::prec_left(1)]
         Array(
-			#[rust_sitter::leaf(text = "[")] (),
+                        #[rust_sitter::leaf(text = "[")] (),
             Box<ExprList>,
-			#[rust_sitter::leaf(text = "]")] (),
+                        #[rust_sitter::leaf(text = "]")] (),
         ),
     }
 
@@ -129,7 +129,7 @@ pub mod grammar {
     #[derive(Debug)]
     pub enum Ident {
         Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
-	}
+        }
 
     #[rust_sitter::language]
     #[derive(Debug)]
@@ -143,7 +143,7 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "(")] (),
             #[rust_sitter::leaf(text = ")")] (),
         ),
-		#[rust_sitter::prec_left(10)]
+                #[rust_sitter::prec_left(10)]
         LPexpRP(
             #[rust_sitter::leaf(text = "(")] (),
             Box<Expression>,
@@ -175,24 +175,24 @@ pub mod grammar {
             Box<Expression>,
         ),
     }
-	
-	#[rust_sitter::language]
+        
+        #[rust_sitter::language]
     #[derive(Debug)]
     pub enum ExprList {
         #[rust_sitter::prec_left(1)]
-		Node(
-			Box<ExprList>,
+                Node(
+                        Box<ExprList>,
             #[rust_sitter::leaf(text = ",")] (),
-			Box<Expression>,
+                        Box<Expression>,
         ),
-		#[rust_sitter::prec_left(10)]
-		Leaf(
+                #[rust_sitter::prec_left(10)]
+                Leaf(
             Box<SimplExpr>,
         ),
     }
 
     #[rust_sitter::extra]
-	#[derive(Debug)]
+        #[derive(Debug)]
     struct Whitespace {
         #[rust_sitter::leaf(pattern = r"\s")]
         _whitespace: (),
@@ -245,22 +245,22 @@ fn translate_cond(tree: grammar::Condition) -> at {
 fn translate_list(list: grammar::ExprList) -> Vec<Box<at>> {
     match list {
         grammar::ExprList::Leaf(se) => vec![Box::new(translate_simple_expr(*se))],
-		grammar::ExprList::Node(l, _, e) => {
-			let mut v = translate_list(*l);
-			v.push(Box::new(translate(*e)));
-			v
-		},
+                grammar::ExprList::Node(l, _, e) => {
+                        let mut v = translate_list(*l);
+                        v.push(Box::new(translate(*e)));
+                        v
+                },
     }
 }
 
 fn translate_param_list(list: grammar::SimplExpr) -> Vec<Box<at>> {
-	match list {
-	    grammar::SimplExpr::LPRP(_,_) => Vec::new(),
-	    grammar::SimplExpr::LPexpRP(_,e,_) => match *e {
-			grammar::Expression::Tuple(list1) => translate_list(*list1),
-			_ => Vec::new(),
-		},
-		_ => Vec::new(),
+        match list {
+            grammar::SimplExpr::LPRP(_,_) => Vec::new(),
+            grammar::SimplExpr::LPexpRP(_,e,_) => match *e {
+                        grammar::Expression::Tuple(list1) => translate_list(*list1),
+                        _ => Vec::new(),
+                },
+                _ => Vec::new(),
     }
 }
 
@@ -291,9 +291,9 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
         grammar::Expression::LetP(var, _, value) => at::Let{var: translate_se_string(*var), is_pointer: "true".to_string(), value: Box::new(translate(*value
 )), expr: Box::new(at::Unit{})}, 
         grammar::Expression::AppEmpty(fun, _, _) => at::App{object_name: "".to_string(), fun: Box::new(translate_simple_expr(*fun)), param_list: Vec::new()}, 
-	    grammar::Expression::App(fun, _, param_list, _) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_ident_string(*fun)}), param_list: translate_param_list(*param_list)}, 
-	    grammar::Expression::Tuple(list) => at::Tuple{elems: translate_list(*list)}, 
-		grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 
+        grammar::Expression::App(fun, _, param_list, _) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_ident_string(*fun)}), param_list: translate_param_list(*param_list)}, 
+        grammar::Expression::Tuple(list) => at::Tuple{elems: translate_list(*list)}, 
+        grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 
     }
 }
 
