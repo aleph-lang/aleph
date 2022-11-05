@@ -1,6 +1,7 @@
 use crate::syntax::AlephTree as at;
 use crate::filter::gen::Gen;
 use crate::filter::gen::gen_list_expr;
+use crate::filter::gen::gen_list_expr_sep;
 use crate::filter::gen::comp_indent;
 
 #[derive(Default)]
@@ -14,8 +15,8 @@ fn gen(ast: at, indent: i64) -> String {
         at::Float{value} => format!("{}{}", c_indent, value),
         at::Bool{value} => format!("{}{}", c_indent, if value=="true" { "True" } else { "False" }),
         at::String{value} => format!("{}{}", c_indent, value),
-        at::Tuple{elems} => format!("{}", gen_list_expr(elems, gen)),
-        at::Array{elems} => format!("[{}]", gen_list_expr(elems, gen)),
+        at::Tuple{elems} => format!("({})", gen_list_expr_sep(elems, gen, ",")),
+        at::Array{elems} => format!("[{}]", gen_list_expr_sep(elems, gen, ",")),
         at::Neg{expr} => format!("{}-{}", c_indent, gen(*expr, 0)),
         at::Not{bool_expr} => format!("{}not({})", c_indent, gen(*bool_expr, 0)),
         at::And{bool_expr1, bool_expr2} => format!("{}{} and {}", c_indent, gen(*bool_expr1, 0), gen(*bool_expr2, 0)),
@@ -31,8 +32,8 @@ fn gen(ast: at, indent: i64) -> String {
              _ => format!("{}if({}):\n{}\nelse:\n{}", c_indent, gen(*condition, 0), gen(*then, indent+1), gen(*els, indent+1)),
         },
         at::While{init_expr, condition, loop_expr, post_expr} => match *post_expr{
-            at::Unit => format!("{init}\n{id}while({cond}):\n{loop_ex}\n{post}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1),post=gen(*post_expr,indent)),
-            _ => format!("{init}\n{id}while({cond}):\n{loop_ex}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1)),
+            at::Unit => format!("{init}\n{id}while({cond}):\n{loop_ex}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1)),
+            _ => format!("{init}\n{id}while({cond}):\n{loop_ex}\n{post}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1),post=gen(*post_expr,indent+1)),
         },
         at::Let{var, is_pointer: _, value, expr} => match *expr {
             at::Unit => match *value{
@@ -40,22 +41,30 @@ fn gen(ast: at, indent: i64) -> String {
                 _ => format!("{}{} = {}", c_indent, var, gen(*value, 0)),
             },
             _ => match *value{
-                at::Remove{array_name, elem, is_value, ret} => format!("{}{};\n{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0), gen(*expr, indent)),
+                at::Remove{array_name, elem, is_value, ret} => format!("{}{}\n{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0), gen(*expr, indent)),
                 _ => format!("{}{} = {}\n{}", c_indent, var, gen(*value, 0), gen(*expr, indent)),
             }
         },
-        at::LetRec{name, args, body} => format!("{}fun {}({}) = {{\n{}\n{}}}", c_indent, name, gen_list_expr(args, gen), gen(*body, indent+1), c_indent),
+        at::LetRec{name, args, body} => format!("{}def {}({}):\n{}\n", c_indent, name, gen_list_expr(args, gen), gen(*body, indent+1)),
         at::Get{array_name, elem} => format!("{}{}[{}]", c_indent, array_name, gen(*elem, 0)),
-        at::Put{array_name, elem, value, insert} => format!("{}{}[{}{}] = {}", c_indent, array_name, (if insert=="true" {"+"} else {""}), gen(*elem, 0), gen(*value, 0)),
-        at::Remove{array_name, elem, is_value, ret: _} => format!("{}{} {} {}", c_indent, array_name, (if is_value=="true" {"-"} else {"/"}), gen(*elem, 0)),
-        at::Length{var} => format!("{}|{}|", c_indent, var),
+        at::Put{array_name, elem, value, insert} => if insert.eq("true") {
+            format!("{}{}.insert({},{})", c_indent, array_name, gen(*elem, 0), gen(*value, 0))
+        } else {
+            format!("{}{}[{}] = {}", c_indent, array_name, gen(*elem, 0), gen(*value, 0))
+        },
+        at::Remove{array_name, elem, is_value, ret} => if is_value.eq("true") && ret.eq("false") {
+            format!("{}{}.remove({})", c_indent, array_name, gen(*elem, 0))
+        } else {
+            format!("{}{}.pop({})",c_indent,array_name, gen(*elem, 0))
+        },
+        at::Length{var} => format!("{}len({})", c_indent, var),
         at::Match{expr, case_list} => format!("{}match {} with\n{}", c_indent, gen(*expr, 0), gen_list_expr(case_list, gen)),
         at::MatchLine{condition, case_expr} => format!("{}: {} -> {}\n", c_indent, gen(*condition, 0), gen(*case_expr, 0)),
-        at::Var{var, is_pointer} => format!("{}{}{}",c_indent, (if is_pointer=="true" {"!"} else {""}), var),
+        at::Var{var, is_pointer: _} => format!("{}{}",c_indent, var),
         at::App{object_name, fun, param_list} => format!("{}{}{}({})",c_indent, (if object_name.ne("") {format!("{}.", object_name)} else {String::from("")}), gen(*fun, 0), gen_list_expr(param_list, gen)),
-        at::Stmts{expr1, expr2} => format!("{};\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
+        at::Stmts{expr1, expr2} => format!("{}\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
         at::Iprt{name} => format!("{}import {}", c_indent, name),
-        at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{};\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!(";\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
+        at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{}\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!("\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
     }
 }
 
