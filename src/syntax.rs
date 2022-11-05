@@ -76,7 +76,7 @@ pub enum AlephTree {
         condition: Box<AlephTree>,
         #[serde(alias="loopExpr")]
         loop_expr: Box<AlephTree>,
-		#[serde(alias="postExpr")]
+        #[serde(alias="postExpr")]
         post_expr: Box<AlephTree>,
     },
     Let{

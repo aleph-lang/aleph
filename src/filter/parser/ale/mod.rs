@@ -125,12 +125,6 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "]")] (),
         ),
     }
-    
-    #[rust_sitter::language]
-    #[derive(Debug)]
-    pub enum Ident {
-        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
-    }
 
     #[rust_sitter::language]
     #[derive(Debug)]
@@ -147,6 +141,12 @@ pub mod grammar {
         ),
     }
 
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum Ident {
+        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
+    }
+    
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum Condition {
