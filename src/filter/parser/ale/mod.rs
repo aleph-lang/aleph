@@ -88,22 +88,10 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "import")] (),
             Box<SimplExpr>,
         ),
-        #[rust_sitter::prec_left(1)]
-        Let(
+        #[rust_sitter::prec_left(10)]
+        IdentConst(
             Box<SimplExpr>,
-            #[rust_sitter::leaf(text = "=")] (),
-            Box<Expression>,
-        ),
-        #[rust_sitter::prec_left(1)]
-        LetP(
-            Box<SimplExpr>,
-            #[rust_sitter::leaf(text = ":=")] (),
-            Box<Expression>,
-        ),
-        #[rust_sitter::prec_left(1)]
-        App(
-            Box<Ident>,
-            Box<Tuple>,
+            Box<IdentSucc>,
         ),
         #[rust_sitter::prec_left(2)]
         Stmts(
@@ -133,18 +121,13 @@ pub mod grammar {
         Number(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i64),
         Float(#[rust_sitter::leaf(pattern = r"\d*\.\d*",transform = |v| v.parse().unwrap())] f64),
         String(#[rust_sitter::leaf(pattern = r#""[^\"]*""#, transform = |v| v.parse().unwrap())] String),
+        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
         #[rust_sitter::prec_left(1)]
         LBexpRB(
             #[rust_sitter::leaf(text = "{")] (),
             Box<Expression>,
             #[rust_sitter::leaf(text = "}")] (),
         ),
-    }
-
-    #[rust_sitter::language]
-    #[derive(Debug)]
-    pub enum Ident {
-        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
     }
     
     #[rust_sitter::language]
@@ -196,6 +179,23 @@ pub mod grammar {
             Box<Expression>,
         ),
     }
+    
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum IdentSucc {
+        Let(
+            #[rust_sitter::leaf(text = "=")] (),
+            Box<Expression>,
+        ),
+        LetP(
+            #[rust_sitter::leaf(text = ":=")] (),
+            Box<Expression>,
+        ),
+        #[rust_sitter::prec_left(10)]
+        App(
+            Box<Tuple>,
+        ),
+    }
 
     #[rust_sitter::extra]
         #[derive(Debug)]
@@ -205,13 +205,6 @@ pub mod grammar {
     }
 }
 
-fn translate_ident_string(tree: grammar::Ident) -> String {
-    match tree {
-        grammar::Ident::Ident(s) => s,
-    }
-}
-
-
 fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
     match tree {
         grammar::SimplExpr::Bool(b) => at::Bool{value: b.to_string()},
@@ -219,6 +212,7 @@ fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
         grammar::SimplExpr::Number(i) => at::Int{value: i.to_string()},
         grammar::SimplExpr::Float(f) => at::Float{value: f.to_string()},
         grammar::SimplExpr::String(s) => at::String{value: s},
+        grammar::SimplExpr::Ident(s) => at::String{value: s},
     }
 }
 
@@ -229,6 +223,7 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
         grammar::SimplExpr::Number(i) => i.to_string(),
         grammar::SimplExpr::Float(f) => f.to_string(),
         grammar::SimplExpr::String(s) => s,
+        grammar::SimplExpr::Ident(s) => s,
     }
 }
 
@@ -285,11 +280,11 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: Box::new(translate_cond(*cond)), loop_expr: 
 Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})}, 
         grammar::Expression::Import(_, name) => at::Iprt{name: translate_se_string(*name)}, 
-        grammar::Expression::Let(var, _, value) => at::Let{var: translate_se_string(*var), is_pointer: "false".to_string(), value: Box::new(translate(*value
-)), expr: Box::new(at::Unit{})}, 
-        grammar::Expression::LetP(var, _, value) => at::Let{var: translate_se_string(*var), is_pointer: "true".to_string(), value: Box::new(translate(*value
-)), expr: Box::new(at::Unit{})}, 
-        grammar::Expression::App(fun, param_list) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_ident_string(*fun)}), param_list: translate_tuple(*param_list)}, 
+        grammar::Expression::IdentConst(ident, succ) => match *succ {
+            grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
+            grammar::IdentSucc::LetP(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "true".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
+            grammar::IdentSucc::App(param_list) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_se_string(*ident)}), param_list: translate_tuple(*param_list)},
+        } 
         grammar::Expression::Tuple(list) => at::Tuple{elems: translate_tuple(*list)}, 
         grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 
         grammar::Expression::Stmts(e1, e2) => match (*e1, *e2) {
