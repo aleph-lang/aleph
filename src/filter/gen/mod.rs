@@ -20,7 +20,7 @@ mod rust;
 fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
         #[cfg(feature="ale_gen")]
-        "ale" => Some(Box::new(ale::AleGen{})),
+        "aleph" | "ale" => Some(Box::new(ale::AleGen{})),
         #[cfg(feature="bash_gen")]
         "bash" => Some(Box::new(bash::BashGen{})),
         #[cfg(feature="java_gen")]
@@ -28,7 +28,7 @@ fn to_gen(s:String) -> Option<Box<dyn Gen>> {
         #[cfg(feature="json_gen")]
         "json" => Some(Box::new(json::JsonGen{})),
         #[cfg(feature="ocaml_gen")]
-        "ocaml" => Some(Box::new(ocaml::OcamlGen{})),
+        "ocaml" | "ml" => Some(Box::new(ocaml::OcamlGen{})),
         #[cfg(feature="python_gen")]
         "python" | "py" => Some(Box::new(python::PythonGen{})),
         #[cfg(feature="rust_gen")]
