@@ -30,12 +30,19 @@ fn gen(ast: at, indent: i64) -> String {
              at::Unit => format!("{}if({}):\n{}", c_indent, gen(*condition, 0), gen(*then, indent+1)),
              _ => format!("{}if({}):\n{}\nelse:\n{}", c_indent, gen(*condition, 0), gen(*then, indent+1), gen(*els, indent+1)),
         },
-        at::While{init_expr, condition, loop_expr, post_expr} => {
-            format!("{}\n{}({})?*{{\n{}\n{}\n{}}}", gen(*init_expr, indent), c_indent, gen(*condition, 0), gen(*loop_expr, indent+1), gen(*post_expr, indent+1), c_indent)
+        at::While{init_expr, condition, loop_expr, post_expr} => match *post_expr{
+            at::Unit => format!("{init}\n{id}while({cond}):\n{loop_ex}\n{post}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1),post=gen(*post_expr,indent)),
+            _ => format!("{init}\n{id}while({cond}):\n{loop_ex}",init=gen(*init_expr,indent),id=c_indent,cond=gen(*condition, 0),loop_ex=gen(*loop_expr, indent+1)),
         },
-        at::Let{var, is_pointer, value, expr} => match *expr {
-             at::Unit{} => format!("{}{}{} = {};", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0)),
-             _ => format!("{}{}{} = {};\n{}", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
+        at::Let{var, is_pointer: _, value, expr} => match *expr {
+            at::Unit => match *value{
+                at::Remove{array_name, elem, is_value, ret} => format!("{}{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0)),
+                _ => format!("{}{} = {}", c_indent, var, gen(*value, 0)),
+            },
+            _ => match *value{
+                at::Remove{array_name, elem, is_value, ret} => format!("{}{};\n{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0), gen(*expr, indent)),
+                _ => format!("{}{} = {}\n{}", c_indent, var, gen(*value, 0), gen(*expr, indent)),
+            }
         },
         at::LetRec{name, args, body} => format!("{}fun {}({}) = {{\n{}\n{}}}", c_indent, name, gen_list_expr(args, gen), gen(*body, indent+1), c_indent),
         at::Get{array_name, elem} => format!("{}{}[{}]", c_indent, array_name, gen(*elem, 0)),
