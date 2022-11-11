@@ -1,6 +1,7 @@
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 use serde_json::json;
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 mod filter;
 mod syntax;
@@ -31,7 +32,15 @@ async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
 
     let res = json!({"response" : output});
 
-    HttpResponse::Ok().json(res) // <- send response
+    HttpResponse::Ok().json(res)
+}
+
+async fn infos() -> HttpResponse {
+    let contents = fs::read_to_string("conf/default.conf")
+        .expect("Should have been able to read the file");
+    let res = json!({"response" : contents});
+
+    HttpResponse::Ok().json(res)
 }
 
 #[actix_web::main]
@@ -43,7 +52,8 @@ async fn main() -> std::io::Result<()> {
             // enable logger
             .wrap(middleware::Logger::default())
             .app_data(web::JsonConfig::default())
-            .service(web::resource("/").route(web::post().to(index)))
+            .route("/", web::post().to(index))
+            .route("/infos", web::get().to(infos))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
