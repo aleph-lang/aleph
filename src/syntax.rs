@@ -151,5 +151,13 @@ pub enum AlephTree {
         #[serde(alias="attributList")]
         attribute_list: Vec<String>,
         body: Box<AlephTree>
-   }
+   },
+   #[serde(alias="Comment")]
+   Comment{
+       value: String 
+   },
+   #[serde(alias="CommentMulti")]
+   CommentMulti{
+       value: String 
+   },
 }

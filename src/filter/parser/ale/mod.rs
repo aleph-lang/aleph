@@ -132,6 +132,8 @@ pub mod grammar {
             Box<Expression>,
             #[rust_sitter::leaf(text = "}")] (),
         ),
+        Comment(#[rust_sitter::leaf(pattern = r#"//([^\n]*)\n"#, transform = |v| v.parse().unwrap())] String),
+        CommentMulti(#[rust_sitter::leaf(pattern = r#"/\*([^\*/]*)\*/"#, transform = |v| v.parse().unwrap())] String),
     }
     
     #[rust_sitter::language]
@@ -227,6 +229,8 @@ fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
         grammar::SimplExpr::Float(f) => at::Float{value: f.to_string()},
         grammar::SimplExpr::String(s) => at::String{value: s},
         grammar::SimplExpr::Ident(s) => at::String{value: s},
+        grammar::SimplExpr::Comment(s) => at::Comment{value: s}, 
+        grammar::SimplExpr::CommentMulti(s) => at::CommentMulti{value: s}, 
     }
 }
 
@@ -238,6 +242,8 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
         grammar::SimplExpr::Float(f) => f.to_string(),
         grammar::SimplExpr::String(s) => s,
         grammar::SimplExpr::Ident(s) => s,
+        grammar::SimplExpr::Comment(_) => "".to_string(), 
+        grammar::SimplExpr::CommentMulti(_) => "".to_string(), 
     }
 }
 

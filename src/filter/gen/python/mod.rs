@@ -65,6 +65,8 @@ fn gen(ast: at, indent: i64) -> String {
         at::Stmts{expr1, expr2} => format!("{}\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
         at::Iprt{name} => format!("{}import {}", c_indent, name),
         at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{}\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!("\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
+/nix/store/v48s6iddb518j9lc1pk3rcn3x8c2ff0j-bash-interactive-5.1-p16/bin/bash: ligne 1: q : commande introuvable
+        at::CommentMulti{value} => format!("{}{}", c_indent, value),
     }
 }
 
