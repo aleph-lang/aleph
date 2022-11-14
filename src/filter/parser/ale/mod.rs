@@ -23,11 +23,15 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "&")] (),
             Box<Expression>,
         ),
-        #[rust_sitter::prec_left(1)]
+        #[rust_sitter::prec_left(2)]
         Or(
             Box<Expression>,
+            Box<OrRight>,
+        ),
+        #[rust_sitter::prec_left(1)]
+        Length(
+            Box<OrRight>,
             #[rust_sitter::leaf(text = "|")] (),
-            Box<Expression>,
         ),
         #[rust_sitter::prec_left(1)]
         EQ(
@@ -76,7 +80,7 @@ pub mod grammar {
             #[rust_sitter::leaf(text = ":")] (),
             Box<Expression>,
         ),
-        #[rust_sitter::prec_left(1)]
+        #[rust_sitter::prec_left(2)]
         While(
             Box<Expression>,
             Box<Condition>,
@@ -130,6 +134,16 @@ pub mod grammar {
         ),
     }
     
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum OrRight {
+        #[rust_sitter::prec_left(11)]
+        OrRight(
+            #[rust_sitter::leaf(text = "|")] (),
+            Box<Expression>,
+        ),
+    }
+   
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum Condition {
@@ -198,7 +212,7 @@ pub mod grammar {
     }
 
     #[rust_sitter::extra]
-        #[derive(Debug)]
+    #[derive(Debug)]
     struct Whitespace {
         #[rust_sitter::leaf(pattern = r"\s")]
         _whitespace: (),
@@ -257,6 +271,12 @@ fn translate_tuple(list: grammar::Tuple) -> Vec<Box<at>> {
     }
 }
 
+fn get_expression_orr(tree: grammar::OrRight) -> grammar::Expression {
+    match tree {
+        grammar::OrRight::OrRight(_, e) => *e,
+    }
+}
+
 fn translate(tree : grammar::Expression) -> at {
     match tree {
         grammar::Expression::Unit(_) => at::Unit{},
@@ -264,7 +284,7 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::U(u) => translate_unary(*u),
         grammar::Expression::Not(_, e) => at::Not{bool_expr: Box::new(translate(*e))},
         grammar::Expression::And(e1,_, e2) => at::And{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
-        grammar::Expression::Or(e1,_, e2) => at::Or{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
+        grammar::Expression::Or(e1, orr) => at::Or{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(get_expression_orr(*orr)))},
         grammar::Expression::EQ(e1,_, e2) => at::Eq{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
         grammar::Expression::LE(e1,_, e2) => at::LE{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
         grammar::Expression::Add(e1,_, e2) => at::Add{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
@@ -292,6 +312,10 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
              (grammar::Expression::Unit(_), e21) => translate(e21),
              (e11, grammar::Expression::Unit(_)) => translate(e11),
              (e11, e21) => at::Stmts{expr1: Box::new(translate(e11)), expr2: Box::new(translate(e21))}, 
+        },
+        grammar::Expression::Length(orr, _) => match get_expression_orr(*orr) {
+            grammar::Expression::SE(se) => at::Length{var: translate_se_string(*se)},
+            _ => { println!("Error parsing Length!"); at::Unit{}},
         },
     }
 }
