@@ -33,10 +33,10 @@ pub mod grammar {
             Box<OrRight>,
             #[rust_sitter::leaf(text = "|")] (),
         ),
-        #[rust_sitter::prec_left(1)]
+        #[rust_sitter::prec_left(4)]
         EQ(
             Box<Expression>,
-            #[rust_sitter::leaf(text = "=")] (),
+            #[rust_sitter::leaf(text = "==")] (),
             Box<Expression>,
         ),
         #[rust_sitter::prec_left(1)]
@@ -92,7 +92,7 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "import")] (),
             Box<SimplExpr>,
         ),
-        #[rust_sitter::prec_left(10)]
+        #[rust_sitter::prec_left(3)]
         IdentConst(
             Box<SimplExpr>,
             Box<IdentSucc>,
@@ -135,7 +135,7 @@ pub mod grammar {
         Comment(#[rust_sitter::leaf(pattern = r#"//([^\n]*)\n"#, transform = |v| v.parse().unwrap())] String),
         CommentMulti(#[rust_sitter::leaf(pattern = r#"/\*([^\*/]*)\*/"#, transform = |v| v.parse().unwrap())] String),
     }
-    
+ 
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum OrRight {
@@ -211,6 +211,45 @@ pub mod grammar {
         App(
             Box<Tuple>,
         ),
+        #[rust_sitter::prec_left(10)]
+        Get(
+            Box<IdentSuccLeft>,
+            #[rust_sitter::leaf(text = "]")] (),
+        ),
+        #[rust_sitter::prec_left(10)]
+        Put(
+            Box<IdentSuccLeft>,
+            #[rust_sitter::leaf(pattern = r"]\s*=")] (),
+            Box<PutRight>,
+        ),
+        #[rust_sitter::prec_left(10)]
+        PutInsert(
+            Box<IdentSuccLeft>,
+            #[rust_sitter::leaf(pattern = r"\+]\s*=")] (),
+            Box<Expression>,
+        ),
+    }
+    
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum IdentSuccLeft {
+        Get(
+            #[rust_sitter::leaf(text = "[")] (),
+            Box<Expression>,
+        ),
+    }
+    
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum PutRight {
+        Put(
+            Box<Expression>,
+        ),
+        #[rust_sitter::prec_left(10)]
+        EQ(
+            #[rust_sitter::leaf(text = "=")] (),
+            Box<Expression>,
+        ),
     }
 
     #[rust_sitter::extra]
@@ -283,6 +322,12 @@ fn get_expression_orr(tree: grammar::OrRight) -> grammar::Expression {
     }
 }
 
+fn translate_ident_succ_left(tree: grammar::IdentSuccLeft) -> grammar::Expression {
+    match tree {
+        grammar::IdentSuccLeft::Get(_, e) => *e,
+    }
+}
+
 fn translate(tree : grammar::Expression) -> at {
     match tree {
         grammar::Expression::Unit(_) => at::Unit{},
@@ -291,9 +336,9 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::Not(_, e) => at::Not{bool_expr: Box::new(translate(*e))},
         grammar::Expression::And(e1,_, e2) => at::And{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
         grammar::Expression::Or(e1, orr) => at::Or{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(get_expression_orr(*orr)))},
-        grammar::Expression::EQ(e1,_, e2) => at::Eq{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
+        grammar::Expression::EQ(e1, _, e2) => at::Eq{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
         grammar::Expression::LE(e1,_, e2) => at::LE{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
-        grammar::Expression::Add(e1,_, e2) => at::Add{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
+        grammar::Expression::Add(e1, _, e2) => at::Add{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Sub(e1,u2) => match *u2 {
             grammar::Unary::Neg(_, e2) => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         }
@@ -310,6 +355,12 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
             grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
             grammar::IdentSucc::LetP(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "true".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
             grammar::IdentSucc::App(param_list) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_se_string(*ident)}), param_list: translate_tuple(*param_list)},
+            grammar::IdentSucc::Get(isl, _) => at::Get{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl)))},
+            grammar::IdentSucc::Put(isl, _, pr) => match *pr {
+                grammar::PutRight::Put(v) => at::Put{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl))), value: Box::new(translate(*v)), insert: "false".to_string()},
+                grammar::PutRight::EQ(_, v) => at::Eq{expr1 : Box::new(at::Get{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl)))}), expr2: Box::new(translate(*v))},
+            },
+            grammar::IdentSucc::PutInsert(isl, _, v) => at::Put{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl))), value: Box::new(translate(*v)), insert: "true".to_string()},
         } 
         grammar::Expression::Tuple(list) => at::Tuple{elems: translate_tuple(*list)}, 
         grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 
