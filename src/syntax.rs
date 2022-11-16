@@ -109,8 +109,6 @@ pub enum AlephTree {
         elem: Box<AlephTree>,
         #[serde(alias="isValue")]
         is_value: String,
-        #[serde(alias="return")]
-        ret: String
     },
     Length{
         var:String

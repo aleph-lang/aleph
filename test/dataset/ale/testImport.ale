@@ -1,0 +1,3 @@
+import "testFunction.ale";
+
+print(add(3,4,5));

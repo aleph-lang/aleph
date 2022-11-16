@@ -1,0 +1,189 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "LetRec", "name" : "add", "args" : [
+			{
+			"type" : "Tuple",
+			"elems" : [
+				{
+					"type" : "Var",
+					"var" : "x",
+					"isPointer" : "false"
+				},
+				{
+					"type" : "Var",
+					"var" : "y",
+					"isPointer" : "false"
+				}
+			]
+			}
+		], "body" : {			"type" : "Add", "numberExpr1" : {
+				"type" : "Var",
+				"var" : "x",
+				"isPointer" : "false"}, "numberExpr2" : {
+				"type" : "Var",
+				"var" : "y",
+				"isPointer" : "false"}
+}
+
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "LetRec", "name" : "add", "args" : [
+				{
+				"type" : "Tuple",
+				"elems" : [
+					{
+						"type" : "Var",
+						"var" : "x",
+						"isPointer" : "false"
+					},
+					{
+						"type" : "Var",
+						"var" : "y",
+						"isPointer" : "false"
+					},
+					{
+						"type" : "Var",
+						"var" : "z",
+						"isPointer" : "false"
+					}
+				]
+				}
+			], "body" : {				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "add",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Tuple",
+					"elems" : [
+						{
+							"type" : "App",
+							"objectName" : "",
+							"fun" : {
+								"type" : "Var",
+								"var" : "add",
+								"isPointer" : "false"
+							},
+							"paramList" : [
+								{
+								"type" : "Tuple",
+								"elems" : [
+									{
+										"type" : "Var",
+										"var" : "x",
+										"isPointer" : "false"
+									},
+									{
+										"type" : "Var",
+										"var" : "y",
+										"isPointer" : "false"
+									}
+								]
+								}
+							]
+						},
+						{
+							"type" : "Var",
+							"var" : "z",
+							"isPointer" : "false"
+						}
+					]
+					}
+				]}
+
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "add",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Tuple",
+						"elems" : [
+							{
+								"type" : "Int",
+								"value" : "2"
+							},
+							{
+								"type" : "Int",
+								"value" : "3"
+							}
+						]
+						}
+					]
+					}
+				]
+			},
+			"expr2" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "add",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Tuple",
+							"elems" : [
+								{
+									"type" : "Int",
+									"value" : "2"
+								},
+								{
+									"type" : "Int",
+									"value" : "3"
+								},
+								{
+									"type" : "Int",
+									"value" : "4"
+								}
+							]
+							}
+						]
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "Unit"
+				}
+
+			}
+
+		}
+
+	}
+
+}

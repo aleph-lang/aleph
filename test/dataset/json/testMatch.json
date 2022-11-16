@@ -1,0 +1,83 @@
+{
+	"type" : "Let",
+	"var" : "y",
+	"isPointer" : "false",
+	"value" : {
+		"type" : "Match",
+		"expr" : {
+			"type" : "Var",
+			"var" : "x",
+			"isPointer" : "false"
+		},
+		"caseList" : [
+			{
+			"type" : "MatchLine",
+			"condition" : {
+				"type" : "Bool",
+				"value" : "true"
+			},
+			"caseExpr" : {
+				"type" : "Int",
+				"value" : "1"
+			}
+
+			},
+			{
+			"type" : "MatchLine",
+			"condition" : {
+				"type" : "Bool",
+				"value" : "false"
+			},
+			"caseExpr" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "Int",
+					"value" : "0"
+				},
+				"expr2" : {
+					"type" : "Stmts",
+					"expr1" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Var",
+							"var" : "x",
+							"isPointer" : "false"
+							}
+						]
+					},
+					"expr2" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Var",
+							"var" : "y",
+							"isPointer" : "false"
+							}
+						]
+					}
+
+				}
+
+			}
+
+			}
+		]
+	},
+	"expr" : {
+		"type" : "Unit"
+	}
+
+}

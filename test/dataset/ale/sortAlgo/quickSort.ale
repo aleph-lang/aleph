@@ -1,0 +1,35 @@
+fun swap(t, a, b) = {
+    tmp = t[a];
+    t[a] = t[b];
+    t[b] = tmp;
+};
+
+fun splitArray(t, first, last, pt_pivot) = {
+    pivot = pt_pivot[0];
+    swap(t, pivot, last);
+    j = first;
+    (i=first;i<last;i=i+1)?*{
+        (t[i] <= t[last])?{
+            swap(t, i, j);
+            j = j + 1;
+        };
+    };
+    swap(t, last, j);
+    pt_pivot[0] = j;
+};
+
+fun quickSort(t, first, last) = {
+    (first<last)?{
+        pivot = first; /* pivot choice*/
+        pt_pivot = [1,2];   /* workaround with one element array */
+        pt_pivot[0] = pivot;  /* workaround with return value of function */
+        splitArray(t, first, last, pt_pivot);
+        quickSort(t, first, pt_pivot[0]+(-1));
+        quickSort(t, pt_pivot[0]+1, last);
+    };
+};
+
+t = [4,6,3,7,8,1,2,9,0,5];
+print(t);
+quickSort(t, 0, |t|+(-1));  /* workaround -1 of a variable */
+print(t);

@@ -1,0 +1,16 @@
+fun bubbleSort (t) = {
+    (i=|t|-1 ; i>0 ; i=i+(-1))?*{
+        (j=0 ; j<i; j=j+1)?*{
+            (t[j+1] < t[j])?{
+                tmp = t[j+1];
+                t[j+1] = t[j];
+                t[j] = tmp;
+            }
+        }
+    }
+};
+
+t = [4,6,3,7,8,1,2,9,0,5];
+print(t);
+bubbleSort(t);
+print(t);

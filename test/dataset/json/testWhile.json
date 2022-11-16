@@ -1,0 +1,66 @@
+{
+	"type" : "Let",
+	"var" : "x",
+	"isPointer" : "false",
+	"value" : {
+		"type" : "Int",
+		"value" : "0"
+	},
+	"expr" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "While", "initExpr" : {
+				"type" : "Unit"}, "condition" : {			"type" : "Not",
+			"boolExpr" : {
+				"type" : "LE", "expr1" : {
+					"type" : "Int",
+					"value" : "10"}, "expr2" : {					"type" : "Var",
+					"var" : "x",
+					"isPointer" : "false"}
+
+			}
+}, "loopExpr" : {				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Var",
+						"var" : "x",
+						"isPointer" : "false"
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "Let",
+					"var" : "x",
+					"isPointer" : "false",
+					"value" : {
+						"type" : "Add", "numberExpr1" : {
+							"type" : "Var",
+							"var" : "x",
+							"isPointer" : "false"}, "numberExpr2" : {
+							"type" : "Int",
+							"value" : "1"}
+
+					},
+					"expr" : {
+						"type" : "Unit"
+					}
+
+				}
+}, "postExpr" : {				"type" : "Unit"}
+
+		},
+		"expr2" : {
+			"type" : "Unit"
+		}
+
+	}
+
+}

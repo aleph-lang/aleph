@@ -1,0 +1,158 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "App",
+		"objectName" : "",
+		"fun" : {
+			"type" : "Var",
+			"var" : "print",
+			"isPointer" : "false"
+		},
+		"paramList" : [
+			{
+			"type" : "Int",
+			"value" : "9"
+			}
+		]
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Add", "numberExpr1" : {
+					"type" : "Int",
+					"value" : "3"}, "numberExpr2" : {
+					"type" : "Int",
+					"value" : "4"}
+
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Mul", "numberExpr1" : {
+						"type" : "Int",
+						"value" : "2"}, "numberExpr2" : {
+						"type" : "Int",
+						"value" : "5"}
+
+					}
+				]
+			},
+			"expr2" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Div", "numberExpr1" : {
+							"type" : "Int",
+							"value" : "6"}, "numberExpr2" : {
+							"type" : "Int",
+							"value" : "8"}
+
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "Stmts",
+					"expr1" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Sub", "numberExpr1" : {
+								"type" : "Int",
+								"value" : "9"}, "numberExpr2" : {
+								"type" : "Int",
+								"value" : "5"}
+
+							}
+						]
+					},
+					"expr2" : {
+						"type" : "Stmts",
+						"expr1" : {
+							"type" : "App",
+							"objectName" : "",
+							"fun" : {
+								"type" : "Var",
+								"var" : "print",
+								"isPointer" : "false"
+							},
+							"paramList" : [
+								{
+								"type" : "Sub", "numberExpr1" : {
+									"type" : "Int",
+									"value" : "3"}, "numberExpr2" : {
+									"type" : "Int",
+									"value" : "8"}
+
+								}
+							]
+						},
+						"expr2" : {
+							"type" : "Stmts",
+							"expr1" : {
+								"type" : "App",
+								"objectName" : "",
+								"fun" : {
+									"type" : "Var",
+									"var" : "print",
+									"isPointer" : "false"
+								},
+								"paramList" : [
+									{
+									"type" : "Neg", "expr" : {
+										"type" : "Int",
+										"value" : "6"}
+
+									}
+								]
+							},
+							"expr2" : {
+								"type" : "Unit"
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}

@@ -1,0 +1,8 @@
+y = match x with 
+: true -> 1
+: false -> 0
+;
+
+print(x);
+print(y)
+

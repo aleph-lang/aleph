@@ -1,0 +1,16 @@
+class player { 
+    tscore; 
+    tname; 
+    fun player(score, name) = {
+        tscore=score; 
+        tname=name
+    }; 
+    
+    fun print() = { 
+        print(tname); 
+        print(tscore) 
+    }
+};
+
+p = player("Alain", "832040"); 
+p.print();

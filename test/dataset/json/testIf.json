@@ -1,0 +1,174 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "If", "condition" : {
+		"type" : "Eq", "expr1" : {
+			"type" : "Int",
+			"value" : "2"}, "expr2" : {			"type" : "Int",
+			"value" : "3"}
+}, "then" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Int",
+				"value" : "1"
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Int",
+				"value" : "2"
+				}
+			]
+		}
+ }, "else" : { 		"type" : "App",
+		"objectName" : "",
+		"fun" : {
+			"type" : "Var",
+			"var" : "print",
+			"isPointer" : "false"
+		},
+		"paramList" : [
+			{
+			"type" : "Int",
+			"value" : "0"
+			}
+		] }
+
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "If", "condition" : {
+			"type" : "Eq", "expr1" : {
+				"type" : "Int",
+				"value" : "2"}, "expr2" : {				"type" : "Int",
+				"value" : "2"}
+}, "then" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Int",
+				"value" : "1"
+				}
+			] }, "else" : { 			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Int",
+				"value" : "0"
+				}
+			] }
+
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "If", "condition" : {
+				"type" : "Or",
+				"boolExpr1" : {
+					"type" : "Bool",
+					"value" : "true"},
+				"boolExpr2" : {
+					"type" : "Bool",
+					"value" : "false"
+				}
+}, "then" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Int",
+					"value" : "1"
+					}
+				] }, "else" : { 				"type" : "Unit" }
+
+			},
+			"expr2" : {
+				"type" : "If", "condition" : {
+				"type" : "Or",
+				"boolExpr1" : {
+					"type" : "Bool",
+					"value" : "true"},
+				"boolExpr2" : {
+					"type" : "Bool",
+					"value" : "false"
+				}
+}, "then" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Int",
+						"value" : "14"
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "If", "condition" : {
+					"type" : "Bool",
+					"value" : "true"}, "then" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Int",
+						"value" : "15"
+						}
+					] }, "else" : { 					"type" : "Unit" }
+
+				}
+ }, "else" : { 				"type" : "Unit" }
+
+			}
+
+		}
+
+	}
+
+}

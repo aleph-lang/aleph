@@ -1,0 +1,130 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "App",
+		"objectName" : "",
+		"fun" : {
+			"type" : "Var",
+			"var" : "print",
+			"isPointer" : "false"
+		},
+		"paramList" : [
+			{
+			"type" : "String",
+			"value" : "Hello"
+			}
+		]
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Add", "numberExpr1" : {
+					"type" : "String",
+					"value" : "Hello"}, "numberExpr2" : {
+					"type" : "String",
+					"value" : " world"}
+
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Add", "numberExpr1" : {
+						"type" : "String",
+						"value" : "Sub Total : "}, "numberExpr2" : {
+						"type" : "Int",
+						"value" : "3"}
+
+					}
+				]
+			},
+			"expr2" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Add", "numberExpr1" : {
+							"type" : "String",
+							"value" : "Total : "}, "numberExpr2" : {
+							"type" : "Mul", "numberExpr1" : {
+								"type" : "Int",
+								"value" : "3"}, "numberExpr2" : {
+								"type" : "Int",
+								"value" : "9"}
+}
+
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "Stmts",
+					"expr1" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Add", "numberExpr1" : {
+								"type" : "String",
+								"value" : "Total = "}, "numberExpr2" : {
+								"type" : "Add", "numberExpr1" : {
+									"type" : "Add", "numberExpr1" : {
+										"type" : "Mul", "numberExpr1" : {
+											"type" : "Int",
+											"value" : "3"}, "numberExpr2" : {
+											"type" : "Int",
+											"value" : "9"}
+}, "numberExpr2" : {
+										"type" : "Int",
+										"value" : "9"}
+}, "numberExpr2" : {
+									"type" : "Int",
+									"value" : "4"}
+}
+
+							}
+						]
+					},
+					"expr2" : {
+						"type" : "Unit"
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}

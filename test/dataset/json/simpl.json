@@ -1,0 +1,41 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "App",
+		"objectName" : "",
+		"fun" : {
+			"type" : "Var",
+			"var" : "print",
+			"isPointer" : "false"
+		},
+		"paramList" : [
+			{
+			"type" : "Int",
+			"value" : "5"
+			}
+		]
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Int",
+				"value" : "5"
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Unit"
+		}
+
+	}
+
+}

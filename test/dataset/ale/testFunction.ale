@@ -1,0 +1,10 @@
+fun add (x,y) = {
+    x + y;
+};
+
+fun add (x,y,z) = {
+    add(add(x,y),z);
+};
+
+print(add(2,3));
+print(add(2,3,4));

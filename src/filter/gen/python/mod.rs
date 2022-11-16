@@ -37,11 +37,11 @@ fn gen(ast: at, indent: i64) -> String {
         },
         at::Let{var, is_pointer: _, value, expr} => match *expr {
             at::Unit => match *value{
-                at::Remove{array_name, elem, is_value, ret} => format!("{}{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0)),
+                at::Remove{array_name, elem, is_value} => format!("{}{}", c_indent, gen(at::Remove{array_name, elem, is_value}, 0)),
                 _ => format!("{}{} = {}", c_indent, var, gen(*value, 0)),
             },
             _ => match *value{
-                at::Remove{array_name, elem, is_value, ret} => format!("{}{}\n{}", c_indent, gen(at::Remove{array_name, elem, is_value, ret}, 0), gen(*expr, indent)),
+                at::Remove{array_name, elem, is_value} => format!("{}{}\n{}", c_indent, gen(at::Remove{array_name, elem, is_value}, 0), gen(*expr, indent)),
                 _ => format!("{}{} = {}\n{}", c_indent, var, gen(*value, 0), gen(*expr, indent)),
             }
         },
@@ -52,7 +52,7 @@ fn gen(ast: at, indent: i64) -> String {
         } else {
             format!("{}{}[{}] = {}", c_indent, array_name, gen(*elem, 0), gen(*value, 0))
         },
-        at::Remove{array_name, elem, is_value, ret} => if is_value.eq("true") && ret.eq("false") {
+        at::Remove{array_name, elem, is_value} => if is_value.eq("true") {
             format!("{}{}.remove({})", c_indent, array_name, gen(*elem, 0))
         } else {
             format!("{}{}.pop({})",c_indent,array_name, gen(*elem, 0))
@@ -65,7 +65,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Stmts{expr1, expr2} => format!("{}\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
         at::Iprt{name} => format!("{}import {}", c_indent, name),
         at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{}\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!("\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
-/nix/store/v48s6iddb518j9lc1pk3rcn3x8c2ff0j-bash-interactive-5.1-p16/bin/bash: ligne 1: q : commande introuvable
+        at::Comment{value} => format!("{}{}", c_indent, value),
         at::CommentMulti{value} => format!("{}{}", c_indent, value),
     }
 }

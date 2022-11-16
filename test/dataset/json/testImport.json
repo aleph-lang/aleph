@@ -1,0 +1,54 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "Import",
+		"name" : "testFunction.ale"
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "add",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Tuple",
+					"elems" : [
+						{
+							"type" : "Int",
+							"value" : "3"
+						},
+						{
+							"type" : "Int",
+							"value" : "4"
+						},
+						{
+							"type" : "Int",
+							"value" : "5"
+						}
+					]
+					}
+				]
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Unit"
+		}
+
+	}
+
+}

@@ -228,6 +228,18 @@ pub mod grammar {
             #[rust_sitter::leaf(pattern = r"\+]\s*=")] (),
             Box<Expression>,
         ),
+        #[rust_sitter::prec_left(10)]
+        RemovePos(
+            #[rust_sitter::leaf(text = "[/")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "]")] (),
+        ),
+        #[rust_sitter::prec_left(10)]
+        RemoveVal(
+            #[rust_sitter::leaf(text = "[-")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "]")] (),
+        ),
     }
     
     #[rust_sitter::language]
@@ -361,6 +373,8 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
                 grammar::PutRight::EQ(_, v) => at::Eq{expr1 : Box::new(at::Get{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl)))}), expr2: Box::new(translate(*v))},
             },
             grammar::IdentSucc::PutInsert(isl, _, v) => at::Put{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl))), value: Box::new(translate(*v)), insert: "true".to_string()},
+            grammar::IdentSucc::RemovePos(_, e, _) => at::Remove{array_name: translate_se_string(*ident), elem: Box::new(translate(*e)), is_value: "false".to_string()},
+            grammar::IdentSucc::RemoveVal(_, e, _) => at::Remove{array_name: translate_se_string(*ident), elem: Box::new(translate(*e)), is_value: "true".to_string()},
         } 
         grammar::Expression::Tuple(list) => at::Tuple{elems: translate_tuple(*list)}, 
         grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 

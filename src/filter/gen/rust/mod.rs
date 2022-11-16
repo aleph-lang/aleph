@@ -40,7 +40,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::LetRec{name, args, body} => format!("{}fn {}({}) {{\n{}\n{}}}", c_indent, name, gen_list_expr_sep(args, gen, ","), gen(*body, indent+1), c_indent),
         at::Get{array_name, elem} => format!("{}{}[{}]", c_indent, array_name, gen(*elem, 0)),
         at::Put{array_name, elem, value, insert} => format!("{}{}[{}{}] = {}", c_indent, array_name, (if insert=="true" {"+"} else {""}), gen(*elem, 0), gen(*value, 0)),
-        at::Remove{array_name, elem, is_value, ret: _} => format!("{}{} {} {}", c_indent, array_name, (if is_value=="true" {"-"} else {"/"}), gen(*elem, 0)),
+        at::Remove{array_name, elem, is_value} => format!("{}{} {} {}", c_indent, array_name, (if is_value=="true" {"-"} else {"/"}), gen(*elem, 0)),
         at::Length{var} => format!("{} {}.len()", c_indent, var),
         at::Match{expr, case_list} => format!("{}match {} {{\n{}\n{}}}", c_indent, gen(*expr, 0), gen_list_expr_sep(case_list, gen, ","), c_indent),
         at::MatchLine{condition, case_expr} => format!("{}: {} => {},\n", c_indent, gen(*condition, 0), gen(*case_expr, 0)),

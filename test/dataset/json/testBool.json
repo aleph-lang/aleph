@@ -1,0 +1,473 @@
+{
+	"type" : "Stmts",
+	"expr1" : {
+		"type" : "App",
+		"objectName" : "",
+		"fun" : {
+			"type" : "Var",
+			"var" : "print",
+			"isPointer" : "false"
+		},
+		"paramList" : [
+			{
+			"type" : "Bool",
+			"value" : "true"
+			}
+		]
+	},
+	"expr2" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Bool",
+				"value" : "false"
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Or",
+					"boolExpr1" : {
+						"type" : "Bool",
+						"value" : "true"},
+					"boolExpr2" : {
+						"type" : "Bool",
+						"value" : "false"
+					}
+
+					}
+				]
+			},
+			"expr2" : {
+				"type" : "Stmts",
+				"expr1" : {
+					"type" : "App",
+					"objectName" : "",
+					"fun" : {
+						"type" : "Var",
+						"var" : "print",
+						"isPointer" : "false"
+					},
+					"paramList" : [
+						{
+						"type" : "Or",
+						"boolExpr1" : {
+							"type" : "Bool",
+							"value" : "false"},
+						"boolExpr2" : {
+							"type" : "Bool",
+							"value" : "false"
+						}
+
+						}
+					]
+				},
+				"expr2" : {
+					"type" : "Stmts",
+					"expr1" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Or",
+							"boolExpr1" : {
+								"type" : "Bool",
+								"value" : "true"},
+							"boolExpr2" : {
+								"type" : "Bool",
+								"value" : "true"
+							}
+
+							}
+						]
+					},
+					"expr2" : {
+						"type" : "Stmts",
+						"expr1" : {
+							"type" : "App",
+							"objectName" : "",
+							"fun" : {
+								"type" : "Var",
+								"var" : "print",
+								"isPointer" : "false"
+							},
+							"paramList" : [
+								{
+								"type" : "Or",
+								"boolExpr1" : {
+									"type" : "Bool",
+									"value" : "false"},
+								"boolExpr2" : {
+									"type" : "Bool",
+									"value" : "true"
+								}
+
+								}
+							]
+						},
+						"expr2" : {
+							"type" : "Stmts",
+							"expr1" : {
+								"type" : "App",
+								"objectName" : "",
+								"fun" : {
+									"type" : "Var",
+									"var" : "print",
+									"isPointer" : "false"
+								},
+								"paramList" : [
+									{
+									"type" : "And",
+									"boolExpr1" : {
+										"type" : "Bool",
+										"value" : "true"
+									},
+									"boolExpr2" : {
+										"type" : "Bool",
+										"value" : "false"
+									}
+
+									}
+								]
+							},
+							"expr2" : {
+								"type" : "Stmts",
+								"expr1" : {
+									"type" : "App",
+									"objectName" : "",
+									"fun" : {
+										"type" : "Var",
+										"var" : "print",
+										"isPointer" : "false"
+									},
+									"paramList" : [
+										{
+										"type" : "And",
+										"boolExpr1" : {
+											"type" : "Bool",
+											"value" : "false"
+										},
+										"boolExpr2" : {
+											"type" : "Bool",
+											"value" : "false"
+										}
+
+										}
+									]
+								},
+								"expr2" : {
+									"type" : "Stmts",
+									"expr1" : {
+										"type" : "App",
+										"objectName" : "",
+										"fun" : {
+											"type" : "Var",
+											"var" : "print",
+											"isPointer" : "false"
+										},
+										"paramList" : [
+											{
+											"type" : "And",
+											"boolExpr1" : {
+												"type" : "Bool",
+												"value" : "true"
+											},
+											"boolExpr2" : {
+												"type" : "Bool",
+												"value" : "true"
+											}
+
+											}
+										]
+									},
+									"expr2" : {
+										"type" : "Stmts",
+										"expr1" : {
+											"type" : "App",
+											"objectName" : "",
+											"fun" : {
+												"type" : "Var",
+												"var" : "print",
+												"isPointer" : "false"
+											},
+											"paramList" : [
+												{
+												"type" : "And",
+												"boolExpr1" : {
+													"type" : "Bool",
+													"value" : "false"
+												},
+												"boolExpr2" : {
+													"type" : "Bool",
+													"value" : "true"
+												}
+
+												}
+											]
+										},
+										"expr2" : {
+											"type" : "Stmts",
+											"expr1" : {
+												"type" : "App",
+												"objectName" : "",
+												"fun" : {
+													"type" : "Var",
+													"var" : "print",
+													"isPointer" : "false"
+												},
+												"paramList" : [
+													{
+													"type" : "And",
+													"boolExpr1" : {
+														"type" : "Bool",
+														"value" : "true"
+													},
+													"boolExpr2" : {
+														"type" : "Or",
+														"boolExpr1" : {
+															"type" : "Bool",
+															"value" : "false"},
+														"boolExpr2" : {
+															"type" : "Bool",
+															"value" : "false"
+														}
+
+													}
+
+													}
+												]
+											},
+											"expr2" : {
+												"type" : "Stmts",
+												"expr1" : {
+													"type" : "App",
+													"objectName" : "",
+													"fun" : {
+														"type" : "Var",
+														"var" : "print",
+														"isPointer" : "false"
+													},
+													"paramList" : [
+														{
+														"type" : "And",
+														"boolExpr1" : {
+															"type" : "Bool",
+															"value" : "true"
+														},
+														"boolExpr2" : {
+															"type" : "Or",
+															"boolExpr1" : {
+																"type" : "Bool",
+																"value" : "false"},
+															"boolExpr2" : {
+																"type" : "Bool",
+																"value" : "true"
+															}
+
+														}
+
+														}
+													]
+												},
+												"expr2" : {
+													"type" : "Stmts",
+													"expr1" : {
+														"type" : "App",
+														"objectName" : "",
+														"fun" : {
+															"type" : "Var",
+															"var" : "print",
+															"isPointer" : "false"
+														},
+														"paramList" : [
+															{
+															"type" : "And",
+															"boolExpr1" : {
+																"type" : "Bool",
+																"value" : "true"
+															},
+															"boolExpr2" : {
+																"type" : "Or",
+																"boolExpr1" : {
+																	"type" : "Bool",
+																	"value" : "false"},
+																"boolExpr2" : {
+																	"type" : "Bool",
+																	"value" : "true"
+																}
+
+															}
+
+															}
+														]
+													},
+													"expr2" : {
+														"type" : "Stmts",
+														"expr1" : {
+															"type" : "App",
+															"objectName" : "",
+															"fun" : {
+																"type" : "Var",
+																"var" : "print",
+																"isPointer" : "false"
+															},
+															"paramList" : [
+																{
+																"type" : "And",
+																"boolExpr1" : {
+																	"type" : "Bool",
+																	"value" : "true"
+																},
+																"boolExpr2" : {
+																	"type" : "Or",
+																	"boolExpr1" : {
+																		"type" : "Bool",
+																		"value" : "false"},
+																	"boolExpr2" : {
+																		"type" : "Bool",
+																		"value" : "false"
+																	}
+
+																}
+
+																}
+															]
+														},
+														"expr2" : {
+															"type" : "Stmts",
+															"expr1" : {
+																"type" : "App",
+																"objectName" : "",
+																"fun" : {
+																	"type" : "Var",
+																	"var" : "print",
+																	"isPointer" : "false"
+																},
+																"paramList" : [
+																	{
+																	"type" : "Not",
+																	"boolExpr" : {
+																		"type" : "Bool",
+																		"value" : "true"
+																	}
+
+																	}
+																]
+															},
+															"expr2" : {
+																"type" : "Stmts",
+																"expr1" : {
+																	"type" : "App",
+																	"objectName" : "",
+																	"fun" : {
+																		"type" : "Var",
+																		"var" : "print",
+																		"isPointer" : "false"
+																	},
+																	"paramList" : [
+																		{
+																		"type" : "Not",
+																		"boolExpr" : {
+																			"type" : "Bool",
+																			"value" : "false"
+																		}
+
+																		}
+																	]
+																},
+																"expr2" : {
+																	"type" : "Stmts",
+																	"expr1" : {
+																		"type" : "App",
+																		"objectName" : "",
+																		"fun" : {
+																			"type" : "Var",
+																			"var" : "print",
+																			"isPointer" : "false"
+																		},
+																		"paramList" : [
+																			{
+																			"type" : "And",
+																			"boolExpr1" : {
+																				"type" : "Bool",
+																				"value" : "true"
+																			},
+																			"boolExpr2" : {
+																				"type" : "Or",
+																				"boolExpr1" : {
+																					"type" : "Bool",
+																					"value" : "false"},
+																				"boolExpr2" : {
+																					"type" : "Not",
+																					"boolExpr" : {
+																						"type" : "Bool",
+																						"value" : "false"
+																					}
+
+																				}
+
+																			}
+
+																			}
+																		]
+																	},
+																	"expr2" : {
+																		"type" : "Unit"
+																	}
+
+																}
+
+															}
+
+														}
+
+													}
+
+												}
+
+											}
+
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}

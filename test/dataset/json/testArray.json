@@ -1,0 +1,337 @@
+{
+	"type" : "Let",
+	"var" : "t",
+	"isPointer" : "false",
+	"value" : {
+		"type" : "Array",
+		"elems" : [
+			{
+				"type" : "Int",
+				"value" : "1"
+			},
+			{
+				"type" : "Int",
+				"value" : "2"
+			},
+			{
+				"type" : "Int",
+				"value" : "3"
+			},
+			{
+				"type" : "Int",
+				"value" : "4"
+			},
+			{
+				"type" : "Int",
+				"value" : "5"
+			}
+		]
+	},
+	"expr" : {
+		"type" : "Stmts",
+		"expr1" : {
+			"type" : "App",
+			"objectName" : "",
+			"fun" : {
+				"type" : "Var",
+				"var" : "print",
+				"isPointer" : "false"
+			},
+			"paramList" : [
+				{
+				"type" : "Var",
+				"var" : "t",
+				"isPointer" : "false"
+				}
+			]
+		},
+		"expr2" : {
+			"type" : "Stmts",
+			"expr1" : {
+				"type" : "App",
+				"objectName" : "",
+				"fun" : {
+					"type" : "Var",
+					"var" : "print",
+					"isPointer" : "false"
+				},
+				"paramList" : [
+					{
+					"type" : "Get",
+					"arrayName" : "t",
+					"elem" : {
+						"type" : "Int",
+						"value" : "3"
+					}
+
+					}
+				]
+			},
+			"expr2" : {
+				"type" : "Let",
+				"var" : "length",
+				"isPointer" : "false",
+				"value" : {
+					"type" : "Length",
+					"var" : "t"
+				},
+				"expr" : {
+					"type" : "Stmts",
+					"expr1" : {
+						"type" : "App",
+						"objectName" : "",
+						"fun" : {
+							"type" : "Var",
+							"var" : "print",
+							"isPointer" : "false"
+						},
+						"paramList" : [
+							{
+							"type" : "Var",
+							"var" : "length",
+							"isPointer" : "false"
+							}
+						]
+					},
+					"expr2" : {
+						"type" : "Stmts",
+						"expr1" : {
+							"type" : "Put",
+							"arrayName" : "t",
+							"elem" : {
+								"type" : "Int",
+								"value" : "3"
+							}, "value" :  {
+								"type" : "Int",
+								"value" : "5"
+							}, "insert" : "false"
+						},
+						"expr2" : {
+							"type" : "Stmts",
+							"expr1" : {
+								"type" : "App",
+								"objectName" : "",
+								"fun" : {
+									"type" : "Var",
+									"var" : "print",
+									"isPointer" : "false"
+								},
+								"paramList" : [
+									{
+									"type" : "Get",
+									"arrayName" : "t",
+									"elem" : {
+										"type" : "Int",
+										"value" : "3"
+									}
+
+									}
+								]
+							},
+							"expr2" : {
+								"type" : "Stmts",
+								"expr1" : {
+									"type" : "App",
+									"objectName" : "",
+									"fun" : {
+										"type" : "Var",
+										"var" : "print",
+										"isPointer" : "false"
+									},
+									"paramList" : [
+										{
+										"type" : "Get",
+										"arrayName" : "t",
+										"elem" : {
+											"type" : "Int",
+											"value" : "4"
+										}
+
+										}
+									]
+								},
+								"expr2" : {
+									"type" : "Stmts",
+									"expr1" : {
+										"type" : "Put",
+										"arrayName" : "t",
+										"elem" : {
+											"type" : "Int",
+											"value" : "3"
+										}, "value" :  {
+											"type" : "Int",
+											"value" : "6"
+										}, "insert" : "true"
+									},
+									"expr2" : {
+										"type" : "Stmts",
+										"expr1" : {
+											"type" : "App",
+											"objectName" : "",
+											"fun" : {
+												"type" : "Var",
+												"var" : "print",
+												"isPointer" : "false"
+											},
+											"paramList" : [
+												{
+												"type" : "Get",
+												"arrayName" : "t",
+												"elem" : {
+													"type" : "Int",
+													"value" : "3"
+												}
+
+												}
+											]
+										},
+										"expr2" : {
+											"type" : "Stmts",
+											"expr1" : {
+												"type" : "App",
+												"objectName" : "",
+												"fun" : {
+													"type" : "Var",
+													"var" : "print",
+													"isPointer" : "false"
+												},
+												"paramList" : [
+													{
+													"type" : "Get",
+													"arrayName" : "t",
+													"elem" : {
+														"type" : "Int",
+														"value" : "4"
+													}
+
+													}
+												]
+											},
+											"expr2" : {
+												"type" : "Stmts",
+												"expr1" : {
+													"type" : "App",
+													"objectName" : "",
+													"fun" : {
+														"type" : "Var",
+														"var" : "print",
+														"isPointer" : "false"
+													},
+													"paramList" : [
+														{
+														"type" : "Get",
+														"arrayName" : "t",
+														"elem" : {
+															"type" : "Int",
+															"value" : "5"
+														}
+
+														}
+													]
+												},
+												"expr2" : {
+													"type" : "Let",
+													"var" : "t2",
+													"isPointer" : "false",
+													"value" : {
+														"type" : "Array",
+														"elems" : [
+															{
+																"type" : "Int",
+																"value" : "6"
+															},
+															{
+																"type" : "Int",
+																"value" : "7"
+															}
+														]
+													},
+													"expr" : {
+														"type" : "Let",
+														"var" : "t3",
+														"isPointer" : "false",
+														"value" : {
+															"type" : "Add", "numberExpr1" : {
+																"type" : "Var",
+																"var" : "t",
+																"isPointer" : "false"}, "numberExpr2" : {
+																"type" : "Var",
+																"var" : "t2",
+																"isPointer" : "false"}
+
+														},
+														"expr" : {
+															"type" : "Stmts",
+															"expr1" : {
+																"type" : "App",
+																"objectName" : "",
+																"fun" : {
+																	"type" : "Var",
+																	"var" : "print",
+																	"isPointer" : "false"
+																},
+																"paramList" : [
+																	{
+																	"type" : "Var",
+																	"var" : "t3",
+																	"isPointer" : "false"
+																	}
+																]
+															},
+															"expr2" : {
+																"type" : "Let",
+																"var" : "t2",
+																"isPointer" : "false",
+																"value" : {
+																	"type" : "Remove", "arrayName" : "t2", "elem" : {
+																	"type" : "Int",
+																	"value" : "1"},
+																	"isValue" : "false"
+																},
+																"expr" : {
+																	"type" : "Let",
+																	"var" : "t2",
+																	"isPointer" : "false",
+																	"value" : {
+																		"type" : "Remove", "arrayName" : "t2", "elem" : {
+																		"type" : "Int",
+																		"value" : "7"},
+																		"isValue" : "true"
+																	},
+																	"expr" : {
+																		"type" : "Unit"
+																	}
+
+																}
+
+															}
+
+														}
+
+													}
+
+												}
+
+											}
+
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
