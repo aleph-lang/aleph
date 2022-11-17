@@ -40,10 +40,15 @@ pub mod grammar {
             Box<Expression>,
         ),
         #[rust_sitter::prec_left(1)]
-        LE(
+        GToE(
             Box<Expression>,
-            #[rust_sitter::leaf(text = "<=")] (),
+            Box<GToERight>,
+        ),
+        #[rust_sitter::prec_left(1)]
+        LToE(
             Box<Expression>,
+            #[rust_sitter::leaf(text = "<")] (),
+            Box<LoGToERight>,
         ),
         #[rust_sitter::prec_left(2)]
         Add(
@@ -97,6 +102,23 @@ pub mod grammar {
             Box<SimplExpr>,
             Box<IdentSucc>,
         ),
+        #[rust_sitter::prec_left(3)]
+        LetRec(
+            #[rust_sitter::leaf(text = "fun")] (),
+            Box<SimplExpr>,
+            Box<IdentSucc>,
+            #[rust_sitter::leaf(pattern = r"=\s*\{")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "}")] (),
+        ),
+        #[rust_sitter::prec_left(3)]
+        Class(
+            #[rust_sitter::leaf(text = "class")] (),
+            Box<SimplExpr>,
+            #[rust_sitter::leaf(text = "{")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "}")] (),
+        ),
         #[rust_sitter::prec_left(2)]
         Stmts(
             Box<Expression>,
@@ -115,6 +137,13 @@ pub mod grammar {
             #[rust_sitter::leaf(text = "[")] (),
             Box<ExprList>,
             #[rust_sitter::leaf(text = "]")] (),
+        ),
+        #[rust_sitter::prec_left(1)]
+        Match(
+            #[rust_sitter::leaf(text = "match")] (),
+            Box<Expression>,
+            #[rust_sitter::leaf(text = "with")] (),
+            Box<MatchList>,
         ),
     }
 
@@ -145,7 +174,30 @@ pub mod grammar {
             Box<Expression>,
         ),
     }
-   
+
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum GToERight {
+        #[rust_sitter::prec_left(1)]
+        GToERight(
+            #[rust_sitter::leaf(text = ">")] (),
+            Box<LoGToERight>,
+        ),
+    }
+
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum LoGToERight {
+        #[rust_sitter::prec_left(1)]
+        LoGERight(
+            #[rust_sitter::leaf(text = "=")] (),
+            Box<Expression>,
+        ),
+        LoGTRight(
+            Box<Expression>,
+        ),
+    }
+    
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum Condition {
@@ -162,6 +214,19 @@ pub mod grammar {
         #[rust_sitter::prec_left(1)]
         Neg(
             #[rust_sitter::leaf(text = "-")] (),
+            Box<NegRight>,
+        ),
+    }
+    
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum NegRight {
+        #[rust_sitter::prec_left(2)]
+        CaseExpr(
+            Box<GToERight>,
+        ),
+        #[rust_sitter::prec_left(1)]
+        Expr(
             Box<Expression>,
         ),
     }
@@ -195,7 +260,33 @@ pub mod grammar {
             Box<Expression>,
         ),
     }
-    
+   
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum MatchList {
+        #[rust_sitter::prec_left(1)]
+        Node(
+            Box<MatchList>,
+            #[rust_sitter::leaf(text = r"\n")] (),
+            Box<MatchLine>,
+        ),
+        #[rust_sitter::prec_left(10)]
+        Leaf(
+            Box<MatchLine>,
+        ),
+    }
+
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub enum MatchLine {
+        #[rust_sitter::prec_left(10)]
+        Line(
+            #[rust_sitter::leaf(text = ":")] (),
+            Box<Expression>,
+            Box<Unary>,
+        ),
+    }
+ 
     #[rust_sitter::language]
     #[derive(Debug)]
     pub enum IdentSucc {
@@ -300,7 +391,19 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
 
 fn translate_unary(tree: grammar::Unary) -> at {
     match tree {
-        grammar::Unary::Neg(_, e) => at::Neg{expr: Box::new(translate(*e))},
+        grammar::Unary::Neg(_, nr) => at::Neg{expr: Box::new(translate_neg_right(*nr))},
+    }
+}
+
+fn translate_neg_right(tree: grammar::NegRight) -> at {
+    match tree {
+        grammar::NegRight::CaseExpr(gtr) => match *gtr {
+            grammar::GToERight::GToERight(_, logr) => match *logr {
+                 grammar::LoGToERight::LoGERight(_, e) => translate(*e),
+                 grammar::LoGToERight::LoGTRight(e) => translate(*e),
+            },
+        },
+        grammar::NegRight::Expr(e) => translate(*e),
     }
 }
 
@@ -340,6 +443,46 @@ fn translate_ident_succ_left(tree: grammar::IdentSuccLeft) -> grammar::Expressio
     }
 }
 
+fn translate_match(tree: grammar::Expression, ml: grammar::MatchList) -> at {
+   at::Match{expr: Box::new(translate(tree)), case_list: translate_match_list(ml)}
+}
+
+fn translate_match_list(list: grammar::MatchList) -> Vec<Box<at>> {
+    match list {
+        grammar::MatchList::Leaf(e) => vec![Box::new(translate_match_line(*e))],
+        grammar::MatchList::Node(l, _, e) => {
+            let mut v = translate_match_list(*l);
+            v.push(Box::new(translate_match_line(*e)));
+            v
+        },
+    }
+}
+
+fn translate_match_line(tree: grammar::MatchLine) -> at {
+    match tree {
+        grammar::MatchLine::Line(_, cond, u) => at::MatchLine{condition: Box::new(translate(*cond)), case_expr: Box::new(translate_unary(*u))},
+    }
+}
+
+fn translate_gtr(ast: at, is_less: bool, tree: grammar::GToERight) -> at {
+    match tree {
+        grammar::GToERight::GToERight(_, logr) => translate_logtoe(ast, is_less, *logr),
+    }
+}
+
+fn translate_logtoe(ast: at, is_less: bool, logr: grammar::LoGToERight) -> at {
+   match logr {
+        grammar::LoGToERight::LoGERight(_, e) => match is_less {
+            true => at::LE{expr1: Box::new(ast), expr2: Box::new(translate(*e))}, 
+            _ => at::LE{expr2: Box::new(ast), expr1: Box::new(translate(*e))},
+        },
+        grammar::LoGToERight::LoGTRight(e) => match is_less {
+            true => at::Not{bool_expr: Box::new(at::LE{expr2: Box::new(ast), expr1: Box::new(translate(*e))})}, 
+            _ => at::Not{bool_expr: Box::new(at::LE{expr1: Box::new(ast), expr2: Box::new(translate(*e))})},
+        },
+   }
+}
+
 fn translate(tree : grammar::Expression) -> at {
     match tree {
         grammar::Expression::Unit(_) => at::Unit{},
@@ -349,10 +492,11 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::And(e1,_, e2) => at::And{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
         grammar::Expression::Or(e1, orr) => at::Or{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(get_expression_orr(*orr)))},
         grammar::Expression::EQ(e1, _, e2) => at::Eq{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
-        grammar::Expression::LE(e1,_, e2) => at::LE{expr1 : Box::new(translate(*e1)), expr2: Box::new(translate(*e2))},
+        grammar::Expression::LToE(e1,_, ltr) => translate_logtoe(translate(*e1), true, *ltr),
+        grammar::Expression::GToE(e1, gtr) => translate_gtr(translate(*e1), false, *gtr),
         grammar::Expression::Add(e1, _, e2) => at::Add{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Sub(e1,u2) => match *u2 {
-            grammar::Unary::Neg(_, e2) => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
+            grammar::Unary::Neg(_, e2) => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate_neg_right(*e2))},
         }
         grammar::Expression::Mul(e1,_, e2) => at::Mul{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Div(e1,_, e2) => at::Div{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))}, 
@@ -388,6 +532,12 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
             grammar::Expression::SE(se) => at::Length{var: translate_se_string(*se)},
             _ => { println!("Error parsing Length!"); at::Unit{}},
         },
+        grammar::Expression::Match(_, e, _, ml) => translate_match(*e, *ml), 
+        grammar::Expression::LetRec(_, name, args, _, body, _) => match *args {
+           grammar::IdentSucc::App(param_list) => at::LetRec{name: translate_se_string(*name), args: translate_tuple(*param_list), body: Box::new(translate(*body))},
+           _ => at::LetRec{name: translate_se_string(*name), args: Vec::new(), body: Box::new(translate(*body))},
+        }, 
+        grammar::Expression::Class(_, _name, _, _body, _) => at::Unit{}, 
     }
 }
 
