@@ -267,7 +267,6 @@ pub mod grammar {
         #[rust_sitter::prec_left(1)]
         Node(
             Box<MatchList>,
-            #[rust_sitter::leaf(text = r"\n")] (),
             Box<MatchLine>,
         ),
         #[rust_sitter::prec_left(10)]
@@ -284,6 +283,7 @@ pub mod grammar {
             #[rust_sitter::leaf(text = ":")] (),
             Box<Expression>,
             Box<Unary>,
+            #[rust_sitter::leaf(text = ":")] (),
         ),
     }
  
@@ -300,6 +300,12 @@ pub mod grammar {
         ),
         #[rust_sitter::prec_left(10)]
         App(
+            Box<Tuple>,
+        ),
+        #[rust_sitter::prec_left(10)]
+        ClsApp(
+            #[rust_sitter::leaf(text = ".")] (),
+            Box<SimplExpr>,
             Box<Tuple>,
         ),
         #[rust_sitter::prec_left(10)]
@@ -389,9 +395,12 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
     }
 }
 
-fn translate_unary(tree: grammar::Unary) -> at {
+fn translate_unary(tree: grammar::Unary, is_num: bool) -> at {
     match tree {
-        grammar::Unary::Neg(_, nr) => at::Neg{expr: Box::new(translate_neg_right(*nr))},
+        grammar::Unary::Neg(_, nr) => match is_num {
+            true => at::Neg{expr: Box::new(translate_neg_right(*nr))},
+            false => translate_neg_right(*nr),
+        },
     }
 }
 
@@ -450,7 +459,7 @@ fn translate_match(tree: grammar::Expression, ml: grammar::MatchList) -> at {
 fn translate_match_list(list: grammar::MatchList) -> Vec<Box<at>> {
     match list {
         grammar::MatchList::Leaf(e) => vec![Box::new(translate_match_line(*e))],
-        grammar::MatchList::Node(l, _, e) => {
+        grammar::MatchList::Node(l, e) => {
             let mut v = translate_match_list(*l);
             v.push(Box::new(translate_match_line(*e)));
             v
@@ -460,7 +469,7 @@ fn translate_match_list(list: grammar::MatchList) -> Vec<Box<at>> {
 
 fn translate_match_line(tree: grammar::MatchLine) -> at {
     match tree {
-        grammar::MatchLine::Line(_, cond, u) => at::MatchLine{condition: Box::new(translate(*cond)), case_expr: Box::new(translate_unary(*u))},
+        grammar::MatchLine::Line(_, cond, u, _) => at::MatchLine{condition: Box::new(translate(*cond)), case_expr: Box::new(translate_unary(*u, false))},
     }
 }
 
@@ -487,7 +496,7 @@ fn translate(tree : grammar::Expression) -> at {
     match tree {
         grammar::Expression::Unit(_) => at::Unit{},
         grammar::Expression::SE(se) => translate_simple_expr(*se),
-        grammar::Expression::U(u) => translate_unary(*u),
+        grammar::Expression::U(u) => translate_unary(*u, true),
         grammar::Expression::Not(_, e) => at::Not{bool_expr: Box::new(translate(*e))},
         grammar::Expression::And(e1,_, e2) => at::And{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(*e2))},
         grammar::Expression::Or(e1, orr) => at::Or{bool_expr1 : Box::new(translate(*e1)), bool_expr2: Box::new(translate(get_expression_orr(*orr)))},
@@ -511,6 +520,7 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
             grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
             grammar::IdentSucc::LetP(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "true".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
             grammar::IdentSucc::App(param_list) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_se_string(*ident)}), param_list: translate_tuple(*param_list)},
+            grammar::IdentSucc::ClsApp(_, id_fun, param_list) => at::App{object_name: translate_se_string(*ident), fun: Box::new(at::String{value: translate_se_string(*id_fun)}), param_list: translate_tuple(*param_list)},
             grammar::IdentSucc::Get(isl, _) => at::Get{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl)))},
             grammar::IdentSucc::Put(isl, _, pr) => match *pr {
                 grammar::PutRight::Put(v) => at::Put{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl))), value: Box::new(translate(*v)), insert: "false".to_string()},
@@ -537,7 +547,7 @@ Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})},
            grammar::IdentSucc::App(param_list) => at::LetRec{name: translate_se_string(*name), args: translate_tuple(*param_list), body: Box::new(translate(*body))},
            _ => at::LetRec{name: translate_se_string(*name), args: Vec::new(), body: Box::new(translate(*body))},
         }, 
-        grammar::Expression::Class(_, _name, _, _body, _) => at::Unit{}, 
+        grammar::Expression::Class(_, name, _, body, _) => at::Clss{name: translate_se_string(*name), attribute_list: Vec::new(), body: Box::new(translate(*body))}, 
     }
 }
 
