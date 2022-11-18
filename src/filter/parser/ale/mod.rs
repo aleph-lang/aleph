@@ -134,9 +134,7 @@ pub mod grammar {
         ),
         #[rust_sitter::prec_left(1)]
         Array(
-            #[rust_sitter::leaf(text = "[")] (),
-            Box<ExprList>,
-            #[rust_sitter::leaf(text = "]")] (),
+            Box<Array>,
         ),
         #[rust_sitter::prec_left(1)]
         Match(
@@ -203,7 +201,7 @@ pub mod grammar {
     pub enum Condition {
         #[rust_sitter::prec_left(1)]
         Simpl(
-            Box<Expression>,
+            Box<Tuple>,
             #[rust_sitter::leaf(text = "?")] (),
         ),
     }
@@ -248,17 +246,25 @@ pub mod grammar {
     
     #[rust_sitter::language]
     #[derive(Debug)]
-    pub enum ExprList {
+    pub enum Array {
         #[rust_sitter::prec_left(1)]
-        Node(
-            Box<ExprList>,
-            #[rust_sitter::leaf(text = ",")] (),
-            Box<Expression>,
+        Elems(
+           #[rust_sitter::leaf(text = "[")] (),
+           Box<ExprList>,
+           #[rust_sitter::leaf(text = "]")] (),
         ),
         #[rust_sitter::prec_left(10)]
-        Leaf(
-            Box<Expression>,
+        Empty(
+           #[rust_sitter::leaf(text = "[]")] (),
         ),
+    }
+    
+    #[rust_sitter::language]
+    #[derive(Debug)]
+    pub struct ExprList {
+        #[rust_sitter::repeat(non_empty = true)]
+        #[rust_sitter::delimited(#[rust_sitter::leaf(text = ",")] ())]
+        pub elems: Vec<Expression>,
     }
    
     #[rust_sitter::language]
@@ -367,6 +373,7 @@ pub mod grammar {
         #[rust_sitter::leaf(pattern = r"\s")]
         _whitespace: (),
     }
+
 }
 
 fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
@@ -378,7 +385,7 @@ fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
         grammar::SimplExpr::String(s) => at::String{value: s},
         grammar::SimplExpr::Ident(s) => at::String{value: s},
         grammar::SimplExpr::Comment(s) => at::Comment{value: s}, 
-        grammar::SimplExpr::CommentMulti(s) => at::CommentMulti{value: s}, 
+        grammar::SimplExpr::CommentMulti(s) => at::CommentMulti{value: s},
     }
 }
 
@@ -391,7 +398,7 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
         grammar::SimplExpr::String(s) => s,
         grammar::SimplExpr::Ident(s) => s,
         grammar::SimplExpr::Comment(_) => "".to_string(), 
-        grammar::SimplExpr::CommentMulti(_) => "".to_string(), 
+        grammar::SimplExpr::CommentMulti(_) => "".to_string(),
     }
 }
 
@@ -416,27 +423,34 @@ fn translate_neg_right(tree: grammar::NegRight) -> at {
     }
 }
 
-fn translate_cond(tree: grammar::Condition) -> at {
+fn translate_cond(tree: grammar::Condition) -> Box<at> {
     match tree {
-        grammar::Condition::Simpl(e, _) => translate(*e),
+        grammar::Condition::Simpl(t, _) => {
+            let v = translate_tuple(*t);
+            if v.is_empty() {
+                Box::new(at::Unit{})
+            } else { 
+                v[0].clone()
+            } 
+        }
     }
 }
 
 fn translate_list(list: grammar::ExprList) -> Vec<Box<at>> {
-    match list {
-        grammar::ExprList::Leaf(e) => vec![Box::new(translate(*e))],
-        grammar::ExprList::Node(l, _, e) => {
-            let mut v = translate_list(*l);
-            v.push(Box::new(translate(*e)));
-            v
-        },
-    }
+    list.elems.into_iter().map(|e| Box::new(translate(e))).collect::<Vec<Box<at>>>()
 }
 
 fn translate_tuple(list: grammar::Tuple) -> Vec<Box<at>> {
     match list {
        grammar::Tuple::Empty(_) => Vec::new(),
        grammar::Tuple::Elems(_, l, _) => translate_list(*l),
+    }
+}
+
+fn translate_array(list: grammar::Array) -> Vec<Box<at>> {
+    match list {
+       grammar::Array::Empty(_) => Vec::new(),
+       grammar::Array::Elems(_, l, _) => translate_list(*l),
     }
 }
 
@@ -509,10 +523,10 @@ fn translate(tree : grammar::Expression) -> at {
         }
         grammar::Expression::Mul(e1,_, e2) => at::Mul{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Div(e1,_, e2) => at::Div{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))}, 
-        grammar::Expression::If(cond, then) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate_simple_expr(*then)), els: Box::new(at::Unit
+        grammar::Expression::If(cond, then) => at::If{condition: translate_cond(*cond), then: Box::new(translate_simple_expr(*then)), els: Box::new(at::Unit
 {})}, 
-        grammar::Expression::IfElse(cond, then, _, els) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate_simple_expr(*then)), els: Box::new(translate_simple_expr(*els))}, 
-        grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: Box::new(translate_cond(*cond)), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
+        grammar::Expression::IfElse(cond, then, _, els) => at::If{condition: translate_cond(*cond), then: Box::new(translate_simple_expr(*then)), els: Box::new(translate_simple_expr(*els))}, 
+        grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: translate_cond(*cond), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
         grammar::Expression::Import(_, name) => at::Iprt{name: translate_se_string(*name)}, 
         grammar::Expression::IdentConst(ident, succ) => match *succ {
             grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
@@ -529,7 +543,7 @@ fn translate(tree : grammar::Expression) -> at {
             grammar::IdentSucc::RemoveVal(_, e, _) => at::Remove{array_name: translate_se_string(*ident), elem: Box::new(translate(*e)), is_value: "true".to_string()},
         } 
         grammar::Expression::Tuple(list) => at::Tuple{elems: translate_tuple(*list)}, 
-        grammar::Expression::Array(_, list, _) => at::Array{elems: translate_list(*list)}, 
+        grammar::Expression::Array(list) => at::Array{elems: translate_array(*list)}, 
         grammar::Expression::Stmts(e1, e2) => match (*e1, *e2) {
              (grammar::Expression::Unit(_), grammar::Expression::Unit(_)) => at::Unit{},
              (grammar::Expression::Unit(_), e21) => translate(e21),
