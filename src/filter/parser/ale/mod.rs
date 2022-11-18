@@ -76,21 +76,21 @@ pub mod grammar {
         #[rust_sitter::prec_left(1)]
         If(
             Box<Condition>,
-            Box<Expression>,
+            Box<SimplExpr>,
         ),
         #[rust_sitter::prec_left(1)]
         IfElse(
             Box<Condition>,
-            Box<Expression>,
+            Box<SimplExpr>,
             #[rust_sitter::leaf(text = ":")] (),
-            Box<Expression>,
+            Box<SimplExpr>,
         ),
         #[rust_sitter::prec_left(2)]
         While(
             Box<Expression>,
             Box<Condition>,
             #[rust_sitter::leaf(text = "*")] (),
-            Box<Expression>,
+            Box<SimplExpr>,
         ),
         #[rust_sitter::prec_left(1)]
         Import(
@@ -509,12 +509,10 @@ fn translate(tree : grammar::Expression) -> at {
         }
         grammar::Expression::Mul(e1,_, e2) => at::Mul{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Div(e1,_, e2) => at::Div{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))}, 
-        grammar::Expression::If(cond, then) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate(*then)), els: Box::new(at::Unit
+        grammar::Expression::If(cond, then) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate_simple_expr(*then)), els: Box::new(at::Unit
 {})}, 
-        grammar::Expression::IfElse(cond, then, _, els) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate(*then)), els: Box::new
-(translate(*els))}, 
-        grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: Box::new(translate_cond(*cond)), loop_expr: 
-Box::new(translate(*e2)), post_expr: Box::new(at::Unit{})}, 
+        grammar::Expression::IfElse(cond, then, _, els) => at::If{condition: Box::new(translate_cond(*cond)), then: Box::new(translate_simple_expr(*then)), els: Box::new(translate_simple_expr(*els))}, 
+        grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: Box::new(translate_cond(*cond)), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
         grammar::Expression::Import(_, name) => at::Iprt{name: translate_se_string(*name)}, 
         grammar::Expression::IdentConst(ident, succ) => match *succ {
             grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
