@@ -152,7 +152,7 @@ pub mod grammar {
         Number(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i64),
         Float(#[rust_sitter::leaf(pattern = r"\d*\.\d*",transform = |v| v.parse().unwrap())] f64),
         String(#[rust_sitter::leaf(pattern = r#""[^\"]*""#, transform = |v| v.parse().unwrap())] String),
-        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|'_')*", transform = |v| v.parse().unwrap())] String),
+        Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|_)*", transform = |v| v.parse().unwrap())] String),
         #[rust_sitter::prec_left(1)]
         LBexpRB(
             #[rust_sitter::leaf(text = "{")] (),
