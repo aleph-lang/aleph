@@ -149,7 +149,7 @@ pub mod grammar {
     #[derive(Debug)]
     pub enum SimplExpr {
         Bool(#[rust_sitter::leaf(pattern = "true|false", transform = |v| v.parse().unwrap())] bool),
-        Number(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i64),
+        Integer(#[rust_sitter::leaf(pattern = r"\d+", transform = |v| v.parse().unwrap())] i64),
         Float(#[rust_sitter::leaf(pattern = r"\d*\.\d*",transform = |v| v.parse().unwrap())] f64),
         String(#[rust_sitter::leaf(pattern = r#""[^\"]*""#, transform = |v| v.parse().unwrap())] String),
         Ident(#[rust_sitter::leaf(pattern = r"[a-z](\d|[A-Za-z]|_)*", transform = |v| v.parse().unwrap())] String),
@@ -380,7 +380,7 @@ fn translate_simple_expr(tree: grammar::SimplExpr) -> at {
     match tree {
         grammar::SimplExpr::Bool(b) => at::Bool{value: b.to_string()},
         grammar::SimplExpr::LBexpRB(_,e,_) => translate(*e),
-        grammar::SimplExpr::Number(i) => at::Int{value: i.to_string()},
+        grammar::SimplExpr::Integer(i) => at::Int{value: i.to_string()},
         grammar::SimplExpr::Float(f) => at::Float{value: f.to_string()},
         grammar::SimplExpr::String(s) => at::String{value: s},
         grammar::SimplExpr::Ident(s) => at::String{value: s},
@@ -393,7 +393,7 @@ fn translate_se_string(tree: grammar::SimplExpr) -> String {
     match tree {
         grammar::SimplExpr::Bool(b) => b.to_string(),
         grammar::SimplExpr::LBexpRB(_,_,_) => "".to_string(),
-        grammar::SimplExpr::Number(i) => i.to_string(),
+        grammar::SimplExpr::Integer(i) => i.to_string(),
         grammar::SimplExpr::Float(f) => f.to_string(),
         grammar::SimplExpr::String(s) => s,
         grammar::SimplExpr::Ident(s) => s,
