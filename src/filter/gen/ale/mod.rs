@@ -1,8 +1,6 @@
 use crate::syntax::AlephTree as at;
 use crate::filter::gen::Gen;
-use crate::filter::gen::gen_list_expr;
-use crate::filter::gen::gen_list_expr_sep;
-use crate::filter::gen::comp_indent;
+use crate::filter::gen::{gen_list_expr, gen_list_expr_sep, comp_indent};
 
 #[derive(Default)]
 pub struct AleGen;
