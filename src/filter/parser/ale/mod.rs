@@ -506,6 +506,60 @@ fn translate_logtoe(ast: at, is_less: bool, logr: grammar::LoGToERight) -> at {
    }
 }
 
+
+fn translate_let(ident: grammar::SimplExpr, tree: grammar::Expression, is_pointer: bool) -> at {
+    match tree {
+        grammar::Expression::LToE(e1, _, ltr) => match *ltr {
+            grammar::LoGToERight::LoGTRight(e) => match *e1 {
+                grammar::Expression::Stmts(e11, e12) => match *e11 {
+                    grammar::Expression::Stmts(e111, _e112) => match *e { 
+                         grammar::Expression::Stmts(e1111, e1112) => at::Let{var: translate_se_string(ident), is_pointer: is_pointer.to_string(), value: Box::new(translate(*e111)), expr: Box::new(at::Stmts{expr1: Box::new(at::Not{bool_expr: Box::new(at::LE{expr2: Box::new(translate(*e12)), expr1: Box::new(translate(*e1111))})}), expr2: Box::new(translate(*e1112))})},
+                         _ => at::Unit{},
+                    },
+                    _ => at::Unit{},
+                },
+                _ => at::Unit{},
+            },
+            grammar::LoGToERight::LoGERight(_, e) => match *e1 {
+                grammar::Expression::Stmts(e11, e12) => match *e11 {
+                    grammar::Expression::Stmts(e111, _e112) => match *e { 
+                         grammar::Expression::Stmts(e1111, e1112) => at::Let{var: translate_se_string(ident), is_pointer: is_pointer.to_string(), value: Box::new(translate(*e111)), expr: Box::new(at::Stmts{expr1: Box::new(at::LE{expr1: Box::new(translate(*e12)), expr2: Box::new(translate(*e1111))}), expr2: Box::new(translate(*e1112))})},
+                         _ => at::Unit{},
+                    },
+                    _ => at::Unit{},
+                },
+                _ => at::Unit{},
+            },
+        },
+        grammar::Expression::GToE(e1, gtr) => match *gtr {
+            grammar::GToERight::GToERight(_, logr) => match *logr {
+                    grammar::LoGToERight::LoGTRight(e) => match *e1 {
+                        grammar::Expression::Stmts(e11, e12) => match *e11 {
+                            grammar::Expression::Stmts(e111, _e112) => match *e { 
+                                grammar::Expression::Stmts(e1111, e1112) => at::Let{var: translate_se_string(ident), is_pointer: is_pointer.to_string(), value: Box::new(translate(*e111)), expr: Box::new(at::Stmts{expr1: Box::new(at::Not{bool_expr: Box::new(at::LE{expr1: Box::new(translate(*e12)), expr2: Box::new(translate(*e1111))})}), expr2: Box::new(translate(*e1112))})},
+                                _ => at::Unit{},
+                            },
+                            _ => at::Unit{},
+                        }
+                        _ => at::Unit{},
+                    },
+                    grammar::LoGToERight::LoGERight(_, e) => match *e1 {
+                        grammar::Expression::Stmts(e11, e12) => match *e11 {
+                            grammar::Expression::Stmts(e111, _e112) => match *e { 
+                               grammar::Expression::Stmts(e1111, e1112) => at::Let{var: translate_se_string(ident), is_pointer: is_pointer.to_string(), value: Box::new(translate(*e111)), expr: Box::new(at::Stmts{expr1: Box::new(at::LE{expr2: Box::new(translate(*e12)), expr1: Box::new(translate(*e1111))}), expr2: Box::new(translate(*e1112))})},
+                                _ => at::Unit{},
+                            },
+                            _ => at::Unit{},
+                        },
+                        _ => at::Unit{},
+                    },
+            },
+        },
+        v => at::Let{var: translate_se_string(ident), is_pointer: is_pointer.to_string(), value: Box::new(translate(v)), expr: Box::new(at::Unit{})},
+    }
+}
+
+
 fn translate(tree : grammar::Expression) -> at {
     match tree {
         grammar::Expression::Unit(_) => at::Unit{},
@@ -529,8 +583,8 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: translate_cond(*cond), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
         grammar::Expression::Import(_, name) => at::Iprt{name: translate_se_string(*name)}, 
         grammar::Expression::IdentConst(ident, succ) => match *succ {
-            grammar::IdentSucc::Let(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "false".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
-            grammar::IdentSucc::LetP(_, value) => at::Let{var: translate_se_string(*ident), is_pointer: "true".to_string(), value: Box::new(translate(*value)), expr: Box::new(at::Unit{})},
+            grammar::IdentSucc::Let(_, value) => translate_let(*ident, *value, false),
+            grammar::IdentSucc::LetP(_, value) => translate_let(*ident, *value, true),
             grammar::IdentSucc::App(param_list) => at::App{object_name: "".to_string(), fun: Box::new(at::String{value: translate_se_string(*ident)}), param_list: translate_tuple(*param_list)},
             grammar::IdentSucc::ClsApp(_, id_fun, param_list) => at::App{object_name: translate_se_string(*ident), fun: Box::new(at::String{value: translate_se_string(*id_fun)}), param_list: translate_tuple(*param_list)},
             grammar::IdentSucc::Get(isl, _) => at::Get{array_name: translate_se_string(*ident), elem: Box::new(translate(translate_ident_succ_left(*isl)))},
