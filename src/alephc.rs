@@ -3,6 +3,7 @@ extern crate argparse;
 use argparse::{ArgumentParser, Store, StoreTrue};
 use std::io;
 use std::io::Read;
+use std::fs;
 
 mod filter;
 use crate::filter::generate;
@@ -31,7 +32,9 @@ async fn main() {
      
         generate(content_type, content, Some(transformer_list), return_type)
     } else {
-        "infos".to_string()
+        let contents = fs::read_to_string("conf/default.conf")
+        .expect("Should have been able to read the file");
+        contents
     };
     
     println!("{}", response);
