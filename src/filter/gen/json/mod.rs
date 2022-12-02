@@ -1,4 +1,4 @@
-use crate::syntax::AlephTree as at;
+use crate::filter::at;
 use crate::filter::gen::Gen;
 
 #[derive(Default)]

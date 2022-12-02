@@ -1,14 +1,11 @@
 extern crate argparse;
 
 use argparse::{ArgumentParser, Store, StoreTrue};
-use serde::{Deserialize, Serialize};
 use std::io;
 use std::io::Read;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct AlephResult {
-    response: String,
-}
+mod filter;
+use crate::filter::generate;
 
 #[actix_web::main]
 async fn main() {
@@ -26,29 +23,16 @@ async fn main() {
         ap.parse_args_or_exit();
     }
 
-    let client = awc::Client::default();
     let response = if !infos {
-        let transformer_list : Vec<&str> = transformer_param.split(",").collect();
+        let transformer_list : Vec<String> = transformer_param.split(",").map(|s| s.to_string()).collect();
  
         let mut content = String::new();
         io::stdin().read_to_string(&mut content).unwrap();
-
-        let request = serde_json::json!({
-            "content_type" : content_type,
-            "content" : content,
-            "return_type" : return_type,
-            "transformer_list" : transformer_list
-        });
-        client.post("http://localhost:8080/").send_json(&request).await
+     
+        generate(content_type, content, Some(transformer_list), return_type)
     } else {
-        client.get("http://localhost:8080/infos").send().await
+        "infos".to_string()
     };
     
-    let data = if !infos {
-        response.unwrap().json::<AlephResult>().await
-    } else {
-        response.unwrap().json::<AlephResult>().await
-    };
-
-    println!("{}", data.unwrap().response);
+    println!("{}", response);
 }

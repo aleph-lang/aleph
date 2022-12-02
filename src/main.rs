@@ -4,11 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 
 mod filter;
-mod syntax;
 
-use crate::filter::parser::parse;
-use crate::filter::gen::generate;
-use crate::filter::transform_dispatcher;
+use crate::filter::generate;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AlephEntry {
@@ -18,17 +15,9 @@ struct AlephEntry {
     transformer_list: Option<Vec<String>>
 }
 
-
 /// This handler uses json extractor
 async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
-    let parsed_content: syntax::AlephTree = parse(item.0.content_type, item.0.content);
-
-    let transformed_content: syntax::AlephTree = match item.0.transformer_list {
-        Some(list)=> transform_dispatcher(list, parsed_content),
-        None => parsed_content
-    };
-    
-    let output = generate(item.0.return_type, transformed_content);
+    let output = generate(item.0.content_type, item.0.content, item.0.transformer_list, item.0.return_type);
 
     let res = json!({"response" : output});
 

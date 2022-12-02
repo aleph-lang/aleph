@@ -1,5 +1,4 @@
-use crate::syntax;
-use syntax::AlephTree as at;
+use crate::filter::at;
 
 #[cfg(feature="ale_gen")]
 mod ale;

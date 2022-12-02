@@ -37,3 +37,7 @@ rust-sitter-tool = "0.1.2"
 name="aleph-cli"
 path="src/client/mod.rs"
 
+[[bin]]
+name="alephc"
+path="src/alephc.rs"
+
