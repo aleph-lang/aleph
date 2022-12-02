@@ -17,3 +17,9 @@ Launching Aleph-Client:
 
 ```cargo run --bin aleph-cli -- -i json -o ale < fileToBeRead```
 
+# Alephc (without WS)
+
+Launching Alephc:
+
+```cargo run --bin alephc -- -i json -o ale < fileToBeRead```
+
