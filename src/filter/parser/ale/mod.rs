@@ -33,7 +33,7 @@ pub mod grammar {
             Box<OrRight>,
             #[rust_sitter::leaf(text = "|")] (),
         ),
-        #[rust_sitter::prec_left(4)]
+        #[rust_sitter::prec_left(2)]
         EQ(
             Box<Expression>,
             #[rust_sitter::leaf(text = "==")] (),
@@ -87,7 +87,6 @@ pub mod grammar {
         ),
         #[rust_sitter::prec_left(2)]
         While(
-            Box<Expression>,
             Box<Condition>,
             #[rust_sitter::leaf(text = "*")] (),
             Box<SimplExpr>,
@@ -360,7 +359,7 @@ pub mod grammar {
         Put(
             Box<Expression>,
         ),
-        #[rust_sitter::prec_left(10)]
+        #[rust_sitter::prec_left(2)]
         EQ(
             #[rust_sitter::leaf(text = "=")] (),
             Box<Expression>,
@@ -541,7 +540,7 @@ fn translate_let(ident: grammar::SimplExpr, tree: grammar::Expression, is_pointe
                             },
                             _ => at::Unit{},
                         }
-                        _ => at::Unit{},
+                        ne1 => translate(ne1),
                     },
                     grammar::LoGToERight::LoGERight(_, e) => match *e1 {
                         grammar::Expression::Stmts(e11, e12) => match *e11 {
@@ -573,14 +572,26 @@ fn translate(tree : grammar::Expression) -> at {
         grammar::Expression::GToE(e1, gtr) => translate_gtr(translate(*e1), false, *gtr),
         grammar::Expression::Add(e1, _, e2) => at::Add{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Sub(e1,u2) => match *u2 {
-            grammar::Unary::Neg(_, e2) => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate_neg_right(*e2))},
-        }
+            grammar::Unary::Neg(_, e2) => match *e2 {
+                grammar::NegRight::Expr(e) => match *e {
+                    grammar::Expression::Stmts(e21, e22) => at::Stmts{expr1: Box::new(at::Sub{number_expr1: Box::new(translate(*e1)), number_expr2: Box::new(translate(*e21))}), expr2: Box::new(translate(*e22))},
+                    e21 => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(e21))},
+                },
+                e21 => at::Sub{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate_neg_right(e21))},
+            },
+        },
         grammar::Expression::Mul(e1,_, e2) => at::Mul{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))},
         grammar::Expression::Div(e1,_, e2) => at::Div{number_expr1 : Box::new(translate(*e1)), number_expr2: Box::new(translate(*e2))}, 
         grammar::Expression::If(cond, then) => at::If{condition: translate_cond(*cond), then: Box::new(translate_simple_expr(*then)), els: Box::new(at::Unit
 {})}, 
         grammar::Expression::IfElse(cond, then, _, els) => at::If{condition: translate_cond(*cond), then: Box::new(translate_simple_expr(*then)), els: Box::new(translate_simple_expr(*els))}, 
-        grammar::Expression::While(e1, cond, _, e2) => at::While{init_expr: Box::new(translate(*e1)), condition: translate_cond(*cond), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
+        grammar::Expression::While(cond, _, e2) => match *translate_cond(*cond) {
+          at::Let{var, is_pointer, value, expr} => match *expr {
+              at::Stmts{expr1, expr2} => at::While{init_expr: Box::new(at::Let{var: var, is_pointer: is_pointer, value: value, expr: Box::new(at::Unit{})}), condition: expr1, loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: expr2},
+              c =>  at::While{init_expr: Box::new(at::Unit{}), condition: Box::new(c), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
+          },  
+          c =>  at::While{init_expr: Box::new(at::Unit{}), condition: Box::new(c), loop_expr: Box::new(translate_simple_expr(*e2)), post_expr: Box::new(at::Unit{})}, 
+        },
         grammar::Expression::Import(_, name) => at::Iprt{name: translate_se_string(*name)}, 
         grammar::Expression::IdentConst(ident, succ) => match *succ {
             grammar::IdentSucc::Let(_, value) => translate_let(*ident, *value, false),
