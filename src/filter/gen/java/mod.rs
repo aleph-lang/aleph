@@ -5,6 +5,13 @@ use crate::filter::gen::{gen_list_expr, comp_indent};
 #[derive(Default)]
 pub struct JavaGen;
 
+fn std_lib(name: &str) -> &str {
+    match name {
+        "print" => "System.out.println",
+        n => &n,
+    }
+}
+
 fn gen(ast: at, indent: i64) -> String {
     let c_indent=comp_indent(indent);
     match ast {
@@ -44,7 +51,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Match{expr, case_list} => format!("{}match {} with\n{}", c_indent, gen(*expr, 0), gen_list_expr(case_list, gen)),
         at::MatchLine{condition, case_expr} => format!("{}: {} -> {}\n", c_indent, gen(*condition, 0), gen(*case_expr, 0)),
         at::Var{var, is_pointer} => format!("{}{}{}",c_indent, (if is_pointer=="true" {"!"} else {""}), var),
-        at::App{object_name, fun, param_list} => format!("{}{}{}({})",c_indent, (if object_name.ne("") {format!("{}.", object_name)} else {String::from("")}), gen(*fun, 0), gen_list_expr(param_list, gen)),
+        at::App{object_name, fun, param_list} => format!("{}{}{}({})",c_indent, (if object_name.ne("") {format!("{}.", object_name)} else {String::from("")}), std_lib(gen(*fun, 0).as_str()), gen_list_expr(param_list, gen)),
         at::Stmts{expr1, expr2} => format!("{};\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
         at::Iprt{name} => format!("{}import {}", c_indent, name),
         at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{};\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!(";\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
@@ -55,6 +62,7 @@ fn gen(ast: at, indent: i64) -> String {
 
 impl Gen for JavaGen {
     fn generate(&self, ast: at) -> String {
-        gen(ast, 0)
+        let c_indent=comp_indent(1);
+        format!("public class Test {{\n{c_indent}public static void main(String[] args) {{\n{};\n{c_indent}}}\n}}", gen(ast, 2), c_indent=c_indent)
     }
 }
