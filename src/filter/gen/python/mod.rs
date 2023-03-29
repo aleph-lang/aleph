@@ -13,7 +13,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Float{value} => format!("{}{}", c_indent, value),
         at::Bool{value} => format!("{}{}", c_indent, if value=="true" { "True" } else { "False" }),
         at::String{value} => format!("{}{}", c_indent, value),
-        at::Tuple{elems} => format!("({})", gen_list_expr_sep(elems, gen, ",")),
+        at::Tuple{elems} => format!("{}", gen_list_expr_sep(elems, gen, ",")),
         at::Array{elems} => format!("[{}]", gen_list_expr_sep(elems, gen, ",")),
         at::Neg{expr} => format!("{}-{}", c_indent, gen(*expr, 0)),
         at::Not{bool_expr} => format!("{}not({})", c_indent, gen(*bool_expr, 0)),

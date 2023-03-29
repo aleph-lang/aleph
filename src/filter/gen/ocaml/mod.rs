@@ -17,8 +17,8 @@ fn gen(ast: at, indent: i64) -> String {
         at::Array{elems} => format!("{}", gen_list_expr(elems, gen)),
         at::Neg{expr} => format!("{}-{}", c_indent, gen(*expr, 0)),
         at::Not{bool_expr} => format!("{}!({})", c_indent, gen(*bool_expr, 0)),
-        at::And{bool_expr1, bool_expr2} => format!("{}{} & {}", c_indent, gen(*bool_expr1, 0), gen(*bool_expr2, 0)),
-        at::Or{bool_expr1, bool_expr2} => format!("{}{} | {}", c_indent, gen(*bool_expr1, 0), gen(*bool_expr2, 0)),
+        at::And{bool_expr1, bool_expr2} => format!("{}{} && {}", c_indent, gen(*bool_expr1, 0), gen(*bool_expr2, 0)),
+        at::Or{bool_expr1, bool_expr2} => format!("{}{} || {}", c_indent, gen(*bool_expr1, 0), gen(*bool_expr2, 0)),
         at::Add{number_expr1, number_expr2} => format!("{}{} + {}", c_indent, gen(*number_expr1, 0), gen(*number_expr2, 0)),
         at::Sub{number_expr1, number_expr2} => format!("{}{} - {}", c_indent, gen(*number_expr1, 0), gen(*number_expr2, 0)),
         at::Mul{number_expr1, number_expr2} => format!("{}{} * {}", c_indent, gen(*number_expr1, 0), gen(*number_expr2, 0)),
@@ -33,8 +33,8 @@ fn gen(ast: at, indent: i64) -> String {
             format!("{}\n{}({})?*{{\n{}\n{}\n{}}}", gen(*init_expr, indent), c_indent, gen(*condition, 0), gen(*loop_expr, indent+1), gen(*post_expr, indent+1), c_indent)
         },
         at::Let{var, is_pointer, value, expr} => match *expr {
-             at::Unit{} => format!("{}{}{} = {};", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0)),
-             _ => format!("{}{}{} = {};\n{}", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
+             at::Unit{} => format!("{}let {}{}= {};", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0)),
+             _ => format!("{}let {}{}= {} in\n{}", c_indent, var, (if is_pointer=="true" {":"} else {""}), gen(*value, 0), gen(*expr, indent)),
         },
         at::LetRec{name, args, body} => format!("{}fun {}({}) = {{\n{}\n{}}}", c_indent, name, gen_list_expr(args, gen), gen(*body, indent+1), c_indent),
         at::Get{array_name, elem} => format!("{}{}[{}]", c_indent, array_name, gen(*elem, 0)),
