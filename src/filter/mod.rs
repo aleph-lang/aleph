@@ -1,15 +1,14 @@
-pub mod syntax;
 pub mod parser;
 pub mod transform;
 pub mod gen;
 
-use syntax::AlephTree as at;
+use aleph_syntax_tree::syntax::AlephTree as at;
 
 pub fn generate(content_type: String, content: String, transformer_list : Option<Vec<String>>, return_type: String) -> String {
 
-    let parsed_content: syntax::AlephTree = parser::parse(content_type, content);
+    let parsed_content: at = parser::parse(content_type, content);
 
-    let transformed_content: syntax::AlephTree = match transformer_list {
+    let transformed_content: at = match transformer_list {
         Some(list)=> transform_dispatcher(list, parsed_content),
         None => parsed_content
     };

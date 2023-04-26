@@ -11,15 +11,13 @@ opt-level = 3
 opt-level = 3 
 
 [dependencies]
+aleph-syntax-tree = { path = "../aleph-syntax-tree" }
 actix-web = "4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-rust-sitter = "0.1.2"
 awc = { version = "3.0.0-beta.11", features = [ "openssl" ] }
 argparse = "0.2.2"
-
-[build-dependencies]
-rust-sitter-tool = "0.1.2"
+aleparser = { path = "src/filter/parser/ale/aleparser" }
 
 [features]
 "ale_parse" = []
@@ -41,3 +39,7 @@ path="src/client/mod.rs"
 name="alephc"
 path="src/alephc.rs"
 
+[workspace]
+members = [
+    "src/filter/parser/ale/aleparser"
+]
