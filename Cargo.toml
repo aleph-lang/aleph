@@ -18,6 +18,7 @@ serde_json = "1.0"
 awc = { version = "3.0.0-beta.11", features = [ "openssl" ] }
 argparse = "0.2.2"
 aleparser = { path = "src/filter/parser/ale/aleparser" }
+python_parser = { path = "src/filter/parser/python/pythonparser" }
 
 [features]
 "ale_parse" = []
@@ -29,6 +30,7 @@ aleparser = { path = "src/filter/parser/ale/aleparser" }
 "ocaml_gen" = []
 "python_gen" = []
 "rust_gen" = []
+"python_parse" = []
 "default" = ["ale_gen","json_gen" ,"ale_parse","json_parse" ]
 
 [[bin]]
@@ -41,5 +43,6 @@ path="src/alephc.rs"
 
 [workspace]
 members = [
-    "src/filter/parser/ale/aleparser"
+    "src/filter/parser/ale/aleparser",
+    "src/filter/parser/python/pythonparser"
 ]

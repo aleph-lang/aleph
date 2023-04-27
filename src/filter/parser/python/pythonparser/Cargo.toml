@@ -1,0 +1,9 @@
+[package]
+name = "python_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aleph-syntax-tree = { path = "../../../../../../aleph-syntax-tree" }
+rustpython-parser = "0.1.2"
+
