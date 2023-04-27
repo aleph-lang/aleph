@@ -13,8 +13,9 @@ in
     nativeBuildInputs = with ocamlPackages; [ ocaml ]; #ocaml-lsp ];
     # dependencies
     buildInputs = with nixpkgs; [ 
-        nixpkgs.latest.rustChannels.nightly.rust
-        ocaml_make
+        #nixpkgs.latest.rustChannels.nightly.rust
+	(nixpkgs.rustChannelOf { date = "2023-04-26"; channel = "nightly"; }).rust
+	ocaml_make
         cargo
         rustc
         python-with-packages
