@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 aleph-syntax-tree = { path = "../../../../../../aleph-syntax-tree" }
-rustpython-parser = "0.1.2"
+rustpython-parser = "0.2.0"
 
