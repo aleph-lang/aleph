@@ -9,24 +9,15 @@ fn extract_constant(value : Constant) -> at {
         Constant::None => at::Unit,
         Constant::Bool(b) => at::Bool{value: b.to_string()},
         Constant::Str(s) => at::String{value: format!("\"{}\"", s)},
-        Constant::Bytes(b) => {
-            println!("Not impl Bytes {:?}", b);
-            at::Unit
-        },
+        Constant::Bytes(b) => at::Bytes{elems: b},
         Constant::Int(i) => at::Int{value: i.to_string()},
         Constant::Tuple(v) => {
             println!("Not impl Tuples {:?}", v);
             at::Unit
         },
         Constant::Float(f) => at::Float{value: f.to_string()},
-        Constant::Complex{real, imag} => {
-            println!("Not impl Complex {:?} + ({:?} * i)", real, imag);
-            at::Unit
-        },
-        Constant::Ellipsis => {
-            println!("Not impl Ellipsis : {:?}", value);
-            at::Unit
-        }
+        Constant::Complex{real, imag} => at::Complex{real: real.to_string(), imag: imag.to_string()},
+        Constant::Ellipsis => at::Ellipsis
     }
 }
 

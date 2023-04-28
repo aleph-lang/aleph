@@ -9,10 +9,13 @@ fn gen(ast: at, indent: i64) -> String {
     let c_indent=comp_indent(indent);
     match ast {
         at::Unit => format!("{}", ""),
+        at::Ellipsis => format!("{}", ""),
         at::Int{value} => format!("{}{}", c_indent, value),
         at::Float{value} => format!("{}{}", c_indent, value),
         at::Bool{value} => format!("{}{}", c_indent, value),
         at::String{value} => format!("{}{}", c_indent, value),
+        at::Complex{real, imag} => format!("{}{} + ({} *j)", c_indent, real, imag),
+        at::Bytes{elems} => format!("{}", String::from_utf8(elems).expect("Found invalid UTF-8")),
         at::Tuple{elems} => format!("{}", gen_list_expr_sep(elems, gen, ", ")),
         at::Array{elems} => format!("[{}]", gen_list_expr_sep(elems, gen, ", ")),
         at::Neg{expr} => format!("{}-{}", c_indent, gen(*expr, 0)),
