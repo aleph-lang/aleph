@@ -1,50 +1,40 @@
-use actix_web::{middleware, web, App, HttpResponse, HttpServer};
-use serde_json::json;
-use serde::{Deserialize, Serialize};
+extern crate argparse;
+
+use argparse::{ArgumentParser, Store, StoreTrue};
+use std::io;
+use std::io::Read;
 use std::fs;
 
 mod filter;
-
 use crate::filter::generate;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct AlephEntry {
-    content_type: String,
-    content: String,
-    return_type: String,
-    transformer_list: Option<Vec<String>>
-}
+fn main() {
+    let mut content_type = "ale".to_string();
+    let mut return_type = "ale".to_string();
+    let mut transformer_param = "".to_string();
+    let mut infos = false;
+    {  
+        let mut ap = ArgumentParser::new();
+        ap.set_description("Multi compiler");
+        ap.refer(&mut content_type).add_option(&["--in_type", "-i"], Store, "Input type");
+        ap.refer(&mut transformer_param).add_option(&["--transformer_list", "-t"], Store, "Transformer list");
+        ap.refer(&mut return_type).add_option(&["--out_type", "-o"], Store, "Output type");
+        ap.refer(&mut infos).add_option(&["-g", "--infos"], StoreTrue, "Get informations");
+        ap.parse_args_or_exit();
+    }
 
-/// This handler uses json extractor
-async fn index(item: web::Json<AlephEntry>) -> HttpResponse {
-    let output = generate(item.0.content_type, item.0.content, item.0.transformer_list, item.0.return_type);
-
-    let res = json!({"response" : output});
-
-    HttpResponse::Ok().json(res)
-}
-
-async fn infos() -> HttpResponse {
-    let contents = fs::read_to_string("conf/default.conf")
+    let response = if !infos {
+        let transformer_list : Vec<String> = transformer_param.split(",").map(|s| s.to_string()).collect();
+ 
+        let mut content = String::new();
+        io::stdin().read_to_string(&mut content).unwrap();
+     
+        generate(content_type, content, Some(transformer_list), return_type)
+    } else {
+        let contents = fs::read_to_string("conf/default.conf")
         .expect("Should have been able to read the file");
-    let res = json!({"response" : contents});
-
-    HttpResponse::Ok().json(res)
-}
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    println!("starting HTTP server at http://localhost:8080");
-
-    HttpServer::new(|| {
-        App::new()
-            // enable logger
-            .wrap(middleware::Logger::default())
-            .app_data(web::JsonConfig::default())
-            .route("/", web::post().to(index))
-            .route("/infos", web::get().to(infos))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+        contents
+    };
+    
+    println!("{}", response);
 }

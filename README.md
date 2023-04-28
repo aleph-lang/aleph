@@ -1,6 +1,6 @@
-# WS
+# Alephc
 
-Launching Aleph-WS:
+Launching Alephc:
 
 to build and run the webservices with default features:\
 ```cargo run```
@@ -11,15 +11,10 @@ to build and run the webservice  with all features:\
 to build and run the webservice with specific features\
 ```cargo run --features python_gen,java_gen```
 
-# Client
+# Simple example with parsing python and gen Ocaml
 
-Launching Aleph-Client:
+```cargo run --all-features -- -i py -o ocaml < test/dataset/python/testInt.py```
 
-```cargo run --bin aleph-cli -- -i json -o ale < fileToBeRead```
+or
 
-# Alephc (without WS)
-
-Launching Alephc:
-
-```cargo run --bin alephc -- -i json -o ale < fileToBeRead```
-
+```cargo run --all-features -- -i python -o ocaml < test/dataset/python/testInt.py```

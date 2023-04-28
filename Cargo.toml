@@ -1,8 +1,7 @@
 [package]
-name = "aleph-ws"
+name = "alephc"
 version = "1.0.0"
 edition = "2021"
-default-run = "alephc"
 
 [profile.dev]
 opt-level = 3
@@ -12,10 +11,8 @@ opt-level = 3
 
 [dependencies]
 aleph-syntax-tree = { path = "../aleph-syntax-tree" }
-actix-web = "4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-awc = { version = "3.0.0-beta.11", features = [ "openssl" ] }
 argparse = "0.2.2"
 aleparser = { path = "src/filter/parser/ale/aleparser" }
 python_parser = { path = "src/filter/parser/python/pythonparser" }
@@ -32,14 +29,6 @@ python_parser = { path = "src/filter/parser/python/pythonparser" }
 "rust_gen" = []
 "python_parse" = []
 "default" = ["ale_gen","json_gen" ,"ale_parse","json_parse" ]
-
-[[bin]]
-name="aleph-cli"
-path="src/client/mod.rs"
-
-[[bin]]
-name="alephc"
-path="src/alephc.rs"
 
 [workspace]
 members = [
