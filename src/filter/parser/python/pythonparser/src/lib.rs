@@ -2,7 +2,7 @@ use aleph_syntax_tree::syntax::AlephTree as at;
 
 use rustpython_parser::{ast, parser};
 use rustpython_parser::ast::{ExprKind, StmtKind};
-use crate::ast::{Constant, Operator, Unaryop};
+use crate::ast::{Boolop, Constant, Located, Operator, Unaryop};
 
 fn extract_constant(value : Constant) -> at {
     match value {
@@ -10,21 +10,21 @@ fn extract_constant(value : Constant) -> at {
         Constant::Bool(b) => at::Bool{value: b.to_string()},
         Constant::Str(s) => at::String{value: format!("\"{}\"", s)},
         Constant::Bytes(b) => {
-            println!("Not yet impl {:?}", b);
+            println!("Not impl Bytes {:?}", b);
             at::Unit
         },
         Constant::Int(i) => at::Int{value: i.to_string()},
         Constant::Tuple(v) => {
-            println!("Not yet impl {:?}", v);
+            println!("Not impl Tuples {:?}", v);
             at::Unit
         },
         Constant::Float(f) => at::Float{value: f.to_string()},
         Constant::Complex{real, imag} => {
-            println!("Not yet impl {:?} + ({:?} * i)", real, imag);
+            println!("Not impl Complex {:?} + ({:?} * i)", real, imag);
             at::Unit
         },
         Constant::Ellipsis => {
-            println!("Not yet impl Ellipsis : {:?}", value);
+            println!("Not impl Ellipsis : {:?}", value);
             at::Unit
         }
     }
@@ -34,7 +34,7 @@ fn extract_name(ek: ExprKind) -> String {
     match ek {
         ExprKind::Name{id, ctx: _} => id,
         _ => {
-            println!("Not Impl {:?}", ek);
+            println!("Not Impl extract_name {:?}", ek);
             "".to_string()
         }
     }
@@ -43,11 +43,23 @@ fn extract_name(ek: ExprKind) -> String {
 fn translate_expr_kind(ek: ExprKind) -> at {
     match ek {
         ExprKind::BoolOp{op, values} => {
-            println!("Not impl {:?} {:?}", op, values);
-            at::Unit
+            let mut res = at::Unit;
+            for value in values {
+                res = match op {
+                    Boolop::And => match res {
+                        at::Unit => translate_expr_kind(value.node),
+                        _ => at::And{bool_expr1: Box::new(res), bool_expr2: Box::new(translate_expr_kind(value.node))},
+                    },
+                    Boolop::Or => match res {
+                        at::Unit => translate_expr_kind(value.node),
+                        _ => at::Or{bool_expr1: Box::new(res), bool_expr2: Box::new(translate_expr_kind(value.node))}
+                    }
+                }
+            }
+            res
         },
         ExprKind::NamedExpr{target, value} => {
-            println!("Not impl {:?} {:?}", target, value);
+            println!("Not impl NamedExpr {:?} {:?}", target, value);
             at::Unit
         },
         ExprKind::BinOp{left, op, right} => {
@@ -56,68 +68,65 @@ fn translate_expr_kind(ek: ExprKind) -> at {
                 Operator::Sub => at::Sub{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
                 Operator::Mult => at::Mul{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
                 Operator::Div => at::Div{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
-                Operator::FloorDiv => at::Div{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
                 _ => {
-                    println!("Not impl {:?} {:?} {:?}", left, op, right);
+                    println!("Not impl BinOp {:?} {:?} {:?}", left, op, right);
                     at::Unit
                 }
             }
         },
         ExprKind::UnaryOp{op, operand} => {
             match op {
+                Unaryop::Not => at::Not{bool_expr: Box::new(translate_expr_kind(operand.node))},
                 Unaryop::USub => at::Neg{expr: Box::new(translate_expr_kind(operand.node))},
                 _ => {
-                    println!("Not impl {:?} {:?}", op, operand);
+                    println!("Not impl UnaryOp {:?} {:?}", op, operand);
                     at::Unit
                 }
             }
         },
         ExprKind::Lambda{args, body} => {
-            println!("Not impl {:?} {:?}", args, body);
+            println!("Not impl Lambda {:?} {:?}", args, body);
             at::Unit
         },
-        ExprKind::IfExp{test, body, orelse} => {
-            println!("Not impl {:?} {:?} {:?}", test, body, orelse);
-            at::Unit
-        },
+        ExprKind::IfExp{test, body, orelse} => at::If{condition: Box::new(translate_expr_kind(test.node)), then: Box::new(translate_expr_kind(body.node)), els: Box::new(translate_expr_kind(orelse.node))},
         ExprKind::Dict{keys, values} => {
-            println!("Not impl {:?} {:?}", keys, values);
+            println!("Not impl Dict {:?} {:?}", keys, values);
             at::Unit
         },
         ExprKind::Set{elts} => {
-            println!("Not impl {:?}", elts);
+            println!("Not impl Set {:?}", elts);
             at::Unit
         },
         ExprKind::ListComp{elt, generators} => {
-            println!("Not impl {:?} {:?}", elt, generators);
+            println!("Not impl ListComp {:?} {:?}", elt, generators);
             at::Unit
         },
         ExprKind::SetComp{elt, generators} => {
-            println!("Not impl {:?} {:?}", elt, generators);
+            println!("Not impl Set {:?} {:?}", elt, generators);
             at::Unit
         },
         ExprKind::DictComp{key, value, generators} => {
-            println!("Not impl {:?} {:?} {:?}", key, value, generators);
+            println!("Not impl DictComp {:?} {:?} {:?}", key, value, generators);
             at::Unit
         },
         ExprKind::GeneratorExp{elt, generators} => {
-            println!("Not impl {:?} {:?}", elt, generators);
+            println!("Not impl GeneratorExp {:?} {:?}", elt, generators);
             at::Unit
         },
         ExprKind::Await{value} => {
-            println!("Not impl {:?}", value);
+            println!("Not impl Await {:?}", value);
             at::Unit
         },
         ExprKind::Yield{value} => {
-            println!("Not impl {:?}", value);
+            println!("Not impl Yield {:?}", value);
             at::Unit
         },
         ExprKind::YieldFrom{value} => {
-            println!("Not impl {:?}", value);
+            println!("Not impl YieldFrom {:?}", value);
             at::Unit
         },
         ExprKind::Compare{left, ops, comparators} => {
-            println!("Not impl {:?} {:?} {:?}", left, ops, comparators);
+            println!("Not impl Compare {:?} {:?} {:?}", left, ops, comparators);
             at::Unit
         },
         ExprKind::Call{func, args, keywords: _} => {
@@ -129,40 +138,39 @@ fn translate_expr_kind(ek: ExprKind) -> at {
             at::App{object_name: "".to_string(), fun: Box::new(at::String{value: name}), param_list: param_list}
         },
         ExprKind::FormattedValue{value, conversion, format_spec} => {
-            println!("Not impl {:?} {:?} {:?}", value, conversion, format_spec);
+            println!("Not impl FormattedValue {:?} {:?} {:?}", value, conversion, format_spec);
             at::Unit
         },
         ExprKind::JoinedStr{values} => {
-            println!("Not impl {:?}", values);
+            println!("Not impl JoinedStr {:?}", values);
             at::Unit
         },
         ExprKind::Constant{value, kind: _} => extract_constant(value),
         ExprKind::Attribute{value, attr, ctx} => {
-            println!("Not impl {:?} {:?} {:?}", value, attr, ctx);
+            println!("Not impl Attribute {:?} {:?} {:?}", value, attr, ctx);
             at::Unit
         },
         ExprKind::Subscript{value, slice, ctx} => {
-            println!("Not impl {:?} {:?} {:?}", value, slice, ctx);
+            println!("Not impl Subscript {:?} {:?} {:?}", value, slice, ctx);
             at::Unit
         },
         ExprKind::Starred{value, ctx} => {
-            println!("Not impl {:?} {:?}", value, ctx);
+            println!("Not impl Starred {:?} {:?}", value, ctx);
             at::Unit
         },
-        ExprKind::Name{id, ctx} => {
-            println!("Not impl {:?} {:?}", id, ctx);
-            at::Unit
+        ExprKind::Name{id, ctx: _} => {
+            at::String{value: id}
         },
         ExprKind::List{elts, ctx} => {
-            println!("Not impl {:?} {:?}", elts, ctx);
+            println!("Not impl List {:?} {:?}", elts, ctx);
             at::Unit
         },
         ExprKind::Tuple{elts, ctx} => {
-            println!("Not impl {:?} {:?}", elts, ctx);
+            println!("Not impl Tuple {:?} {:?}", elts, ctx);
             at::Unit
         },
         ExprKind::Slice{lower, upper, step} => {
-            println!("Not impl {:?} {:?} {:?}", lower, upper, step);
+            println!("Not impl Slice {:?} {:?} {:?}", lower, upper, step);
             at::Unit
         }
     }
@@ -171,120 +179,121 @@ fn translate_expr_kind(ek: ExprKind) -> at {
 fn translate_stmt_kind(sk : StmtKind) -> at {
     match sk {
         StmtKind::FunctionDef{name, args, body, decorator_list, returns, type_comment} => {
-            println!("Not impl {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
+            println!("Not impl FunDef {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
             at::Unit 
         },
         StmtKind::AsyncFunctionDef{name, args, body, decorator_list, returns, type_comment} => {
-            println!("Not impl {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
+            println!("Not impl AsyncFunDef {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
             at::Unit 
         },
         StmtKind::ClassDef{name, bases, keywords, body, decorator_list} => {
-            println!("Not impl {:?} {:?} {:?} {:?} {:?}", name, bases, keywords, body, decorator_list);
+            println!("Not impl ClassDef {:?} {:?} {:?} {:?} {:?}", name, bases, keywords, body, decorator_list);
             at::Unit 
         },
         StmtKind::Return{value} => {
-            println!("Not impl {:?}", value);
+            println!("Not impl Return {:?}", value);
             at::Unit 
         },
         StmtKind::Delete{targets} => {
-            println!("Not impl {:?}", targets);
+            println!("Not impl Delete {:?}", targets);
             at::Unit 
         },
         StmtKind::Assign{targets, value, type_comment} => {
-            println!("Not impl {:?} {:?} {:?}", targets, value, type_comment);
+            println!("Not impl Assign {:?} {:?} {:?}", targets, value, type_comment);
             at::Unit 
         },
         StmtKind::AugAssign{target, op, value} => {
-            println!("Not impl {:?} {:?} {:?}", target, op, value);
+            println!("Not impl AugAssign {:?} {:?} {:?}", target, op, value);
             at::Unit 
         },
         StmtKind::AnnAssign{target, annotation, value, simple} => {
-            println!("Not impl {:?} {:?} {:?} {:?}", target, annotation, value, simple);
+            println!("Not impl AnnAssign {:?} {:?} {:?} {:?}", target, annotation, value, simple);
             at::Unit 
         },
         StmtKind::For{target, iter, body, orelse, type_comment} => {
-            println!("Not impl {:?} {:?} {:?} {:?} {:?}", target, iter, body, orelse, type_comment);
+            println!("Not impl For {:?} {:?} {:?} {:?} {:?}", target, iter, body, orelse, type_comment);
             at::Unit 
         },
         StmtKind::AsyncFor{target, iter, body, orelse, type_comment} => {
-            println!("Not impl {:?} {:?} {:?} {:?} {:?}", target, iter, body, orelse, type_comment);
+            println!("Not impl AsyncFor {:?} {:?} {:?} {:?} {:?}", target, iter, body, orelse, type_comment);
             at::Unit 
         },
         StmtKind::While{test, body, orelse} => {
-            println!("Not impl {:?} {:?} {:?}", test, body, orelse);
+            println!("Not impl While {:?} {:?} {:?}", test, body, orelse);
             at::Unit 
         },
-        StmtKind::If{test, body, orelse} => {
-            println!("Not impl {:?} {:?} {:?}", test, body, orelse);
-            at::Unit 
-        },
+        StmtKind::If{test, body, orelse} => at::If{condition: Box::new(translate_expr_kind(test.node)), then: Box::new(translate_stmt_kind_list(body)), els: Box::new(translate_stmt_kind_list(orelse))},
         StmtKind::With{items, body, type_comment} => {
-            println!("Not impl {:?} {:?} {:?}", items, body, type_comment);
+            println!("Not impl With {:?} {:?} {:?}", items, body, type_comment);
             at::Unit 
         },
         StmtKind::AsyncWith{items, body, type_comment} => {
-            println!("Not impl {:?} {:?} {:?}", items, body, type_comment);
+            println!("Not impl AsyncWith {:?} {:?} {:?}", items, body, type_comment);
             at::Unit 
         },
         StmtKind::Match{subject, cases} => {
-            println!("Not impl {:?} {:?}", subject, cases);
+            println!("Not impl Match {:?} {:?}", subject, cases);
             at::Unit 
         },
         StmtKind::Raise{exc, cause} => {
-            println!("Not impl {:?} {:?}", exc, cause);
+            println!("Not impl Raise {:?} {:?}", exc, cause);
             at::Unit 
         },
         StmtKind::Try{body, handlers, orelse, finalbody} => {
-            println!("Not impl {:?} {:?} {:?} {:?}", body, handlers, orelse, finalbody);
+            println!("Not impl Try {:?} {:?} {:?} {:?}", body, handlers, orelse, finalbody);
             at::Unit 
         },
         StmtKind::Assert{test, msg} => {
-            println!("Not impl {:?} {:?}", test, msg);
+            println!("Not impl Assert {:?} {:?}", test, msg);
             at::Unit 
         },
         StmtKind::Import{names} => {
-            println!("Not impl {:?}", names);
+            println!("Not impl Import {:?}", names);
             at::Unit 
         },
         StmtKind::ImportFrom{module, names, level} => {
-            println!("Not impl {:?} {:?} {:?}", module, names, level);
+            println!("Not impl ImportFrom {:?} {:?} {:?}", module, names, level);
             at::Unit 
         },
         StmtKind::Global{names} => {
-            println!("Not impl {:?}", names);
+            println!("Not impl Global {:?}", names);
             at::Unit 
         },
         StmtKind::Nonlocal{names} => {
-            println!("Not impl {:?}", names);
+            println!("Not impl Nonlocal {:?}", names);
             at::Unit 
         },
         StmtKind::Expr{value} => translate_expr_kind(value.node),
         StmtKind::Pass => {
-            println!("Not impl");
+            println!("Not impl Pass");
             at::Unit 
         },
         StmtKind::Break => {
-            println!("Not impl");
+            println!("Not impl Break");
             at::Unit 
         },
         StmtKind::Continue => {
-            println!("Not impl");
+            println!("Not impl Continue");
             at::Unit 
         }
     }
 }
 
-pub fn python_parse(source: String) -> at {
-    let ast = parser::parse_program(&source, "<embedded>").unwrap();
-    //  println!("AST: {:?}", ast);
+fn translate_stmt_kind_list(skl: Vec<Located<StmtKind>>) -> at { 
     let mut res = at::Unit;
-    for statement in ast {
+    for sk in skl {
         res = match res {
-            at::Unit => translate_stmt_kind(statement.node),
-            _ => at::Stmts{expr1: Box::new(res), expr2: Box::new(translate_stmt_kind(statement.node))}
+            at::Unit => translate_stmt_kind(sk.node),
+            _ => at::Stmts{expr1: Box::new(res), expr2: Box::new(translate_stmt_kind(sk.node))}
         }
     }
     res
+}
+
+pub fn python_parse(source: String) -> at {
+    let ast = parser::parse_program(&source, "<embedded>").unwrap();
+    //  println!("AST: {:?}", ast);
+    translate_stmt_kind_list(ast)
 }
 
 
