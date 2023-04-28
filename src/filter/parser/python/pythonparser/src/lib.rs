@@ -2,7 +2,7 @@ use aleph_syntax_tree::syntax::AlephTree as at;
 
 use rustpython_parser::{ast, parser};
 use rustpython_parser::ast::{ExprKind, StmtKind};
-use crate::ast::Constant;
+use crate::ast::{Constant, Operator, Unaryop};
 
 fn extract_constant(value : Constant) -> at {
     match value {
@@ -51,12 +51,26 @@ fn translate_expr_kind(ek: ExprKind) -> at {
             at::Unit
         },
         ExprKind::BinOp{left, op, right} => {
-            println!("Not impl {:?} {:?} {:?}", left, op, right);
-            at::Unit
+            match op {
+                Operator::Add => at::Add{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
+                Operator::Sub => at::Sub{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
+                Operator::Mult => at::Mul{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
+                Operator::Div => at::Div{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
+                Operator::FloorDiv => at::Div{number_expr1: Box::new(translate_expr_kind(left.node)), number_expr2: Box::new(translate_expr_kind(right.node))},
+                _ => {
+                    println!("Not impl {:?} {:?} {:?}", left, op, right);
+                    at::Unit
+                }
+            }
         },
         ExprKind::UnaryOp{op, operand} => {
-            println!("Not impl {:?} {:?}", op, operand);
-            at::Unit
+            match op {
+                Unaryop::USub => at::Neg{expr: Box::new(translate_expr_kind(operand.node))},
+                _ => {
+                    println!("Not impl {:?} {:?}", op, operand);
+                    at::Unit
+                }
+            }
         },
         ExprKind::Lambda{args, body} => {
             println!("Not impl {:?} {:?}", args, body);
