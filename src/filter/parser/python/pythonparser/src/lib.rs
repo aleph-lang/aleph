@@ -2,7 +2,7 @@ use aleph_syntax_tree::syntax::AlephTree as at;
 
 use rustpython_parser::{ast, parser};
 use rustpython_parser::ast::{ExprKind, StmtKind};
-use crate::ast::{Arguments, Boolop, Constant, Located, Operator, Unaryop};
+use crate::ast::{Arguments, Boolop, Cmpop, Constant, Located, Operator, Unaryop};
 
 fn extract_constant(value : Constant) -> at {
     match value {
@@ -131,8 +131,27 @@ fn translate_expr_kind(ek: ExprKind) -> at {
             at::Unit
         },
         ExprKind::Compare{left, ops, comparators} => {
-            println!("Not impl Compare {:?} {:?} {:?}", left, ops, comparators);
-            at::Unit
+            let mut res = translate_expr_kind(left.node);
+            for (op, right) in ops.iter().zip(comparators.iter()) {
+                let right_expr = translate_expr_kind(right.node.clone());
+                res = match op {
+                    Cmpop::Eq => at::Eq{expr1: Box::new(res), expr2: Box::new(right_expr)},
+                    Cmpop::NotEq => at::Not{bool_expr: Box::new(at::Eq{expr1: Box::new(res), expr2: Box::new(right_expr)})},
+                    Cmpop::Lt => at::And{bool_expr1: Box::new(at::LE{expr1: Box::new(res.clone()), expr2: Box::new(right_expr.clone())}), bool_expr2: Box::new(at::Not{bool_expr: Box::new(at::Eq{expr1: Box::new(res.clone()), expr2: Box::new(right_expr.clone())})})},
+                    Cmpop::LtE => at::LE{expr1: Box::new(res), expr2: Box::new(right_expr)},
+                    Cmpop::Gt => at::Not{bool_expr: Box::new(at::LE{expr1: Box::new(res), expr2: Box::new(right_expr.clone())})},
+                    Cmpop::GtE => at::Or{bool_expr1: Box::new(at::LE{expr1: Box::new(res.clone()), expr2: Box::new(right_expr.clone())}), bool_expr2: Box::new(at::Eq{expr1: Box::new(res.clone()), expr2: Box::new(right_expr.clone())})},
+                    /*Is,
+                    IsNot,
+                    In,
+                    NotIn,*/
+                    _ => {
+                        println!("Compare not impl {:?}", op);
+                        res
+                    }
+                }
+            }
+            res
         },
         ExprKind::Call{func, args, keywords: _} => {
             let name = extract_name(func.node);
