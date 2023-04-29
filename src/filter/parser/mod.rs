@@ -19,7 +19,14 @@ fn do_parse(s:String) -> Option<Box<dyn Parser>> {
     }
 }
 
-// select right generator and generate the code from the ast
+/// Parser
+/// select right generator and generate the code from the ast
+/// #Arguments
+/// `to` - Name of parser, actually language name (ale, py, ...)
+/// `source` - String to parse
+///
+/// # Return
+/// This function return an AlephTree
 pub fn parse(to: String, source: String) -> at {
     match do_parse(to) {
         Some(g) => g.parse(source),

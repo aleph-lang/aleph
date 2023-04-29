@@ -625,6 +625,12 @@ fn translate(tree : grammar::Expression) -> at {
 }
 
 
+/// Aleph parser
+/// #Arguments
+/// `source` - String to parse
+///
+/// # Return
+/// This function return an AlephTree
 pub fn parse(source: String) -> at {
     translate(grammar::parse(&source).unwrap())
 }

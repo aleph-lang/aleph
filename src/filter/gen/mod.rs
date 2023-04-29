@@ -2,8 +2,6 @@ use crate::filter::at;
 
 #[cfg(feature="ale_gen")]
 mod ale;
-#[cfg(feature="bash_gen")]
-mod bash;
 #[cfg(feature="java_gen")]
 mod java;
 #[cfg(feature="json_gen")]
@@ -20,8 +18,6 @@ fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
         #[cfg(feature="ale_gen")]
         "aleph" | "ale" => Some(Box::new(ale::AleGen{})),
-        #[cfg(feature="bash_gen")]
-        "bash" => Some(Box::new(bash::BashGen{})),
         #[cfg(feature="java_gen")]
         "java" => Some(Box::new(java::JavaGen{})),
         #[cfg(feature="json_gen")]
@@ -36,7 +32,13 @@ fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     }
 }
 
-// select right generator and generate the code from the ast
+/// Generator
+/// #Arguments
+/// `to` - Name of generator, actually name of language (ale, py, ...)
+/// `ast` - ast source to translate
+///
+/// # Return
+/// This function return generated source code
 pub fn generate(to: String, ast: at) -> String {
     match to_gen(to) {
         Some(g) => g.generate(ast),

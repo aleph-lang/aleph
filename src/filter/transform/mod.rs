@@ -9,7 +9,13 @@ fn select_transform(s:String) -> Option<Box<dyn Transform>> {
     }
 }
 
-// select right generator and generate the code from the ast
+/// Transform
+/// #Arguments
+/// `transformer_name` - Name of transform function
+/// `ast` - AlephTree to transform
+///
+/// # Return
+/// This function return an AlephTree
 pub fn transform(transformer_name: String, ast: at) -> at {
     match select_transform(transformer_name) {
         Some(t) => t.transform(ast),
@@ -17,9 +23,7 @@ pub fn transform(transformer_name: String, ast: at) -> at {
     }
 }
 
-/**
-* this trait should be implemented by all transformers
-*/
+/// this trait should be implemented by all transformers
 trait Transform {
     fn transform(&self, ast: at) -> at ;
 }

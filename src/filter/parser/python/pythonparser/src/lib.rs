@@ -2,7 +2,7 @@ use aleph_syntax_tree::syntax::AlephTree as at;
 
 use rustpython_parser::{ast, parser};
 use rustpython_parser::ast::{ExprKind, StmtKind};
-use crate::ast::{Boolop, Constant, Located, Operator, Unaryop};
+use crate::ast::{Arguments, Boolop, Constant, Located, Operator, Unaryop};
 
 fn extract_constant(value : Constant) -> at {
     match value {
@@ -12,8 +12,11 @@ fn extract_constant(value : Constant) -> at {
         Constant::Bytes(b) => at::Bytes{elems: b},
         Constant::Int(i) => at::Int{value: i.to_string()},
         Constant::Tuple(v) => {
-            println!("Not impl Tuples {:?}", v);
-            at::Unit
+            let mut res = Vec::new();
+            for c in v {
+                res.push(Box::new(extract_constant(c)));
+            }
+            at::Tuple{elems : res}
         },
         Constant::Float(f) => at::Float{value: f.to_string()},
         Constant::Complex{real, imag} => at::Complex{real: real.to_string(), imag: imag.to_string()},
@@ -29,6 +32,20 @@ fn extract_name(ek: ExprKind) -> String {
             "".to_string()
         }
     }
+}
+
+// TODO translate Arguments to Vec<Box<at>>
+// pub struct Arguments<U = ()> {
+//    pub posonlyargs: Vec<Arg<U>>,
+//    pub args: Vec<Arg<U>>,
+//    pub vararg: Option<Box<Arg<U>>>,
+//    pub kwonlyargs: Vec<Arg<U>>,
+//    pub kw_defaults: Vec<Expr<U>>,
+//    pub kwarg: Option<Box<Arg<U>>>,
+//    pub defaults: Vec<Expr<U>>,
+//}
+fn translate_arguments_vec(_args : Arguments) -> Vec<Box<at>> {
+    Vec::new()
 }
 
 fn translate_expr_kind(ek: ExprKind) -> at {
@@ -75,10 +92,7 @@ fn translate_expr_kind(ek: ExprKind) -> at {
                 }
             }
         },
-        ExprKind::Lambda{args, body} => {
-            println!("Not impl Lambda {:?} {:?}", args, body);
-            at::Unit
-        },
+        ExprKind::Lambda{args, body} => at::LetRec{name: "lambda".to_string(), args: translate_arguments_vec(*args), body: Box::new(translate_expr_kind(body.node))},
         ExprKind::IfExp{test, body, orelse} => at::If{condition: Box::new(translate_expr_kind(test.node)), then: Box::new(translate_expr_kind(body.node)), els: Box::new(translate_expr_kind(orelse.node))},
         ExprKind::Dict{keys, values} => {
             println!("Not impl Dict {:?} {:?}", keys, values);
@@ -169,21 +183,12 @@ fn translate_expr_kind(ek: ExprKind) -> at {
 
 fn translate_stmt_kind(sk : StmtKind) -> at {
     match sk {
-        StmtKind::FunctionDef{name, args, body, decorator_list, returns, type_comment} => {
-            println!("Not impl FunDef {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
-            at::Unit 
-        },
-        StmtKind::AsyncFunctionDef{name, args, body, decorator_list, returns, type_comment} => {
-            println!("Not impl AsyncFunDef {:?} {:?} {:?} {:?} {:?} {:?}", name, args, body, decorator_list, returns, type_comment);
-            at::Unit 
-        },
-        StmtKind::ClassDef{name, bases, keywords, body, decorator_list} => {
-            println!("Not impl ClassDef {:?} {:?} {:?} {:?} {:?}", name, bases, keywords, body, decorator_list);
-            at::Unit 
-        },
-        StmtKind::Return{value} => {
-            println!("Not impl Return {:?}", value);
-            at::Unit 
+        StmtKind::FunctionDef{name, args, body, decorator_list: _, returns: _, type_comment: _} => at::LetRec{name: name, args: translate_arguments_vec(*args), body: Box::new(translate_stmt_kind_list(body))},
+        StmtKind::AsyncFunctionDef{name, args, body, decorator_list: _, returns: _, type_comment: _} => at::LetRec{name: name, args: translate_arguments_vec(*args), body: Box::new(translate_stmt_kind_list(body))},
+        StmtKind::ClassDef{name, bases: _, keywords: _, body, decorator_list: _} => at::Clss{name: name, attribute_list: Vec::new(), body: Box::new(translate_stmt_kind_list(body))},
+        StmtKind::Return{value} => match value {
+            None => at::Unit,
+            Some(r) => at::Return{value: Box::new(translate_expr_kind(r.node))},
         },
         StmtKind::Delete{targets} => {
             println!("Not impl Delete {:?}", targets);
@@ -281,6 +286,12 @@ fn translate_stmt_kind_list(skl: Vec<Located<StmtKind>>) -> at {
     res
 }
 
+/// Python parser
+/// #Arguments
+/// `source` - String to parse
+///
+/// # Return
+/// This function return an AlephTree
 pub fn python_parse(source: String) -> at {
     let ast = parser::parse_program(&source, "<embedded>").unwrap();
     //  println!("AST: {:?}", ast);

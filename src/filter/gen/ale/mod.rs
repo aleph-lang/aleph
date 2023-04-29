@@ -51,6 +51,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Stmts{expr1, expr2} => format!("{};\n{}", gen(*expr1, indent), gen(*expr2, indent)), 
         at::Iprt{name} => format!("{}import {}", c_indent, name),
         at::Clss{name, attribute_list, body} => format!("{}class {} {{\n{}{};\n{}\n}}", c_indent, name, comp_indent(indent+1), attribute_list.join(&format!(";\n{}", comp_indent(indent+1))), gen(*body, indent+1)), 
+        at::Return{value} => format!("return {}", gen(*value, 0)),
         at::Comment{value} => format!("{}{}", c_indent, value),
         at::CommentMulti{value} => format!("{}{}", c_indent, value),
     }

@@ -21,7 +21,6 @@ python_parser = { path = "src/filter/parser/python/pythonparser" }
 "ale_parse" = []
 "json_parse" = []
 "ale_gen" = []
-"bash_gen" = []
 "java_gen" = []
 "json_gen" = []
 "ocaml_gen" = []
