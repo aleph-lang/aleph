@@ -14,7 +14,7 @@ aleph-syntax-tree = { path = "../aleph-syntax-tree" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 argparse = "0.2.2"
-aleparser = { path = "src/filter/parser/ale/aleparser" }
+aleparser = { path = "../filter/parser/aleparser" }
 python_parser = { path = "src/filter/parser/python/pythonparser" }
 
 [features]
@@ -31,6 +31,5 @@ python_parser = { path = "src/filter/parser/python/pythonparser" }
 
 [workspace]
 members = [
-    "src/filter/parser/ale/aleparser",
     "src/filter/parser/python/pythonparser"
 ]
