@@ -3,6 +3,9 @@ name = "alephc"
 version = "1.0.0"
 edition = "2021"
 
+[net]
+git-fetch-with-cli = true
+
 [profile.dev]
 opt-level = 3
 
@@ -10,12 +13,12 @@ opt-level = 3
 opt-level = 3 
 
 [dependencies]
-aleph-syntax-tree = { path = "../aleph-syntax-tree" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 argparse = "0.2.2"
-aleparser = { path = "../filter/parser/aleparser" }
-python_parser = { path = "src/filter/parser/python/pythonparser" }
+aleph-syntax-tree = { git = "ssh://git@github.com/aleph-lang/aleph-syntax-tree.git" }
+aleparser = { git = "ssh://git@github.com/aleph-lang/aleparser.git" }
+python_parser = { git = "ssh://git@github.com/aleph-lang/pythonparser.git" }
 
 [features]
 "ale_parse" = []
@@ -29,7 +32,3 @@ python_parser = { path = "src/filter/parser/python/pythonparser" }
 "python_parse" = []
 "default" = ["ale_gen","json_gen" ,"ale_parse","json_parse" ]
 
-[workspace]
-members = [
-    "src/filter/parser/python/pythonparser"
-]
