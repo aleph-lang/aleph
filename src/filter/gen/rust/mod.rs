@@ -28,6 +28,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Div{number_expr1, number_expr2} => format!("{}{} / {}", c_indent, gen(*number_expr1, 0), gen(*number_expr2, 0)),
         at::Eq{expr1, expr2} => format!("{}{} = {}", c_indent, gen(*expr1, 0), gen(*expr2, 0)),
         at::LE{expr1, expr2} => format!("{}{} <= {}", c_indent, gen(*expr1, 0), gen(*expr2, 0)),
+        at::In{expr1, expr2} => format!("{}{} in {}", c_indent, gen(*expr1, 0), gen(*expr2, 0)),
         at::If{condition, then, els} => match *els {
              at::Unit => format!("{}if {} {{\n{}\n{}}}", c_indent, gen(*condition, 0), gen(*then, indent+1), c_indent),
              _ => format!("{}if {} {{\n{}\n{}}}\nelse\n{{\n{}\n{}}}", c_indent, gen(*condition, 0), gen(*then, indent+1), c_indent, gen(*els, indent+1), c_indent),
