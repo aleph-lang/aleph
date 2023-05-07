@@ -16,9 +16,11 @@ argparse = "0.2.2"
 aleph-syntax-tree = { git = "ssh://git@github.com/aleph-lang/aleph-syntax-tree.git" }
 aleparser = { git = "ssh://git@github.com/aleph-lang/aleparser.git" }
 python_parser = { git = "ssh://git@github.com/aleph-lang/pythonparser.git" }
+js_parser = { git = "ssh://git@github.com/aleph-lang/jsparser.git" }
 
 [features]
 "ale_parse" = []
+"js_parse" = []
 "json_parse" = []
 "ale_gen" = []
 "java_gen" = []

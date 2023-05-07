@@ -2,6 +2,8 @@ use crate::filter::at;
 
 #[cfg(feature="ale_parse")]
 mod ale;
+#[cfg(feature="js_parse")]
+mod javascript;
 #[cfg(feature="json_parse")]
 mod json;
 #[cfg(feature="python_parse")]
@@ -11,6 +13,8 @@ fn do_parse(s:String) -> Option<Box<dyn Parser>> {
     match s.as_str() {
         #[cfg(feature="ale_parse")]
         "ale" => Some(Box::new(ale::AleParser{})),
+        #[cfg(feature="js_parse")]
+        "javascript" | "js" => Some(Box::new(javascript::JavascriptParser{})),
         #[cfg(feature="json_parse")]
         "json" => Some(Box::new(json::JsonParser{})),
         #[cfg(feature="python_parse")]
