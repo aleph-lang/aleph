@@ -2,32 +2,19 @@ use crate::filter::at;
 
 #[cfg(feature="ale_gen")]
 mod ale;
-#[cfg(feature="java_gen")]
-mod java;
 #[cfg(feature="json_gen")]
 mod json;
-#[cfg(feature="ocaml_gen")]
-mod ocaml;
 #[cfg(feature="python_gen")]
 mod python;
-#[cfg(feature="rust_gen")]
-mod rust;
-
 
 fn to_gen(s:String) -> Option<Box<dyn Gen>> {
     match s.as_str() {
         #[cfg(feature="ale_gen")]
         "aleph" | "ale" => Some(Box::new(ale::AleGen{})),
-        #[cfg(feature="java_gen")]
-        "java" => Some(Box::new(java::JavaGen{})),
         #[cfg(feature="json_gen")]
         "json" => Some(Box::new(json::JsonGen{})),
-        #[cfg(feature="ocaml_gen")]
-        "ocaml" | "ml" => Some(Box::new(ocaml::OcamlGen{})),
         #[cfg(feature="python_gen")]
         "python" | "py" => Some(Box::new(python::PythonGen{})),
-        #[cfg(feature="rust_gen")]
-        "rust" | "rs" => Some(Box::new(rust::RustGen{})),
         _ => None
     }
 }

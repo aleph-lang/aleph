@@ -70,6 +70,7 @@ fn gen(ast: at, indent: i64) -> String {
         at::Return{value} => format!("return {}", gen(*value, 0)),
         at::Comment{value} => format!("{}{}", c_indent, value),
         at::CommentMulti{value} => format!("{}{}", c_indent, value),
+        at::Break | at::Continue | at::Assert { .. } => todo!(),
     }
 }
 
