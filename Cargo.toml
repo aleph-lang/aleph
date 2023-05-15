@@ -18,6 +18,8 @@ aleparser = { git = "ssh://git@github.com/aleph-lang/aleparser.git" }
 python_parser = { git = "ssh://git@github.com/aleph-lang/pythonparser.git" }
 #js_parser = { path = "../filter/parser/jsparser" }
 js_parser = { git = "ssh://git@github.com/aleph-lang/jsparser.git" }
+alegen = { git = "ssh://git@github.com/aleph-lang/alegen.git" }
+pythongen = { git = "ssh://git@github.com/aleph-lang/pythongen.git" }
 
 [features]
 "ale_parse" = []

@@ -33,28 +33,6 @@ pub fn generate(to: String, ast: at) -> String {
     }
 }
 
-fn gen_list_expr_sep(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String, sep: &str) -> String {
-    format!("{}", ast_list.into_iter().map(|e| f(*e, 0)).collect::<Vec<String>>().join(sep))
-}
-
-fn gen_list_expr(ast_list: Vec<Box<at>>, f: fn(at, i64) -> String) -> String {
-    gen_list_expr_sep(ast_list, f, " ")
-}
-
-// indentation for generators
-fn comp_indent_sep(indent: i64, sep: String) -> String {
-    let mut res = "".to_string();
-    for _ in 0..indent {
-        res.push_str(&sep);
-    }
-    res
-}
-
-// use comp_indent_sep with tab
-fn comp_indent(indent: i64) -> String {
-   comp_indent_sep(indent, String::from("    "))
-}
-
 /**
 * this trait should be implemented by all generators
 */
