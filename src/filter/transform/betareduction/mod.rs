@@ -1,6 +1,6 @@
 use crate::syntax;
 use crate::filter::transform::Transform;
-use crate::filter::at;
+use aleph_syntax_tree::syntax::AlephTree as at;
 
 #[derive(Default)]
 pub struct BetaReduction;
