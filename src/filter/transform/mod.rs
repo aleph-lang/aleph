@@ -1,10 +1,10 @@
 use aleph_syntax_tree::syntax::AlephTree as at;
 
-mod ident;
+mod betareduction;
 
 fn select_transform(s:String) -> Option<Box<dyn Transform>> {
     match s.as_str() {
-        "ident" => Some(Box::new(ident::Ident)),
+        "betareduction" => Some(Box::new(betareduction::BetaReduction)),
         _ => None
     }
 }
