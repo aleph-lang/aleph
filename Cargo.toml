@@ -26,9 +26,9 @@ pythongen = { git = "ssh://git@github.com/aleph-lang/pythongen.git" }
 "ale_parse" = []
 "js_parse" = []
 "json_parse" = []
+"python_parse" = []
 "ale_gen" = []
 "json_gen" = []
 "python_gen" = []
-"python_parse" = []
 "default" = ["ale_gen","json_gen" ,"ale_parse","json_parse" ]
 
