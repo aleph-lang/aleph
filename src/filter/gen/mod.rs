@@ -1,4 +1,5 @@
 use aleph_syntax_tree::syntax::AlephTree as at;
+use aleph_syntax_tree::Gen;
 
 #[cfg(feature="ale_gen")]
 mod ale;
@@ -33,9 +34,3 @@ pub fn generate(to: String, ast: at) -> String {
     }
 }
 
-/**
-* this trait should be implemented by all generators
-*/
-trait Gen {
-    fn generate(&self, ast: at) -> String ;
-}

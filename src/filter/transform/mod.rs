@@ -1,4 +1,5 @@
 use aleph_syntax_tree::syntax::AlephTree as at;
+use aleph_syntax_tree::Transform;
 
 mod betareduction;
 
@@ -23,7 +24,3 @@ pub fn transform(transformer_name: String, ast: at) -> at {
     }
 }
 
-/// this trait should be implemented by all transformers
-trait Transform {
-    fn transform(&self, ast: at) -> at ;
-}
