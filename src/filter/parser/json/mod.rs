@@ -1,5 +1,5 @@
 use aleph_syntax_tree::syntax::AlephTree as at;
-use crate::filter::parser::Parser;
+use aleph_syntax_tree::Parser;
 
 #[derive(Default)]
 pub struct JsonParser;

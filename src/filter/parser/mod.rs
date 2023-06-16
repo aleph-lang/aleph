@@ -1,4 +1,5 @@
 use aleph_syntax_tree::syntax::AlephTree as at;
+use aleph_syntax_tree::Parser;
 
 #[cfg(feature="ale_parse")]
 mod ale;
@@ -36,11 +37,4 @@ pub fn parse(to: String, source: String) -> at {
         Some(g) => g.parse(source),
         None => at::String{value : "Parser Not Implemented".to_string()}
     }
-}
-
-/**
-* this trait should be implemented by all parser
-*/
-trait Parser {
-    fn parse(&self, source: String) -> at;
 }
