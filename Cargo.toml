@@ -2,6 +2,9 @@
 name = "alephc"
 version = "1.0.0"
 edition = "2021"
+license-file="LICENSE"
+repository="https://github.com/aleph-lang/aleph"
+description="Aleph Compiler (or transpiler)."
 
 [profile.dev]
 opt-level = 3
@@ -11,14 +14,13 @@ opt-level = 3
 
 [dependencies]
 argparse = "0.2.2"
-aleph-syntax-tree = { git = "ssh://git@github.com/aleph-lang/aleph-syntax-tree.git" }
-aleparser = { git = "ssh://git@github.com/aleph-lang/aleparser.git" }
+aleph-syntax-tree = "0.1.0"
+aleparser = "0.1.1"
 python_parser = { git = "ssh://git@github.com/aleph-lang/pythonparser.git" }
-#js_parser = { path = "../filter/parser/jsparser" }
 js_parser = { git = "ssh://git@github.com/aleph-lang/jsparser.git" }
-betareduction = { git = "ssh://git@github.com/aleph-lang/betareduction.git" }
-alegen = { git = "ssh://git@github.com/aleph-lang/alegen.git" }
-pythongen = { git = "ssh://git@github.com/aleph-lang/pythongen.git" }
+betareduction = "0.1.0"
+alegen = "0.1.0"
+pythongen = "0.1.0"
 
 [features]
 "ale_parse" = []
