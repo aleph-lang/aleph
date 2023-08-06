@@ -17,7 +17,7 @@ pub fn parse(from: String, source: String) -> at {
         #[cfg(feature="json_parse")]
         "json" => aleph_syntax_tree::syntax::json_parse(source),
         #[cfg(feature="python_parse")]
-        "python" | "py" => python_parser::python_parse(source),
+        "python" | "py" => ale_python_parser::python_parse(source),
         _ => at::String{value : "Parser Not Implemented".to_string()}
     }
 }
