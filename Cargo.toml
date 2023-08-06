@@ -16,7 +16,7 @@ opt-level = 3
 argparse = "0.2.2"
 aleph-syntax-tree = "0.1.0"
 aleparser = "0.1.1"
-ale_python_parser = { git = "ssh://git@github.com/aleph-lang/pythonparser.git" }
+ale_python_parser = "0.1.0"
 js_parser = "0.1.0"
 betareduction = "0.1.0"
 alegen = "0.1.0"
