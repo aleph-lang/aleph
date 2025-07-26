@@ -3,6 +3,7 @@ pub mod transform;
 pub mod gen;
 
 use aleph_syntax_tree::syntax::AlephTree as at;
+use aleph_syntax_tree::syntax::json_parse;
 
 /// Generate
 /// #Arguments
@@ -15,7 +16,10 @@ use aleph_syntax_tree::syntax::AlephTree as at;
 /// This function return generated source code
 pub fn generate(content_type: String, content: String, transformer_list : Option<Vec<String>>, return_type: String) -> String {
 
-    let parsed_content: at = parser::parse(content_type, content);
+    let parsed_content: at = match content_type.as_str() {
+        "ast_json" => json_parse(content),
+        _ => parser::parse(content_type.clone(), content),
+    };
 
     let transformed_content: at = match transformer_list {
         Some(list)=> transform_dispatcher(list, parsed_content),
