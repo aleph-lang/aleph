@@ -15,6 +15,12 @@ pub fn generate(to: String, ast: at) -> String {
         "json" => aleph_syntax_tree::syntax::to_json(ast),
         #[cfg(feature="python_gen")]
         "python" | "py" => pythongen::generate(ast),
+        #[cfg(feature="erlang_gen")]
+        "erlang" | "erl" => erlanggen::generate(ast),
+        #[cfg(feature="elixir_gen")]
+        "elixir" | "ex" => elixirgen::generate(ast),
+        #[cfg(feature="gleam_gen")]
+        "gleam" => gleamgen::generate(ast),
         _ => "Generator Not Implemented: Use external binary as generator".to_string()
     }
 }
