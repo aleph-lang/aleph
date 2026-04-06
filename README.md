@@ -5,17 +5,17 @@ Alephc is a multi-language compiler/transpiler that can parse and generate code 
 ## Features
 
 ### Input Languages (Parsers)
-- **Aleph Language** (`ale_parse`): The native Aleph language
-- **Python** (`python_parse`): Parse Python code
-- **JavaScript** (`js_parse`): Parse JavaScript code  
+- **Aleph Language** ([`ale_parse`](https://github.com/aleph-lang/aleparser)): The native Aleph language
+- **Python** ([`python_parse`](https://github.com/aleph-lang/pythonparser)): Parse Python code
+- **JavaScript** ([`js_parse`](https://github.com/aleph-lang/jsparser)): Parse JavaScript code
 - **JSON** (`json_parse`): Parse JSON structures
 
 ### Output Languages (Generators)
-- **Aleph Language** (`ale_gen`): Generate Aleph code
-- **Python** (`python_gen`): Generate Python code
-- **Erlang** (`erlang_gen`): Generate Erlang code
-- **Elixir** (`elixir_gen`): Generate Elixir code
-- **Gleam** (`gleam_gen`): Generate Gleam code
+- **Aleph Language** ([`ale_gen`](https://github.com/aleph-lang/alegen)): Generate Aleph code
+- **Python** ([`python_gen`](https://github.com/aleph-lang/pythongen)): Generate Python code
+- **Erlang** ([`erlang_gen`](https://github.com/aleph-lang/erlanggen)): Generate Erlang code
+- **Elixir** ([`elixir_gen`](https://github.com/aleph-lang/elixirgen)): Generate Elixir code
+- **Gleam** ([`gleam_gen`](https://github.com/aleph-lang/gleamgen)): Generate Gleam code
 - **JSON** (`json_gen`): Generate JSON structures
 
 ## Installation
@@ -131,6 +131,20 @@ These include various language constructs like:
   - `parser/`: Language parsers
   - `gen/`: Code generators
   - `transform/`: Code transformers
+
+## Related Projects
+
+The Aleph compiler ecosystem includes several related projects:
+
+### Core Components
+- [Aleph Compiler](https://github.com/aleph-lang/aleph) - Main compiler/transpiler
+- [Aleph Syntax Tree](https://github.com/aleph-lang/aleph-syntax-tree) - Core syntax tree structure
+- [Beta Reduction](https://github.com/aleph-lang/betareduction) - AST transformation engine
+
+### Experimental & Advanced Tools
+- [Aleph Call](https://github.com/aleph-lang/ale_call) - Erlang implementation caller
+- [Aleph Ollama](https://github.com/aleph-lang/aleph_ollama) - AI-powered translator
+- [Aleph Ollama Erlang](https://github.com/aleph-lang/aleph_ollama_erlang) - Erlang AI translation library
 
 ## License
 
