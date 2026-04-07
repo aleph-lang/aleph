@@ -1,22 +1,22 @@
 # Aleph Compiler (Alephc)
 
-Alephc is a multi-language compiler/transpiler that can parse and generate code between various programming languages. It supports parsing from Python, JavaScript, JSON, and Aleph language, and can generate code in multiple target languages including Python, Erlang, Elixir, Gleam, and more.
+Alephc is a multi-language compiler and transpiler capable of parsing and generating code across multiple programming languages. It supports parsing Python, JavaScript, JSON, and the Aleph language, and can generate code in multiple target languages including Python, Erlang, Elixir, Gleam, and more.
 
 ## Features
 
 ### Input Languages (Parsers)
-- **Aleph Language** ([`ale_parse`](https://github.com/aleph-lang/aleparser)): The native Aleph language
-- **Python** ([`python_parse`](https://github.com/aleph-lang/pythonparser)): Parse Python code
-- **JavaScript** ([`js_parse`](https://github.com/aleph-lang/jsparser)): Parse JavaScript code
-- **JSON** (`json_parse`): Parse JSON structures
+- **Aleph Language** ([`ale_parse`](https://github.com/aleph-lang/aleparser)): Parser for Aleph code
+- **Python** ([`python_parse`](https://github.com/aleph-lang/pythonparser)): Parser for Python code
+- **JavaScript** ([`js_parse`](https://github.com/aleph-lang/jsparser)): Parser for JavaScript code
+- **JSON** (`json_parse`): Parser for JSON structures
 
 ### Output Languages (Generators)
-- **Aleph Language** ([`ale_gen`](https://github.com/aleph-lang/alegen)): Generate Aleph code
-- **Python** ([`python_gen`](https://github.com/aleph-lang/pythongen)): Generate Python code
-- **Erlang** ([`erlang_gen`](https://github.com/aleph-lang/erlanggen)): Generate Erlang code
-- **Elixir** ([`elixir_gen`](https://github.com/aleph-lang/elixirgen)): Generate Elixir code
-- **Gleam** ([`gleam_gen`](https://github.com/aleph-lang/gleamgen)): Generate Gleam code
-- **JSON** (`json_gen`): Generate JSON structures
+- **Aleph Language** ([`ale_gen`](https://github.com/aleph-lang/alegen)): Generator for Aleph code
+- **Python** ([`python_gen`](https://github.com/aleph-lang/pythongen)): Generator for Python code
+- **Erlang** ([`erlang_gen`](https://github.com/aleph-lang/erlanggen)): Generator for Erlang code
+- **Elixir** ([`elixir_gen`](https://github.com/aleph-lang/elixirgen)): Generator for Elixir code
+- **Gleam** ([`gleam_gen`](https://github.com/aleph-lang/gleamgen)): Generator for Gleam code
+- **JSON** (`json_gen`): Generator for JSON structures
 
 ## Installation
 
@@ -35,7 +35,7 @@ cargo build
 ### Basic Command Structure
 
 ```bash
-cargo run -- [FEATURES] -- -i [INPUT_LANGUAGE] -o [OUTPUT_LANGUAGE] < [INPUT_FILE]
+cargo run -- [FEATURES] -- -i <INPUT_LANGUAGE> -o <OUTPUT_LANGUAGE> < <INPUT_FILE>
 ```
 
 ### Running with Default Features
@@ -60,7 +60,7 @@ cargo run --features python_gen,erlang_gen
 
 ## Examples
 
-### Parse Python and Generate Ocaml
+### Parse Python and Generate OCaml
 
 ```bash
 cargo run --all-features -- -i py -o ocaml < test/dataset/python/testInt.py
@@ -86,13 +86,13 @@ cargo run --features json_parse,erlang_gen -- -i json -o erlang < test/dataset/j
 
 ## Supported Language Codes
 
-### Input Language Codes
+### Supported Input Language Codes
 - `ale` or `aleparse`: Aleph language
 - `py` or `python`: Python
 - `js` or `javascript`: JavaScript
 - `json`: JSON
 
-### Output Language Codes
+### Supported Output Language Codes
 - `ale` or `alegen`: Aleph language
 - `py` or `python`: Python
 - `erlang`: Erlang
@@ -102,7 +102,7 @@ cargo run --features json_parse,erlang_gen -- -i json -o erlang < test/dataset/j
 
 ## Transformers
 
-You can apply code transformations using the `-t` or `--transformer_list` option:
+Code transformations can be applied using the `-t` or `--transformer_list` option:
 
 ```bash
 cargo run --all-features -- -i python -o ocaml -t "transform1,transform2" < input.py
@@ -117,7 +117,7 @@ The project includes a comprehensive test dataset located in `test/dataset/` wit
 - Aleph (`test/dataset/ale/`)
 - OCaml (`test/dataset/ocaml/`)
 
-These include various language constructs like:
+The dataset includes examples covering various language constructs such as:
 - Basic types (int, float, string, bool)
 - Control structures (if, for, while)
 - Functions and classes
@@ -127,7 +127,7 @@ These include various language constructs like:
 ## Project Structure
 
 - `src/main.rs`: Main entry point and CLI interface
-- `src/filter/`: Core compilation pipeline
+- `src/filter/`: Core compilation pipeline components
   - `parser/`: Language parsers
   - `gen/`: Code generators
   - `transform/`: Code transformers
@@ -169,20 +169,19 @@ cargo build --release
 After building, you can use the compiled binary directly:
 
 ```bash
-./target/release/alephc -i [INPUT_LANGUAGE] -o [OUTPUT_LANGUAGE] < [INPUT_FILE]
+./target/release/alephc -i <INPUT_LANGUAGE> -o <OUTPUT_LANGUAGE> < <INPUT_FILE>
 ```
 
 ### Examples with the Binary
 
 ```bash
-# Parse Python and generate Ocaml using the binary
+# Parse Python and generate OCaml using the binary
 ./target/release/alephc -i python -o ocaml < test/dataset/python/testInt.py
 
 # Parse JavaScript and generate Python using the binary
 ./target/release/alephc -i js -o python < test/dataset/js/testInt.js
 ```
-
-The binary supports the same options as `cargo run` but doesn't require specifying features at runtime since features are compiled into the binary during the build process.
+The compiled binary supports the same options as `cargo run`, but feature flags must be selected during compilation rather than at runtime.
 
 ## Running Tests
 
@@ -193,7 +192,7 @@ The project includes various test files in the `test/dataset/` directory that yo
 cargo run --all-features -- -i python -o ale < test/dataset/python/testInt.py
 
 # Test Aleph to JSON conversion  
-cargo run --default -- -i ale -o json < test/dataset/ale/testInt.ale
+cargo run -- -i ale -o json < test/dataset/ale/testInt.ale
 ```
 
 ## Feature Matrix
