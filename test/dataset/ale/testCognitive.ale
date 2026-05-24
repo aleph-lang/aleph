@@ -1,0 +1,19 @@
+intention greet(name) = {
+    suggest msg from name;
+    act format(msg) as result;
+    remember "last_greeting" = result;
+    result
+};
+
+intention classify(input) = {
+    perceive input as data;
+    suggest category from data;
+    act tag(category) as label;
+    remember "last_label" = label;
+    label
+};
+
+perceive sensor as reading;
+act greet(reading) as output;
+act classify(reading) as kind;
+remember "session" = output

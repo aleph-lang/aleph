@@ -42,3 +42,40 @@ pub fn transform_dispatcher(transformer_list: Vec<String>, ast: at) ->at{
             transform::transform(transformer_name.to_string(), accum)
         })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Round-trip test for the cognitive layer.
+    /// parse(source) → alegen → parse → alegen must be idempotent.
+    #[cfg(all(feature = "ale_parse", feature = "ale_gen"))]
+    #[test]
+    fn cognitive_roundtrip() {
+        let source = include_str!(
+            "../../test/dataset/ale/testCognitive.ale"
+        ).to_string();
+
+        // First pass: Aleph → AST → Aleph
+        let pass1 = generate(
+            "ale".to_string(),
+            source,
+            None,
+            "ale".to_string(),
+        );
+        assert!(!pass1.is_empty(), "first pass produced empty output");
+        assert!(
+            !pass1.contains("Can't parse"),
+            "first pass produced a parse error:\n{}", pass1
+        );
+
+        // Second pass: idempotency check
+        let pass2 = generate(
+            "ale".to_string(),
+            pass1.clone(),
+            None,
+            "ale".to_string(),
+        );
+        assert_eq!(pass1, pass2, "cognitive round-trip is not idempotent");
+    }
+}
