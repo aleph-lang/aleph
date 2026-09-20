@@ -13,3 +13,6 @@ Cargo.lock
 **/*.rs.bk
 debug/
 target/
+
+# Local scratch directory, not part of the crate
+.wolf/
