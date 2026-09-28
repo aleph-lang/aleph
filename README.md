@@ -1,5 +1,7 @@
 # Aleph Compiler (Alephc)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23021204.svg)](https://doi.org/10.5281/zenodo.23021204)
+
 Alephc is a multi-language compiler and transpiler capable of parsing and generating code across multiple programming languages. It supports parsing Python, JavaScript, JSON, and the Aleph language, and can generate code in multiple target languages including Python, Erlang, Elixir, Gleam, and more.
 
 ## Features
